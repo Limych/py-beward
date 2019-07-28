@@ -20,10 +20,10 @@ from .const import MSG_GENERIC_FAIL, BEWARD_MODELS, TIMEOUT
 
 try:
     from urllib.parse import urlencode
-except ImportError:
+except ImportError:  # pragma: no cover
     from urllib import urlencode
 
-_LOG = logging.getLogger(__name__)
+_LOGGER = logging.getLogger(__name__)
 
 
 # pylint: disable=R0902,R0904
@@ -47,7 +47,7 @@ class BewardGeneric(object):
 
         return None
 
-    def __init__(self, host_ip, username, password, debug=False):
+    def __init__(self, host_ip, username, password, name=None):
 
         # Check if host_ip is a valid IPv4 representation.
         # This library does not (yet?) support IPv6
@@ -58,7 +58,6 @@ class BewardGeneric(object):
 
         self.params = {}
 
-        self.debug = debug
         self.host = host_ip
         self.username = username
         self.password = password
@@ -67,6 +66,10 @@ class BewardGeneric(object):
         self.last_activity = None
         self.alarm_timestamp = {}
         self.alarm_state = {}
+
+        self._sysinfo = None
+        self.name = name or 'Beward %s' % self.system_info.get('DeviceID',
+                                                               host_ip)
 
     def get_url(self, function):
         """Get entry point for function."""
@@ -77,8 +80,7 @@ class BewardGeneric(object):
         """Query data from Beward device."""
 
         url = self.get_url(function)
-        if self.debug:  # pragma: no cover
-            _LOG.debug("Querying %s", url)
+        _LOGGER.debug("Querying %s", url)
 
         response = None
 
@@ -110,26 +112,24 @@ class BewardGeneric(object):
             else:
                 raise ValueError('Unknown method: %s' % method)
 
-            if self.debug:  # pragma: no cover
-                _LOG.debug("_query ret %s", req.status_code)
+            _LOGGER.debug("_query ret %s", req.status_code)
 
         except Exception as err_msg:
-            _LOG.error("Error! %s", err_msg)
+            _LOGGER.error("Error! %s", err_msg)
             raise
 
         if req.status_code == 200 or req.status_code == 204:
             response = req
 
-        if self.debug and response is None:  # pragma: no cover
-            _LOG.debug("%s", MSG_GENERIC_FAIL)
+        if response is None:
+            _LOGGER.debug("%s", MSG_GENERIC_FAIL)
         return response
 
     def _handle_alarm(self, timestamp, alarm, state):
         """Handle alarms from Beward device."""
 
-        if self.debug:  # pragma: no cover
-            _LOG.debug("Time: %s; Alert: %s; Status: %s", timestamp, alarm,
-                       state)
+        _LOGGER.debug("Time: %s; Alert: %s; Status: %s", timestamp, alarm,
+                      state)
 
         self.last_activity = timestamp
         self.alarm_timestamp[alarm] = timestamp
@@ -141,14 +141,12 @@ class BewardGeneric(object):
         def listener():
             resp = requests.get(url, params=urlencode(params), auth=auth,
                                 timeout=TIMEOUT, stream=True)
-            if self.debug:
-                _LOG.debug("_query ret %s", resp.status_code)
+            _LOGGER.debug("_query ret %s", resp.status_code)
 
             if resp.status_code == 200:
                 for line in resp.iter_lines(chunk_size=1, decode_unicode=True):
                     if line:
-                        if self.debug:
-                            _LOG.debug("Alarm: %s", line)
+                        _LOGGER.debug("Alarm: %s", line)
 
                         date, time, alert, state, _ = str(line).split(';', 5)
                         timestamp = datetime.strptime(date + ' ' + time,
@@ -162,8 +160,7 @@ class BewardGeneric(object):
 
         url = self.get_url('alarmchangestate')
 
-        if self.debug:
-            _LOG.debug("Querying %s", url)
+        _LOGGER.debug("Querying %s", url)
 
         params = self.params
         params.update({
@@ -182,24 +179,26 @@ class BewardGeneric(object):
         thread = threading.Thread(target=listener)
         thread.start()
 
-        if self.debug:
-            _LOG.debug("Return from listen_alarms()")
+        _LOGGER.debug("Return from listen_alarms()")
 
     @property
     def system_info(self):
         """Get system info from Beward device."""
 
-        sysinfo = {}
+        if self._sysinfo:
+            return self._sysinfo
+
+        self._sysinfo = {}
 
         try:
             data = self.query('systeminfo').text
             for env in data.splitlines():
                 (k, v) = env.split('=', 2)
-                sysinfo[k] = v
+                self._sysinfo[k] = v
         except ConnectTimeout:
             pass
 
-        return sysinfo
+        return self._sysinfo
 
     @property
     def device_type(self):
@@ -208,10 +207,14 @@ class BewardGeneric(object):
         return self.get_device_type(self.system_info.get('DeviceModel'))
 
     @property
-    def is_online(self):
+    def ready(self):
         try:
             self.query('systeminfo')
         except ConnectTimeout:
             return False
 
         return True
+
+    @property
+    def is_online(self):
+        return self.ready

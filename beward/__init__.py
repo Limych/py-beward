@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""Beward devices controller."""
+"""Python API for Beward Cameras and Doorbells."""
 
 #
 #  Copyright (c) 2019, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>

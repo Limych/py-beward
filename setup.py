@@ -14,7 +14,7 @@ class PyTest(TestCommand):
 
     def finalize_options(self):
         TestCommand.finalize_options(self)
-        # we don't run integration tests which need an actual LinkPlay device
+        # we don't run integration tests which need an actual Beward device
         self.test_args = ['-m', 'not integration']
         self.test_suite = True
 
@@ -35,7 +35,6 @@ NAME = 'beward'
 
 PACKAGES = (
     'beward',
-    # 'beward.plugins',
 )
 
 AUTHOR_EMAIL = metadata['author']
@@ -43,8 +42,6 @@ VERSION = metadata['version']
 WEBSITE = metadata['website']
 LICENSE = metadata['license']
 DESCRIPTION = docstrings[0]
-
-TEST_REQUIREMENTS = list(open('requirements_tests.txt'))
 
 CLASSIFIERS = [
     'Development Status :: 2 - Pre-Alpha',
@@ -69,6 +66,7 @@ with io.open('README.md', encoding='utf-8') as file:
 AUTHOR, EMAIL = re.match(r'(.*) <(.*)>', AUTHOR_EMAIL).groups()
 
 REQUIREMENTS = list(open('requirements.txt'))
+TEST_REQUIREMENTS = list(open('requirements_tests.txt'))
 
 setup(
     name=NAME,

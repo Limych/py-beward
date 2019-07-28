@@ -13,15 +13,15 @@ import logging
 from beward.const import ALARM_SENSOR
 from .camera import BewardCamera
 
-_LOG = logging.getLogger(__name__)
+_LOGGER = logging.getLogger(__name__)
 
 
 # pylint: disable=R0902,R0904
 class BewardDoorbell(BewardCamera):
     """Beward doorbell controller class."""
 
-    def __init__(self, host_ip, username, password, debug=False):
-        super().__init__(host_ip, username, password, debug)
+    def __init__(self, host_ip, username, password):
+        super().__init__(host_ip, username, password)
 
         self.last_ding_timestamp = None
         self.last_ding_image = None
