@@ -2,11 +2,20 @@
 
 """Beward devices controller."""
 
+#
+#  Copyright (c) 2019, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
+#  Creative Commons BY-NC-SA 4.0 International Public License
+#  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
+#
+
 import logging
 
-from .core import BewardGeneric
-
 # Will be parsed by setup.py to determine package metadata
+from beward.camera import BewardCamera
+from beward.const import BEWARD_CAMERA, BEWARD_DOORBELL
+from beward.core import BewardGeneric
+from beward.doorbell import BewardDoorbell
+
 __author__ = 'Andrey "Limych" Khrolenok <andrey@khrolenok.ru>'
 # Please add the suffix "+" to the version after release, to make it
 # possible infer whether in development code from the version string
@@ -17,10 +26,38 @@ __license__ = 'Creative Commons BY-NC-SA License'
 # You really should not `import *` - it is poor practice
 # but if you do, here is what you get:
 __all__ = [
+    'Beward',
     'BewardGeneric',
+    'BewardCamera',
+    'BewardDoorbell',
 ]
 
 # http://docs.python.org/2/howto/logging.html#library-config
 # Avoids spurious error messages if no logger is configured by the user
 
 logging.getLogger(__name__).addHandler(logging.NullHandler())
+
+
+# pylint: disable=R0902,R0904
+class Beward:
+    """Beward device factory class."""
+
+    @staticmethod
+    def factory(host_ip, username, password, **kwargs):
+        """Return correct class for device."""
+
+        bw = BewardGeneric(host_ip, username, password)
+        model = bw.system_info.get('DeviceModel')
+        dev_type = bw.get_device_type(model)
+
+        if dev_type is None:
+            return BewardGeneric(host_ip, username, password, *kwargs)
+
+        if dev_type == BEWARD_CAMERA:
+            return BewardCamera(host_ip, username, password, *kwargs)
+
+        if dev_type == BEWARD_DOORBELL:
+            return BewardDoorbell(host_ip, username, password, *kwargs)
+
+        raise ValueError(
+            'Unknown device "%s" (%s)' % (model, dev_type))  # pragma: no cover

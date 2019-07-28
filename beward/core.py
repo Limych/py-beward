@@ -1,15 +1,22 @@
 # -*- coding: utf-8 -*-
 
 """Beward devices controller core."""
-import asyncio
+
+#
+#  Copyright (c) 2019, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
+#  Creative Commons BY-NC-SA 4.0 International Public License
+#  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
+#
+
 import logging
 import socket
 from datetime import datetime
 
 import requests
+from requests import ConnectTimeout
 from requests.auth import HTTPBasicAuth
 
-from .const import MSG_GENERIC_FAIL
+from .const import MSG_GENERIC_FAIL, BEWARD_MODELS, TIMEOUT
 
 try:
     from urllib.parse import urlencode
@@ -27,9 +34,22 @@ class BewardGeneric(object):
 
     _class_group = 'Beward'
 
+    @staticmethod
+    def get_device_type(model):
+        """Detect device type for model."""
+
+        if not model:
+            return None
+
+        for dev_type, models in BEWARD_MODELS.items():
+            if model in models.split():
+                return dev_type
+
+        return None
+
     def __init__(self, host_ip, username, password, debug=False):
 
-        # Check if ip_address is a valid IPv4 representation.
+        # Check if host_ip is a valid IPv4 representation.
         # This library does not (yet?) support IPv6
         try:
             socket.inet_aton(host_ip)
@@ -42,16 +62,22 @@ class BewardGeneric(object):
         self.host = host_ip
         self.username = username
         self.password = password
+        self.session = requests.session()
+
+        self.last_activity = None
+        self.alarm_timestamp = {}
+        self.alarm_state = {}
 
     def get_url(self, function):
         """Get entry point for function."""
 
         return 'http://' + self.host + '/cgi-bin/' + function + '_cgi'
 
-    def query(self, url, method='GET', extra_params=None):
+    def query(self, function, method='GET', extra_params=None):
         """Query data from Beward device."""
 
-        if self.debug:
+        url = self.get_url(function)
+        if self.debug:  # pragma: no cover
             _LOG.debug("Querying %s", url)
 
         response = None
@@ -73,18 +99,18 @@ class BewardGeneric(object):
 
         try:
             if method == 'GET':
-                req = requests.get(url, params=urlencode(params),
-                                   auth=auth)
+                req = self.session.get(url, params=urlencode(params),
+                                       auth=auth, timeout=TIMEOUT)
             # elif method == 'PUT':
-            #     req = requests.put(url, params=urlencode(params),
-            #                        auth=auth)
+            #     req = self.session.put(url, params=urlencode(params),
+            #                            auth=auth, timeout=TIMEOUT)
             # elif method == 'POST':
-            #     req = requests.post(url, params=urlencode(params),
-            #                         auth=auth, json=json)
+            #     req = self.session.post(url, params=urlencode(params),
+            #                             auth=auth, timeout=TIMEOUT, json=json)
             else:
                 raise ValueError('Unknown method: %s' % method)
 
-            if self.debug:
+            if self.debug:  # pragma: no cover
                 _LOG.debug("_query ret %s", req.status_code)
 
         except Exception as err_msg:
@@ -92,26 +118,29 @@ class BewardGeneric(object):
             raise
 
         if req.status_code == 200 or req.status_code == 204:
-            # if raw, return session object otherwise return JSON
             response = req
 
-        if self.debug and response is None:
+        if self.debug and response is None:  # pragma: no cover
             _LOG.debug("%s", MSG_GENERIC_FAIL)
         return response
 
-    def handle_alerts(self, date_time, alert, status):
-        """Handle alerts from Beward device."""
+    def _handle_alarm(self, timestamp, alarm, state):
+        """Handle alarms from Beward device."""
 
-        if self.debug:
-            _LOG.debug("Time: %s; Alert: %s; Status: %s", date_time, alert,
-                       status)
+        if self.debug:  # pragma: no cover
+            _LOG.debug("Time: %s; Alert: %s; Status: %s", timestamp, alarm,
+                       state)
 
-    def listen_alerts(self, channel=0, alerts=None):
-        """Listen for alerts from Beward device."""
+        self.last_activity = timestamp
+        self.alarm_timestamp[alarm] = timestamp
+        self.alarm_state[alarm] = state
+
+    def listen_alarms(self, channel=0, alarms=None):
+        """Listen for alarms from Beward device."""
 
         def listener():
             resp = requests.get(url, params=urlencode(params), auth=auth,
-                                stream=True)
+                                timeout=TIMEOUT, stream=True)
             if self.debug:
                 _LOG.debug("_query ret %s", resp.status_code)
 
@@ -119,19 +148,17 @@ class BewardGeneric(object):
                 for line in resp.iter_lines(chunk_size=1, decode_unicode=True):
                     if line:
                         if self.debug:
-                            _LOG.debug("Alert: %s", line)
+                            _LOG.debug("Alarm: %s", line)
 
-                        # 2019-07-28;00:57:27;MotionDetection;1;0
-                        # 2019-07-28;00:57:28;MotionDetection;0;0
-                        date, time, alert, status, _ = str(line).split(';', 5)
-                        date_time = datetime.strptime(date + ' ' + time,
+                        date, time, alert, state, _ = str(line).split(';', 5)
+                        timestamp = datetime.strptime(date + ' ' + time,
                                                       '%Y-%m-%d %H:%M:%S')
-                        status = int(status)
+                        state = int(state)
 
-                        self.handle_alerts(date_time, alert, status)
+                        self._handle_alarm(timestamp, alert, state)
 
-        if alerts is None:
-            alerts = {}
+        if alarms is None:
+            alarms = {}
 
         url = self.get_url('alarmchangestate')
 
@@ -141,7 +168,7 @@ class BewardGeneric(object):
         params = self.params
         params.update({
             'channel': channel,
-            'parameter': ';'.join(alerts),
+            'parameter': ';'.join(alarms),
         })
 
         # Add authentication data
@@ -156,4 +183,35 @@ class BewardGeneric(object):
         thread.start()
 
         if self.debug:
-            _LOG.debug("Return from listen_alerts()")
+            _LOG.debug("Return from listen_alarms()")
+
+    @property
+    def system_info(self):
+        """Get system info from Beward device."""
+
+        sysinfo = {}
+
+        try:
+            data = self.query('systeminfo').text
+            for env in data.splitlines():
+                (k, v) = env.split('=', 2)
+                sysinfo[k] = v
+        except ConnectTimeout:
+            pass
+
+        return sysinfo
+
+    @property
+    def device_type(self):
+        """Detect device type."""
+
+        return self.get_device_type(self.system_info.get('DeviceModel'))
+
+    @property
+    def is_online(self):
+        try:
+            self.query('systeminfo')
+        except ConnectTimeout:
+            return False
+
+        return True

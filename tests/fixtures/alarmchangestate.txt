@@ -1,0 +1,4 @@
+2019-07-28;00:57:27;MotionDetection;1;0
+2019-07-28;00:57:28;MotionDetection;0;0
+2019-07-28;15:51:52;SensorAlarm;1;0
+2019-07-28;15:51:53;SensorAlarm;0;0
