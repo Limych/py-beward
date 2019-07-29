@@ -33,4 +33,4 @@ class BewardDoorbell(BewardCamera):
 
         if alarm == ALARM_SENSOR and state == 1:
             self.last_ding_timestamp = timestamp
-            self.last_ding_image = self.camera_image()
+            self.last_ding_image = self.live_image

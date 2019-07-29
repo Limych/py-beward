@@ -71,10 +71,33 @@ class BewardGeneric(object):
         self.name = name or 'Beward %s' % self.system_info.get('DeviceID',
                                                                host_ip)
 
-    def get_url(self, function):
+    def get_url(self, function, extra_params=None, username=None,
+                password=None):
         """Get entry point for function."""
 
-        return 'http://' + self.host + '/cgi-bin/' + function + '_cgi'
+        url = 'http://'
+        if username:
+            url += username
+            if password:
+                url += ':' + password
+            url += '@'
+        url += self.host + '/cgi-bin/' + function + '_cgi'
+        if extra_params:
+            url = self.add_url_params(url, extra_params)
+        return url
+
+    def add_url_params(self, url, extra_params):
+        """Add params to URL."""
+
+        from requests import PreparedRequest
+
+        params = self.params.copy()
+        params.update(extra_params)
+
+        p = PreparedRequest()
+        p.prepare_url(url, params)
+
+        return p.url
 
     def query(self, function, method='GET', extra_params=None):
         """Query data from Beward device."""
@@ -86,29 +109,23 @@ class BewardGeneric(object):
 
         # allow to override params when necessary
         # and update self.params globally for the next connection
+        params = self.params.copy()
         if extra_params:
-            params = self.params
             params.update(extra_params)
-        else:
-            params = self.params
 
         # Add authentication data
-        params.update({
-            'user': self.username,
-            'pwd': self.password,
-        })
         auth = HTTPBasicAuth(self.username, self.password)
 
         try:
             if method == 'GET':
-                req = self.session.get(url, params=urlencode(params),
-                                       auth=auth, timeout=TIMEOUT)
+                req = self.session.get(url, params=params, auth=auth,
+                                       timeout=TIMEOUT)
             # elif method == 'PUT':
-            #     req = self.session.put(url, params=urlencode(params),
-            #                            auth=auth, timeout=TIMEOUT)
+            #     req = self.session.put(url, params=params, auth=auth,
+            #                            timeout=TIMEOUT)
             # elif method == 'POST':
-            #     req = self.session.post(url, params=urlencode(params),
-            #                             auth=auth, timeout=TIMEOUT, json=json)
+            #     req = self.session.post(url, params=params, auth=auth,
+            #                             timeout=TIMEOUT, json=json)
             else:
                 raise ValueError('Unknown method: %s' % method)
 
@@ -121,7 +138,7 @@ class BewardGeneric(object):
         if req.status_code == 200 or req.status_code == 204:
             response = req
 
-        if response is None:
+        if response is None:  # pragma: no cover
             _LOGGER.debug("%s", MSG_GENERIC_FAIL)
         return response
 
@@ -162,16 +179,10 @@ class BewardGeneric(object):
 
         _LOGGER.debug("Querying %s", url)
 
-        params = self.params
+        params = self.params.copy()
         params.update({
             'channel': channel,
             'parameter': ';'.join(alarms),
-        })
-
-        # Add authentication data
-        params.update({
-            'user': self.username,
-            'pwd': self.password,
         })
         auth = HTTPBasicAuth(self.username, self.password)
 
@@ -181,6 +192,19 @@ class BewardGeneric(object):
 
         _LOGGER.debug("Return from listen_alarms()")
 
+    def get_info(self, function):
+        """Get info from Beward device."""
+
+        info = {}
+        data = self.query(function, extra_params={
+            'action': 'get',
+        }).text
+        for env in data.splitlines():
+            (k, v) = env.split('=', 2)
+            info[k] = v
+
+        return info
+
     @property
     def system_info(self):
         """Get system info from Beward device."""
@@ -189,12 +213,8 @@ class BewardGeneric(object):
             return self._sysinfo
 
         self._sysinfo = {}
-
         try:
-            data = self.query('systeminfo').text
-            for env in data.splitlines():
-                (k, v) = env.split('=', 2)
-                self._sysinfo[k] = v
+            self._sysinfo = self.get_info('systeminfo')
         except ConnectTimeout:
             pass
 
@@ -203,7 +223,6 @@ class BewardGeneric(object):
     @property
     def device_type(self):
         """Detect device type."""
-
         return self.get_device_type(self.system_info.get('DeviceModel'))
 
     @property

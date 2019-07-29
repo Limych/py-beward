@@ -19,7 +19,7 @@ from beward.doorbell import BewardDoorbell
 __author__ = 'Andrey "Limych" Khrolenok <andrey@khrolenok.ru>'
 # Please add the suffix "+" to the version after release, to make it
 # possible infer whether in development code from the version string
-__version__ = '0.0.1'
+__version__ = '0.3.0'
 __website__ = 'https://github.com/Limych/python-beward'
 __license__ = 'Creative Commons BY-NC-SA License'
 
@@ -34,8 +34,9 @@ __all__ = [
 
 # http://docs.python.org/2/howto/logging.html#library-config
 # Avoids spurious error messages if no logger is configured by the user
-
 logging.getLogger(__name__).addHandler(logging.NullHandler())
+
+_LOGGER = logging.getLogger(__name__)
 
 
 # pylint: disable=R0902,R0904
@@ -50,14 +51,22 @@ class Beward:
         model = bw.system_info.get('DeviceModel')
         dev_type = bw.get_device_type(model)
 
+        inst = None
         if dev_type is None:
-            return BewardGeneric(host_ip, username, password, *kwargs)
+            inst = BewardGeneric(host_ip, username, password, *kwargs)
 
         if dev_type == BEWARD_CAMERA:
-            return BewardCamera(host_ip, username, password, *kwargs)
+            inst = BewardCamera(host_ip, username, password, *kwargs)
 
         if dev_type == BEWARD_DOORBELL:
-            return BewardDoorbell(host_ip, username, password, *kwargs)
+            inst = BewardDoorbell(host_ip, username, password, *kwargs)
 
-        raise ValueError(
-            'Unknown device "%s" (%s)' % (model, dev_type))  # pragma: no cover
+        if inst is None:  # pragma: no cover
+            raise ValueError(
+                'Unknown device "%s" (%s)' % (model, dev_type)
+            )
+
+        _LOGGER.debug(
+            'Factory create instance of %s' % inst.__class__
+        )
+        return inst
