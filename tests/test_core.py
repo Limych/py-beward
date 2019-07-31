@@ -8,6 +8,7 @@
 
 import os
 from datetime import datetime
+from time import sleep
 from unittest import TestCase
 
 import requests
@@ -187,7 +188,52 @@ class TestBewardGeneric(TestCase):
             ALARM_SENSOR: 1,
         })
 
-    # TODO: def test_listen_alarms()
+    def _listen_alarms_tester(self, mock, alarms, timestamps=None,
+                              states=None):
+        bw = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
+        mock.register_uri("get", function_url('alarmchangestate'),
+                          text='\n'.join(alarms))
+
+        # Check initial state
+        self.assertEqual(bw.alarm_timestamp, {})
+        self.assertEqual(bw.alarm_state, {})
+
+        bw.listen_alarms(alarms=list(states.keys()))
+        sleep(1)
+        self.assertEqual(bw.alarm_timestamp, timestamps)
+        self.assertEqual(bw.alarm_state, states)
+
+    @requests_mock.Mocker()
+    def test_listen_alarms(self, mock):
+        alarms = [
+            '2019-07-28;00:57:27;MotionDetection;1;0',
+        ]
+        timestamps = {
+            ALARM_MOTION: datetime(2019, 7, 28, 0, 57, 27),
+        }
+        states = {
+            ALARM_MOTION: 1,
+        }
+        self._listen_alarms_tester(
+            mock, alarms, timestamps=timestamps, states=states)
+
+        alarms.append('2019-07-28;00:57:28;MotionDetection;0;0')
+        timestamps[ALARM_MOTION] = datetime(2019, 7, 28, 0, 57, 28)
+        states[ALARM_MOTION] = 0
+        self._listen_alarms_tester(
+            mock, alarms, timestamps=timestamps, states=states)
+
+        alarms.append('2019-07-28;15:51:52;SensorAlarm;1;0')
+        timestamps[ALARM_SENSOR] = datetime(2019, 7, 28, 15, 51, 52)
+        states[ALARM_SENSOR] = 1
+        self._listen_alarms_tester(
+            mock, alarms, timestamps=timestamps, states=states)
+
+        alarms.append('2019-07-28;15:51:53;SensorAlarm;0;0')
+        timestamps[ALARM_SENSOR] = datetime(2019, 7, 28, 15, 51, 53)
+        states[ALARM_SENSOR] = 0
+        self._listen_alarms_tester(
+            mock, alarms, timestamps=timestamps, states=states)
 
     @requests_mock.Mocker()
     def test_system_info(self, mock):

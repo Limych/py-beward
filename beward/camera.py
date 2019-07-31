@@ -22,12 +22,13 @@ _LOGGER = logging.getLogger(__name__)
 class BewardCamera(BewardGeneric):
     """Beward camera controller class."""
 
-    def __init__(self, host_ip, username, password):
-        super().__init__(host_ip, username, password)
+    def __init__(self, host_ip, username, password, stream=0, **kwargs):
+        super().__init__(host_ip, username, password, **kwargs)
 
         self.last_motion_timestamp = None
         self.last_motion_image = None
 
+        self._stream = stream
         self._live_image_url = None
         self._rtsp_live_video_url = None
 
@@ -46,9 +47,10 @@ class BewardCamera(BewardGeneric):
 
         try:
             info = self.get_info('rtsp')
-            url = 'rtsp://%s:%s@%s:%s/av0_0' % (
+            url = 'rtsp://%s:%s@%s:%s/av0_%d' % (
                 self.username, self.password,
                 self.host, info.get('RtspPort', 554),
+                self._stream,
             )
             self._rtsp_live_video_url = url
         except ConnectTimeout:
