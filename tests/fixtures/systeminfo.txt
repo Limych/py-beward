@@ -1,0 +1,10 @@
+HostName=IPC1692
+ChannelNum=1
+Standard=PAL
+DeviceID=1692
+SoftwareVersion=3.1.0.0.6.18
+WebVersion=2.1.3.8(20180208)
+HardwareVersion=Hi3518 IP Camera
+DeviceModel=DS06M
+DeviceUUID=8q2bmz2gfLZ5pMuImBTQIiIwcqo7lNd0
+FaceRecognition=1
