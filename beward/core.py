@@ -162,7 +162,7 @@ class BewardGeneric(object):
         params = self.params.copy()
         params.update({
             'channel': channel,
-            'parameter': ';'.join(alarms),
+            'parameter': ';'.join(set(alarms)),
         })
         auth = HTTPBasicAuth(self.username, self.password)
 

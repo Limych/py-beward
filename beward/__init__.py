@@ -19,7 +19,7 @@ from beward.doorbell import BewardDoorbell
 __author__ = 'Andrey "Limych" Khrolenok <andrey@khrolenok.ru>'
 # Please add the suffix "+" to the version after release, to make it
 # possible infer whether in development code from the version string
-__version__ = '0.10.1'
+__version__ = '0.11.0'
 __website__ = 'https://github.com/Limych/python-beward'
 __license__ = 'Creative Commons BY-NC-SA License'
 
@@ -50,21 +50,18 @@ class Beward:
         bw = BewardGeneric(host_ip, username, password)
         model = bw.system_info.get('DeviceModel')
         dev_type = bw.get_device_type(model)
-
         inst = None
-        if dev_type is None:
-            inst = BewardGeneric(host_ip, username, password, **kwargs)
+
+        if dev_type is None:  # pragma: no cover
+            raise ValueError(
+                'Unknown device "%s" (%s)' % (model, dev_type)
+            )
 
         if dev_type == BEWARD_CAMERA:
             inst = BewardCamera(host_ip, username, password, **kwargs)
 
         if dev_type == BEWARD_DOORBELL:
             inst = BewardDoorbell(host_ip, username, password, **kwargs)
-
-        if inst is None:  # pragma: no cover
-            raise ValueError(
-                'Unknown device "%s" (%s)' % (model, dev_type)
-            )
 
         _LOGGER.debug(
             'Factory create instance of %s' % inst.__class__
