@@ -14,6 +14,7 @@ TIMEOUT = 3
 MSG_GENERIC_FAIL = 'Sorry.. Something went wrong...'
 
 # Alarms
+ALARM_ONLINE = 'DeviceOnline'
 ALARM_MOTION = 'MotionDetection'
 ALARM_SENSOR = 'SensorAlarm'
 ALARM_SENSOR_OUT = 'SensorOutAlarm'
