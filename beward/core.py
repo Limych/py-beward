@@ -15,7 +15,7 @@ from time import sleep
 from typing import Optional
 
 import requests
-from requests import ConnectTimeout, Response
+from requests import ConnectTimeout, Response, RequestException
 from requests.auth import HTTPBasicAuth
 
 from .const import MSG_GENERIC_FAIL, BEWARD_MODELS, TIMEOUT, ALARM_ONLINE
@@ -135,7 +135,7 @@ class BewardGeneric:
         """Remove alarms handler."""
         if handler in self._alarm_handlers:
             self._alarm_handlers.remove(handler)
-            self._listen_alarms &= (len(self._alarm_handlers) != 0)
+            self._listen_alarms &= (self._alarm_handlers == set())
         return self
 
     def _handle_alarm(self, timestamp, alarm, state):
@@ -178,7 +178,7 @@ class BewardGeneric:
         while True:
             try:
                 resp = requests.get(url, params=params, auth=auth, stream=True)
-            except Exception:  # pragma: no cover
+            except RequestException:  # pragma: no cover
                 break
             _LOGGER.debug("_query ret %s", resp.status_code)
 

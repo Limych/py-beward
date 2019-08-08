@@ -74,8 +74,8 @@ class TestBewardCamera(TestCase):
 
         self.assertIsNone(bwd._live_image_url)
 
-        expect = f'http://{MOCK_USER}:{MOCK_PASS}@{MOCK_HOST}/cgi-bin/' \
-            'images_cgi?channel=0'
+        expect = f'http://{MOCK_USER}:{MOCK_PASS}@{MOCK_HOST}/cgi-bin/' + \
+                 'images_cgi?channel=0'
         self.assertEqual(expect, bwd.live_image_url)
 
     @requests_mock.Mocker()
