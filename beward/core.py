@@ -22,7 +22,6 @@ from .const import MSG_GENERIC_FAIL, BEWARD_MODELS, TIMEOUT, ALARM_ONLINE
 _LOGGER = logging.getLogger(__name__)
 
 
-# pylint: disable=R0902,R0904
 class BewardGeneric(object):
     """Generic Implementation for Beward device.
 

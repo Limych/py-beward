@@ -18,7 +18,6 @@ from .core import BewardGeneric
 _LOGGER = logging.getLogger(__name__)
 
 
-# pylint: disable=R0902,R0904
 class BewardCamera(BewardGeneric):
     """Beward camera controller class."""
 

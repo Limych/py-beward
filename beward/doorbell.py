@@ -16,7 +16,6 @@ from .camera import BewardCamera
 _LOGGER = logging.getLogger(__name__)
 
 
-# pylint: disable=R0902,R0904
 class BewardDoorbell(BewardCamera):
     """Beward doorbell controller class."""
 

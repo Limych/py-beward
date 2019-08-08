@@ -39,7 +39,7 @@ logging.getLogger(__name__).addHandler(logging.NullHandler())
 _LOGGER = logging.getLogger(__name__)
 
 
-# pylint: disable=R0902,R0904
+# pylint: disable=R0903
 class Beward:
     """Beward device factory class."""
 
@@ -47,9 +47,9 @@ class Beward:
     def factory(host_ip, username, password, **kwargs):
         """Return correct class for device."""
 
-        bw = BewardGeneric(host_ip, username, password)
-        model = bw.system_info.get('DeviceModel')
-        dev_type = bw.get_device_type(model)
+        bwd = BewardGeneric(host_ip, username, password)
+        model = bwd.system_info.get('DeviceModel')
+        dev_type = bwd.get_device_type(model)
         inst = None
 
         if dev_type is None:
@@ -63,7 +63,5 @@ class Beward:
         if dev_type == BEWARD_DOORBELL:
             inst = BewardDoorbell(host_ip, username, password, **kwargs)
 
-        _LOGGER.debug(
-            'Factory create instance of %s' % inst.__class__
-        )
+        _LOGGER.debug('Factory create instance of %s', inst.__class__)
         return inst
