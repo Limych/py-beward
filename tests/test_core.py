@@ -120,14 +120,6 @@ class TestBewardGeneric(TestCase):
         #
         self.assertEqual(expect, res)
 
-        expect = base_url + '?arg=123&par=qwe'
-        res = bw.add_url_params(base_url, {
-            'arg': '123',
-            'par': 'qwe',
-        })
-        #
-        self.assertEqual(expect, res)
-
     @requests_mock.Mocker()
     def test_query(self, mock):
         function = 'systeminfo'

@@ -19,11 +19,6 @@ from requests.auth import HTTPBasicAuth
 
 from .const import MSG_GENERIC_FAIL, BEWARD_MODELS, TIMEOUT, ALARM_ONLINE
 
-try:
-    from urllib.parse import urlencode
-except ImportError:  # pragma: no cover
-    from urllib import urlencode
-
 _LOGGER = logging.getLogger(__name__)
 
 
