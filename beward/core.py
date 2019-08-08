@@ -17,7 +17,7 @@ import requests
 from requests import ConnectTimeout
 from requests.auth import HTTPBasicAuth
 
-from .const import MSG_GENERIC_FAIL, BEWARD_MODELS, TIMEOUT
+from .const import MSG_GENERIC_FAIL, BEWARD_MODELS, TIMEOUT, ALARM_ONLINE
 
 try:
     from urllib.parse import urlencode
@@ -64,8 +64,12 @@ class BewardGeneric(object):
         self.params = {}
 
         self.last_activity = None
-        self.alarm_timestamp = {}
-        self.alarm_state = {}
+        self.alarm_state = {
+            ALARM_ONLINE: False,
+        }
+        self.alarm_timestamp = {
+            ALARM_ONLINE: datetime.min,
+        }
         self._alarm_handlers = []
 
         self._sysinfo = None
@@ -96,7 +100,7 @@ class BewardGeneric(object):
 
         return p.url
 
-    def query(self, function, method='GET', extra_params=None):
+    def query(self, function, extra_params=None):
         """Query data from Beward device."""
         url = self.get_url(function)
         _LOGGER.debug("Querying %s", url)
@@ -113,18 +117,8 @@ class BewardGeneric(object):
         auth = HTTPBasicAuth(self.username, self.password)
 
         try:
-            if method == 'GET':
-                req = self.session.get(url, params=params, auth=auth,
-                                       timeout=TIMEOUT)
-            # elif method == 'PUT':
-            #     req = self.session.put(url, params=params, auth=auth,
-            #                            timeout=TIMEOUT)
-            # elif method == 'POST':
-            #     req = self.session.post(url, params=params, auth=auth,
-            #                             timeout=TIMEOUT, json=json)
-            else:
-                raise ValueError('Unknown method: %s' % method)
-
+            req = self.session.get(url, params=params, auth=auth,
+                                   timeout=TIMEOUT)
             _LOGGER.debug("_query ret %s", req.status_code)
 
         except Exception as err_msg:
@@ -189,6 +183,8 @@ class BewardGeneric(object):
                 sleep(TIMEOUT)
                 continue
 
+            self._handle_alarm(datetime.now(), ALARM_ONLINE, True)
+
             for line in resp.iter_lines(chunk_size=1, decode_unicode=True):
                 if line:
                     _LOGGER.debug("Alarm: %s", line)
@@ -199,6 +195,8 @@ class BewardGeneric(object):
                     state = (state != '0')
 
                     self._handle_alarm(timestamp, alert, state)
+
+            self._handle_alarm(datetime.now(), ALARM_ONLINE, False)
 
     def get_info(self, function):
         """Get info from Beward device."""

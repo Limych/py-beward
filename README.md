@@ -1,3 +1,5 @@
+*Please :star: this repo if you find it useful*
+
 # py-beward
 
 [![Build Status](https://img.shields.io/travis/Limych/py-beward.svg?style=popout)](https://travis-ci.org/Limych/py-beward)
