@@ -41,9 +41,7 @@ class TestBewardDoorbell(TestCase):
 
         ts1 = datetime.now()
         mock.register_uri("get", function_url('images'), content=image,
-                          headers={
-                              'Content-Type': 'image/jpeg',
-                          })
+                          headers={'Content-Type': 'image/jpeg'})
         bwd._handle_alarm(ts1, ALARM_SENSOR, True)
         self.assertEqual(ts1, bwd.last_ding_timestamp)
         self.assertEqual(image, bwd.last_ding_image)

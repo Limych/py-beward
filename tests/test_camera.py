@@ -99,9 +99,7 @@ class TestBewardCamera(TestCase):
         self.assertIsNone(res)
 
         mock.register_uri("get", function_url('images'), content=image,
-                          headers={
-                              'Content-Type': 'image/jpeg',
-                          })
+                          headers={'Content-Type': 'image/jpeg'})
         res = bwd.live_image
         self.assertEqual(image, res)
 
@@ -116,9 +114,7 @@ class TestBewardCamera(TestCase):
 
         ts1 = datetime.now()
         mock.register_uri("get", function_url('images'), content=image,
-                          headers={
-                              'Content-Type': 'image/jpeg',
-                          })
+                          headers={'Content-Type': 'image/jpeg'})
         bwd._handle_alarm(ts1, ALARM_MOTION, True)
         self.assertEqual(ts1, bwd.last_motion_timestamp)
         self.assertEqual(image, bwd.last_motion_image)
