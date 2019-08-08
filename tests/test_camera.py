@@ -34,7 +34,7 @@ def load_binary(filename):
 
 
 def function_url(function, host=MOCK_HOST, user=None, password=None):
-    auth = None
+    auth = ''
     if user:
         auth = user
         if password:
