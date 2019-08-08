@@ -68,8 +68,8 @@ AUTHOR, EMAIL = re.match(r'(.*) <(.*)>', AUTHOR_EMAIL).groups()
 
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 
-REQUIREMENTS = list(open(f'{SCRIPT_DIR}/requirements.txt'))
-TEST_REQUIREMENTS = list(open(f'{SCRIPT_DIR}/requirements_tests.txt'))
+REQUIREMENTS = list(open(SCRIPT_DIR + '/requirements.txt'))
+TEST_REQUIREMENTS = list(open(SCRIPT_DIR + '/requirements_tests.txt'))
 
 setup(
     name=NAME,
