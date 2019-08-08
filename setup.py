@@ -66,10 +66,10 @@ with io.open('README.md', encoding='utf-8') as file:
 # Extract name and e-mail ("Firstname Lastname <mail@example.org>")
 AUTHOR, EMAIL = re.match(r'(.*) <(.*)>', AUTHOR_EMAIL).groups()
 
-SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
+BASE_DIR = os.getcwd()
 
-REQUIREMENTS = list(open(SCRIPT_DIR + '/requirements.txt'))
-TEST_REQUIREMENTS = list(open(SCRIPT_DIR + '/requirements_tests.txt'))
+REQUIREMENTS = list(open(BASE_DIR + '/requirements.txt'))
+TEST_REQUIREMENTS = list(open(BASE_DIR + '/requirements_tests.txt'))
 
 setup(
     name=NAME,
