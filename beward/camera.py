@@ -9,6 +9,7 @@
 #
 
 import logging
+from typing import Optional
 
 from requests import ConnectTimeout
 
@@ -65,7 +66,7 @@ class BewardCamera(BewardGeneric):
             self.last_motion_image = self.live_image
 
     @property
-    def live_image(self):
+    def live_image(self) -> Optional[bytes]:
         """Return bytes of camera image."""
 
         res = self.query('images', extra_params={'channel': 0})
@@ -76,7 +77,7 @@ class BewardCamera(BewardGeneric):
         return res.content
 
     @property
-    def live_image_url(self):
+    def live_image_url(self) -> str:
         """Return URL to get live photo from camera."""
 
         if not self._live_image_url:
@@ -84,7 +85,7 @@ class BewardCamera(BewardGeneric):
         return self._live_image_url
 
     @property
-    def rtsp_live_video_url(self):
+    def rtsp_live_video_url(self) -> str:
         """Return URL to get live video from camera via RTSP protocol."""
 
         if not self._live_image_url:

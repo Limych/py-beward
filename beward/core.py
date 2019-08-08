@@ -12,9 +12,10 @@ import logging
 import socket
 from datetime import datetime
 from time import sleep
+from typing import Optional
 
 import requests
-from requests import ConnectTimeout
+from requests import ConnectTimeout, Response
 from requests.auth import HTTPBasicAuth
 
 from .const import MSG_GENERIC_FAIL, BEWARD_MODELS, TIMEOUT, ALARM_ONLINE
@@ -22,7 +23,8 @@ from .const import MSG_GENERIC_FAIL, BEWARD_MODELS, TIMEOUT, ALARM_ONLINE
 _LOGGER = logging.getLogger(__name__)
 
 
-class BewardGeneric(object):
+# pylint: disable=R0902
+class BewardGeneric:
     """Generic Implementation for Beward device.
 
     """
@@ -30,7 +32,7 @@ class BewardGeneric(object):
     _class_group = 'Beward'
 
     @staticmethod
-    def get_device_type(model):
+    def get_device_type(model) -> Optional[str]:
         """Detect device type for model."""
 
         if not model:
@@ -42,7 +44,8 @@ class BewardGeneric(object):
 
         return None
 
-    def __init__(self, host_ip, username, password, name=None, **kwargs):
+    # pylint: disable=W0613
+    def __init__(self, host_ip, username, password, **kwargs):
 
         # Check if host_ip is a valid IPv4 representation.
         # This library does not (yet?) support IPv6
@@ -69,7 +72,7 @@ class BewardGeneric(object):
         self._sysinfo = None
 
     def get_url(self, function, extra_params=None, username=None,
-                password=None):
+                password=None) -> str:
         """Get entry point for function."""
         url = 'http://'
         if username:
@@ -82,19 +85,19 @@ class BewardGeneric(object):
             url = self.add_url_params(url, extra_params)
         return url
 
-    def add_url_params(self, url, extra_params):
+    def add_url_params(self, url, extra_params) -> str:
         """Add params to URL."""
         from requests import PreparedRequest
 
         params = self.params.copy()
         params.update(extra_params)
 
-        p = PreparedRequest()
-        p.prepare_url(url, params)
+        req = PreparedRequest()
+        req.prepare_url(url, params)
 
-        return p.url
+        return req.url
 
-    def query(self, function, extra_params=None):
+    def query(self, function, extra_params=None) -> Optional[Response]:
         """Query data from Beward device."""
         url = self.get_url(function)
         _LOGGER.debug("Querying %s", url)
@@ -127,10 +130,12 @@ class BewardGeneric(object):
         return response
 
     def add_alarms_handler(self, handler: callable):
+        """Add alarms handler."""
         self._alarm_handlers.append(handler)
         return self
 
     def remove_alarms_handler(self, handler: callable):
+        """Remove alarms handler."""
         self._alarm_handlers.remove(handler)
         return self
 
@@ -192,20 +197,20 @@ class BewardGeneric(object):
 
             self._handle_alarm(datetime.now(), ALARM_ONLINE, False)
 
-    def get_info(self, function):
+    def get_info(self, function) -> list:
         """Get info from Beward device."""
         info = {}
         data = self.query(function, extra_params={
             'action': 'get',
         }).text
         for env in data.splitlines():
-            (k, v) = env.split('=', 2)
-            info[k] = v
+            (key, val) = env.split('=', 2)
+            info[key] = val
 
         return info
 
     @property
-    def system_info(self):
+    def system_info(self) -> list:
         """Get system info from Beward device."""
         if self._sysinfo:
             return self._sysinfo
@@ -219,12 +224,13 @@ class BewardGeneric(object):
         return self._sysinfo
 
     @property
-    def device_type(self):
+    def device_type(self) -> Optional[str]:
         """Detect device type."""
         return self.get_device_type(self.system_info.get('DeviceModel'))
 
     @property
-    def ready(self):
+    def is_online(self) -> bool:
+        """Return True if entity is online."""
         try:
             self.query('systeminfo')
         except ConnectTimeout:
@@ -233,5 +239,6 @@ class BewardGeneric(object):
         return True
 
     @property
-    def is_online(self):
-        return self.ready
+    def available(self) -> bool:
+        """Return True if entity is available."""
+        return self.is_online

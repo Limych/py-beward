@@ -44,7 +44,7 @@ class Beward:
     """Beward device factory class."""
 
     @staticmethod
-    def factory(host_ip, username, password, **kwargs):
+    def factory(host_ip, username, password, **kwargs) -> BewardGeneric:
         """Return correct class for device."""
 
         bwd = BewardGeneric(host_ip, username, password)

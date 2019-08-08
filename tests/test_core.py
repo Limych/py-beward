@@ -317,19 +317,19 @@ class TestBewardGeneric(TestCase):
         self.assertFalse(bwd.is_online)
 
     @requests_mock.Mocker()
-    def test_ready(self, mock):
+    def test_available(self, mock):
         data = load_fixture("systeminfo.txt")
         mock.register_uri("get", function_url('systeminfo'), text=data)
 
         bwd = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
 
-        self.assertTrue(bwd.ready)
+        self.assertTrue(bwd.available)
 
         mock.register_uri("get", function_url('systeminfo'))
 
-        self.assertTrue(bwd.ready)
+        self.assertTrue(bwd.available)
 
         mock.register_uri("get", function_url('systeminfo'),
                           exc=requests.exceptions.ConnectTimeout)
 
-        self.assertFalse(bwd.ready)
+        self.assertFalse(bwd.available)
