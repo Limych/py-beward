@@ -33,8 +33,14 @@ def load_binary(filename):
         return fptr.read()
 
 
-def function_url(function, host=MOCK_HOST):
-    return 'http://' + host + '/cgi-bin/' + function + '_cgi'
+def function_url(function, host=MOCK_HOST, user=None, password=None):
+    auth = None
+    if user:
+        auth = user
+        if password:
+            auth += ':' + password
+        auth += '@'
+    return 'http://' + auth + host + '/cgi-bin/' + function + '_cgi'
 
 
 class TestBewardCamera(TestCase):
@@ -54,17 +60,20 @@ class TestBewardCamera(TestCase):
         mock.register_uri("get", function_url('rtsp'))
         bwd._obtain_uris()
 
-        expect = f'http://{MOCK_USER}:{MOCK_PASS}@{MOCK_HOST}/cgi-bin/images_cgi?channel=0'
+        expect = function_url('images', user=MOCK_USER,
+                              password=MOCK_PASS) + '?channel=0'
         self.assertEqual(expect, bwd._live_image_url)
 
-        expect = f'rtsp://{MOCK_USER}:{MOCK_PASS}@{MOCK_HOST}:554/av0_0'
+        expect = 'rtsp://' + MOCK_USER + ':' + MOCK_PASS + '@' + MOCK_HOST + \
+                 ':554/av0_0'
         self.assertEqual(expect, bwd._rtsp_live_video_url)
 
         mock.register_uri("get", function_url('rtsp'),
                           text=load_fixture("rtsp.txt"))
         bwd._obtain_uris()
 
-        expect = f'rtsp://{MOCK_USER}:{MOCK_PASS}@{MOCK_HOST}:47456/av0_0'
+        expect = 'rtsp://' + MOCK_USER + ':' + MOCK_PASS + '@' + MOCK_HOST + \
+                 ':47456/av0_0'
         self.assertEqual(expect, bwd._rtsp_live_video_url)
 
     @requests_mock.Mocker()
@@ -74,7 +83,8 @@ class TestBewardCamera(TestCase):
 
         self.assertIsNone(bwd._live_image_url)
 
-        expect = f'http://{MOCK_USER}:{MOCK_PASS}@{MOCK_HOST}/cgi-bin/images_cgi?channel=0'
+        expect = function_url('images', user=MOCK_USER,
+                              password=MOCK_PASS) + '?channel=0'
         self.assertEqual(expect, bwd.live_image_url)
 
     @requests_mock.Mocker()
@@ -85,7 +95,8 @@ class TestBewardCamera(TestCase):
 
         self.assertIsNone(bwd._rtsp_live_video_url)
 
-        expect = f'rtsp://{MOCK_USER}:{MOCK_PASS}@{MOCK_HOST}:47456/av0_0'
+        expect = 'rtsp://' + MOCK_USER + ':' + MOCK_PASS + '@' + MOCK_HOST + \
+                 ':47456/av0_0'
         self.assertEqual(expect, bwd.rtsp_live_video_url)
 
     @requests_mock.Mocker()
