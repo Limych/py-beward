@@ -61,7 +61,7 @@ class BewardCamera(BewardGeneric):
 
         super()._handle_alarm(timestamp, alarm, state)
 
-        if alarm == ALARM_MOTION and state == 1:
+        if alarm == ALARM_MOTION and state:
             self.last_motion_timestamp = timestamp
             self.last_motion_image = self.live_image
 

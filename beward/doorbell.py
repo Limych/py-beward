@@ -31,6 +31,6 @@ class BewardDoorbell(BewardCamera):
 
         super()._handle_alarm(timestamp, alarm, state)
 
-        if alarm == ALARM_SENSOR and state == 1:
+        if alarm == ALARM_SENSOR and state:
             self.last_ding_timestamp = timestamp
             self.last_ding_image = self.live_image

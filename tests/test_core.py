@@ -272,6 +272,9 @@ class TestBewardGeneric(TestCase):
 
         mock.register_uri("get", function_url('systeminfo'),
                           exc=requests.exceptions.ConnectTimeout)
+
+        self.assertEqual(expect, bw.system_info)  # Check for caching
+
         bw._sysinfo = None
 
         self.assertEqual({}, bw.system_info)

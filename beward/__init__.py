@@ -52,7 +52,7 @@ class Beward:
         dev_type = bw.get_device_type(model)
         inst = None
 
-        if dev_type is None:  # pragma: no cover
+        if dev_type is None:
             raise ValueError(
                 'Unknown device "%s" (%s)' % (model, dev_type)
             )

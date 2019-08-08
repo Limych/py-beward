@@ -179,7 +179,7 @@ class BewardGeneric(object):
             resp = requests.get(url, params=params, auth=auth, stream=True)
             _LOGGER.debug("_query ret %s", resp.status_code)
 
-            if resp.status_code != 200:
+            if resp.status_code != 200:  # pragma: no cover
                 sleep(TIMEOUT)
                 continue
 
