@@ -19,7 +19,7 @@ from beward.doorbell import BewardDoorbell
 __author__ = 'Andrey "Limych" Khrolenok <andrey@khrolenok.ru>'
 # Please add the suffix "+" to the version after release, to make it
 # possible infer whether in development code from the version string
-__version__ = '0.10.1'
+__version__ = '0.11.0'
 __website__ = 'https://github.com/Limych/python-beward'
 __license__ = 'Creative Commons BY-NC-SA License'
 
@@ -39,21 +39,23 @@ logging.getLogger(__name__).addHandler(logging.NullHandler())
 _LOGGER = logging.getLogger(__name__)
 
 
-# pylint: disable=R0902,R0904
+# pylint: disable=R0903
 class Beward:
     """Beward device factory class."""
 
     @staticmethod
-    def factory(host_ip, username, password, **kwargs):
+    def factory(host_ip, username, password, **kwargs) -> BewardGeneric:
         """Return correct class for device."""
 
-        bw = BewardGeneric(host_ip, username, password)
-        model = bw.system_info.get('DeviceModel')
-        dev_type = bw.get_device_type(model)
-
+        bwd = BewardGeneric(host_ip, username, password)
+        model = bwd.system_info.get('DeviceModel')
+        dev_type = bwd.get_device_type(model)
         inst = None
+
         if dev_type is None:
-            inst = BewardGeneric(host_ip, username, password, **kwargs)
+            raise ValueError(
+                'Unknown device "%s" (%s)' % (model, dev_type)
+            )
 
         if dev_type == BEWARD_CAMERA:
             inst = BewardCamera(host_ip, username, password, **kwargs)
@@ -61,12 +63,5 @@ class Beward:
         if dev_type == BEWARD_DOORBELL:
             inst = BewardDoorbell(host_ip, username, password, **kwargs)
 
-        if inst is None:  # pragma: no cover
-            raise ValueError(
-                'Unknown device "%s" (%s)' % (model, dev_type)
-            )
-
-        _LOGGER.debug(
-            'Factory create instance of %s' % inst.__class__
-        )
+        _LOGGER.debug('Factory create instance of %s', inst.__class__)
         return inst

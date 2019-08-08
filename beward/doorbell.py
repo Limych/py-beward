@@ -16,7 +16,6 @@ from .camera import BewardCamera
 _LOGGER = logging.getLogger(__name__)
 
 
-# pylint: disable=R0902,R0904
 class BewardDoorbell(BewardCamera):
     """Beward doorbell controller class."""
 
@@ -31,6 +30,6 @@ class BewardDoorbell(BewardCamera):
 
         super()._handle_alarm(timestamp, alarm, state)
 
-        if alarm == ALARM_SENSOR and state == 1:
+        if alarm == ALARM_SENSOR and state:
             self.last_ding_timestamp = timestamp
             self.last_ding_image = self.live_image

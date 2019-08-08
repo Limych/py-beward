@@ -15,7 +15,8 @@ import requests
 import requests_mock
 
 from beward import Beward, BewardDoorbell, BewardGeneric
-from beward.const import ALARM_MOTION, ALARM_SENSOR, BEWARD_DOORBELL
+from beward.const import ALARM_MOTION, ALARM_SENSOR, BEWARD_DOORBELL, \
+    ALARM_ONLINE
 
 MOCK_HOST = '192.168.0.2'
 MOCK_USER = 'user'
@@ -41,10 +42,11 @@ class TestBeward(TestCase):
         mock.register_uri("get", function_url('systeminfo'),
                           text='DeviceModel=NONEXISTENT')
 
-        bw = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
-
-        res = Beward.factory(MOCK_HOST, MOCK_USER, MOCK_PASS)
-        self.assertTrue(isinstance(res, BewardGeneric))
+        try:
+            Beward.factory(MOCK_HOST, MOCK_USER, MOCK_PASS)
+            self.fail()
+        except ValueError:
+            pass
 
         # TODO: BewardCamera
         # mock.register_uri("get", function_url('systeminfo'),
@@ -70,61 +72,53 @@ class TestBewardGeneric(TestCase):
             pass
 
     def test_get_device_type(self):
-        self.assertEqual(BewardGeneric.get_device_type('DS03M'),
-                         BEWARD_DOORBELL)
-        self.assertEqual(BewardGeneric.get_device_type('DS06M'),
-                         BEWARD_DOORBELL)
+        self.assertEqual(BEWARD_DOORBELL,
+                         BewardGeneric.get_device_type('DS03M'))
+        self.assertEqual(BEWARD_DOORBELL,
+                         BewardGeneric.get_device_type('DS06M'))
 
         self.assertIsNone(BewardGeneric.get_device_type(None))
         self.assertIsNone(BewardGeneric.get_device_type('NONEXISTENT'))
 
     def test_get_url(self):
-        bw = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
+        bwd = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
 
         expect = 'http://%s/cgi-bin/systeminfo_cgi' % MOCK_HOST
-        res = bw.get_url('systeminfo')
+        res = bwd.get_url('systeminfo')
         #
-        self.assertEqual(res, expect)
+        self.assertEqual(expect, res)
 
         expect = 'http://%s/cgi-bin/systeminfo_cgi?arg=123' % MOCK_HOST
-        res = bw.get_url('systeminfo', extra_params={
+        res = bwd.get_url('systeminfo', extra_params={
             'arg': '123',
         })
         #
-        self.assertEqual(res, expect)
+        self.assertEqual(expect, res)
 
         username = 'user'
         expect = 'http://%s@%s/cgi-bin/systeminfo_cgi' % (username, MOCK_HOST)
-        res = bw.get_url('systeminfo', username=username)
+        res = bwd.get_url('systeminfo', username=username)
         #
-        self.assertEqual(res, expect)
+        self.assertEqual(expect, res)
 
         username = 'user'
         password = 'pass'
         expect = 'http://%s:%s@%s/cgi-bin/systeminfo_cgi' % (
             username, password, MOCK_HOST)
-        res = bw.get_url('systeminfo', username=username, password=password)
+        res = bwd.get_url('systeminfo', username=username, password=password)
         #
-        self.assertEqual(res, expect)
+        self.assertEqual(expect, res)
 
     def test_add_url_param(self):
         base_url = 'http://%s/cgi-bin/systeminfo_cgi' % MOCK_HOST
-        bw = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
+        bwd = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
 
         expect = base_url + '?arg=123'
-        res = bw.add_url_params(base_url, {
+        res = bwd.add_url_params(base_url, {
             'arg': '123',
         })
         #
-        self.assertEqual(res, expect)
-
-        expect = base_url + '?arg=123&par=qwe'
-        res = bw.add_url_params(base_url, {
-            'arg': '123',
-            'par': 'qwe',
-        })
-        #
-        self.assertEqual(res, expect)
+        self.assertEqual(expect, res)
 
     @requests_mock.Mocker()
     def test_query(self, mock):
@@ -132,188 +126,210 @@ class TestBewardGeneric(TestCase):
         data = load_fixture("systeminfo.txt")
         mock.register_uri("get", function_url(function), text=data)
 
-        bw = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
+        bwd = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
 
-        res = bw.query(function)
-        self.assertEqual(res.text, data)
+        res = bwd.query(function)
+        self.assertEqual(data, res.text)
 
         data = 'test data'
         mock.register_uri("get", function_url(function) + '?extra=123',
                           text=data)
 
-        res = bw.query(function, extra_params={'extra': 123})
-        self.assertEqual(res.text, data)
-
-        try:
-            bw.query(function, method='UNEXISTENT')
-            self.fail()  # pragma: no cover
-        except ValueError:
-            pass
+        res = bwd.query(function, extra_params={'extra': 123})
+        self.assertEqual(data, res.text)
 
     def test__handle_alarm(self):
-        bw = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
+        bwd = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
 
         # Check initial state
-        self.assertEqual(bw.alarm_timestamp, {})
-        self.assertEqual(bw.alarm_state, {})
+        self.assertEqual({
+            ALARM_ONLINE: False,
+        }, bwd.alarm_state)
+        self.assertEqual({
+            ALARM_ONLINE: datetime.min,
+        }, bwd.alarm_timestamp)
 
         ts1 = datetime.now()
-        bw._handle_alarm(ts1, ALARM_MOTION, 1)
-        self.assertEqual(bw.alarm_timestamp, {
+        bwd._handle_alarm(ts1, ALARM_MOTION, True)
+        self.assertEqual({
+            ALARM_ONLINE: False,
+            ALARM_MOTION: True,
+        }, bwd.alarm_state)
+        self.assertEqual({
+            ALARM_ONLINE: datetime.min,
             ALARM_MOTION: ts1,
-        })
-        self.assertEqual(bw.alarm_state, {
-            ALARM_MOTION: 1,
-        })
+        }, bwd.alarm_timestamp)
 
         ts2 = datetime.now()
-        bw._handle_alarm(ts2, ALARM_SENSOR, 1)
-        self.assertEqual(bw.alarm_timestamp, {
+        bwd._handle_alarm(ts2, ALARM_SENSOR, True)
+        self.assertEqual({
+            ALARM_ONLINE: False,
+            ALARM_MOTION: True,
+            ALARM_SENSOR: True,
+        }, bwd.alarm_state)
+        self.assertEqual({
+            ALARM_ONLINE: datetime.min,
             ALARM_MOTION: ts1,
             ALARM_SENSOR: ts2,
-        })
-        self.assertEqual(bw.alarm_state, {
-            ALARM_MOTION: 1,
-            ALARM_SENSOR: 1,
-        })
+        }, bwd.alarm_timestamp)
 
         ts3 = datetime.now()
-        bw._handle_alarm(ts3, ALARM_MOTION, 0)
-        self.assertEqual(bw.alarm_timestamp, {
+        bwd._handle_alarm(ts3, ALARM_MOTION, False)
+        self.assertEqual({
+            ALARM_ONLINE: False,
+            ALARM_MOTION: False,
+            ALARM_SENSOR: True,
+        }, bwd.alarm_state)
+        self.assertEqual({
+            ALARM_ONLINE: datetime.min,
             ALARM_MOTION: ts3,
             ALARM_SENSOR: ts2,
-        })
-        self.assertEqual(bw.alarm_state, {
-            ALARM_MOTION: 0,
-            ALARM_SENSOR: 1,
-        })
-
-    def _listen_alarms_tester(self, mock, alarms, timestamps=None,
-                              states=None):
-        bw = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
-        mock.register_uri("get", function_url('alarmchangestate'),
-                          text='\n'.join(alarms))
-
-        # Check initial state
-        self.assertEqual(bw.alarm_timestamp, {})
-        self.assertEqual(bw.alarm_state, {})
-
-        bw.listen_alarms(alarms=list(states.keys()))
-        sleep(1)
-        self.assertEqual(bw.alarm_timestamp, timestamps)
-        self.assertEqual(bw.alarm_state, states)
+        }, bwd.alarm_timestamp)
 
     @requests_mock.Mocker()
-    def test_listen_alarms(self, mock):
+    def _listen_alarms_tester(self, alarms, expected_log, mock):
+        bwd = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
+        mock.register_uri("get", function_url('alarmchangestate'),
+                          text='\n'.join(alarms))
+        log = []
+        logging = True
+
+        def _alarms_logger(device, timestamp, alarm, state):
+            nonlocal logging
+            if not logging:
+                return
+
+            if alarm == ALARM_ONLINE:
+                log.append(';'.join((str(alarm), str(state))))
+                logging = state
+            else:
+                log.append(';'.join((str(timestamp), str(alarm), str(state))))
+
+        # Check initial state
+        self.assertEqual({
+            ALARM_ONLINE: False,
+        }, bwd.alarm_state)
+        self.assertEqual({
+            ALARM_ONLINE: datetime.min,
+        }, bwd.alarm_timestamp)
+
+        alarms2listen = []
+        for alarm in alarms:
+            alarms2listen.append(alarm.split(';')[2])
+        bwd.add_alarms_handler(_alarms_logger)
+        bwd.listen_alarms(alarms=alarms2listen)
+        sleep(1)
+
+        expect = [
+            'DeviceOnline;True',
+        ]
+        expect.extend(expected_log)
+        expect.append('DeviceOnline;False')
+        self.assertEqual(expect, log)
+
+    def test_listen_alarms(self):
         alarms = [
             '2019-07-28;00:57:27;MotionDetection;1;0',
         ]
-        timestamps = {
-            ALARM_MOTION: datetime(2019, 7, 28, 0, 57, 27),
-        }
-        states = {
-            ALARM_MOTION: 1,
-        }
-        self._listen_alarms_tester(
-            mock, alarms, timestamps=timestamps, states=states)
+        ex_log = [
+            '2019-07-28 00:57:27;MotionDetection;True'
+        ]
+        self._listen_alarms_tester(alarms, ex_log)
 
         alarms.append('2019-07-28;00:57:28;MotionDetection;0;0')
-        timestamps[ALARM_MOTION] = datetime(2019, 7, 28, 0, 57, 28)
-        states[ALARM_MOTION] = 0
-        self._listen_alarms_tester(
-            mock, alarms, timestamps=timestamps, states=states)
+        ex_log.append('2019-07-28 00:57:28;MotionDetection;False')
+        self._listen_alarms_tester(alarms, ex_log)
 
         alarms.append('2019-07-28;15:51:52;SensorAlarm;1;0')
-        timestamps[ALARM_SENSOR] = datetime(2019, 7, 28, 15, 51, 52)
-        states[ALARM_SENSOR] = 1
-        self._listen_alarms_tester(
-            mock, alarms, timestamps=timestamps, states=states)
+        ex_log.append('2019-07-28 15:51:52;SensorAlarm;True')
+        self._listen_alarms_tester(alarms, ex_log)
 
         alarms.append('2019-07-28;15:51:53;SensorAlarm;0;0')
-        timestamps[ALARM_SENSOR] = datetime(2019, 7, 28, 15, 51, 53)
-        states[ALARM_SENSOR] = 0
-        self._listen_alarms_tester(
-            mock, alarms, timestamps=timestamps, states=states)
+        ex_log.append('2019-07-28 15:51:53;SensorAlarm;False')
+        self._listen_alarms_tester(alarms, ex_log)
 
     @requests_mock.Mocker()
     def test_system_info(self, mock):
         data = load_fixture("systeminfo.txt")
         mock.register_uri("get", function_url('systeminfo'), text=data)
 
-        bw = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
+        bwd = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
 
         expect = {}
         for env in data.splitlines():
             (k, v) = env.split('=', 2)
             expect[k] = v
 
-        self.assertEqual(bw.system_info, expect)
+        self.assertEqual(expect, bwd.system_info)
 
         mock.register_uri("get", function_url('systeminfo'),
                           exc=requests.exceptions.ConnectTimeout)
-        bw._sysinfo = None
 
-        self.assertEqual(bw.system_info, {})
+        self.assertEqual(expect, bwd.system_info)  # Check for caching
+
+        bwd._sysinfo = None
+
+        self.assertEqual({}, bwd.system_info)
 
     @requests_mock.Mocker()
     def test_device_type(self, mock):
         mock.register_uri("get", function_url('systeminfo'),
                           text=load_fixture("systeminfo.txt"))
 
-        bw = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
+        bwd = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
 
-        self.assertEqual(bw.device_type, BEWARD_DOORBELL)
+        self.assertEqual(BEWARD_DOORBELL, bwd.device_type)
 
         mock.register_uri("get", function_url('systeminfo'),
                           text='DeviceModel=DS03M')
-        bw._sysinfo = None
+        bwd._sysinfo = None
 
-        self.assertEqual(bw.device_type, BEWARD_DOORBELL)
+        self.assertEqual(BEWARD_DOORBELL, bwd.device_type)
 
         mock.register_uri("get", function_url('systeminfo'),
                           text='DeviceModel=NONEXISTENT')
-        bw._sysinfo = None
+        bwd._sysinfo = None
 
-        self.assertIsNone(bw.device_type)
+        self.assertIsNone(bwd.device_type)
 
         mock.register_uri("get", function_url('systeminfo'),
                           text='NonExistent=DS03M')
-        bw._sysinfo = None
+        bwd._sysinfo = None
 
-        self.assertIsNone(bw.device_type)
+        self.assertIsNone(bwd.device_type)
 
     @requests_mock.Mocker()
     def test_is_online(self, mock):
         data = load_fixture("systeminfo.txt")
         mock.register_uri("get", function_url('systeminfo'), text=data)
 
-        bw = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
+        bwd = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
 
-        self.assertTrue(bw.is_online)
+        self.assertTrue(bwd.is_online)
 
         mock.register_uri("get", function_url('systeminfo'))
 
-        self.assertTrue(bw.is_online)
+        self.assertTrue(bwd.is_online)
 
         mock.register_uri("get", function_url('systeminfo'),
                           exc=requests.exceptions.ConnectTimeout)
 
-        self.assertFalse(bw.is_online)
+        self.assertFalse(bwd.is_online)
 
     @requests_mock.Mocker()
-    def test_ready(self, mock):
+    def test_available(self, mock):
         data = load_fixture("systeminfo.txt")
         mock.register_uri("get", function_url('systeminfo'), text=data)
 
-        bw = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
+        bwd = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
 
-        self.assertTrue(bw.ready)
+        self.assertTrue(bwd.available)
 
         mock.register_uri("get", function_url('systeminfo'))
 
-        self.assertTrue(bw.ready)
+        self.assertTrue(bwd.available)
 
         mock.register_uri("get", function_url('systeminfo'),
                           exc=requests.exceptions.ConnectTimeout)
 
-        self.assertFalse(bw.ready)
+        self.assertFalse(bwd.available)
