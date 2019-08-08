@@ -27,7 +27,6 @@ class BewardDoorbell(BewardCamera):
 
     def _handle_alarm(self, timestamp, alarm, state):
         """Handle alarms from Beward device."""
-
         super()._handle_alarm(timestamp, alarm, state)
 
         if alarm == ALARM_SENSOR and state:

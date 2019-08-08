@@ -1,0 +1,4 @@
+RtspSwitch=open
+RtspAuth=open
+RtspPacketSize=1460
+RtspPort=47456

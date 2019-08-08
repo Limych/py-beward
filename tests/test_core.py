@@ -5,7 +5,6 @@
 #  Creative Commons BY-NC-SA 4.0 International Public License
 #  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
 #
-
 import os
 from datetime import datetime
 from time import sleep
@@ -25,9 +24,8 @@ MOCK_PASS = 'pass'
 
 def load_fixture(filename):
     """Load a fixture."""
-
     path = os.path.join(os.path.dirname(__file__), 'fixtures', filename)
-    with open(path) as fptr:
+    with open(path, encoding='utf-8') as fptr:
         return fptr.read()
 
 
@@ -58,8 +56,8 @@ class TestBeward(TestCase):
         mock.register_uri("get", function_url('systeminfo'),
                           text='DeviceModel=DS06M')
 
-        res = Beward.factory(MOCK_HOST, MOCK_USER, MOCK_PASS)
-        self.assertTrue(isinstance(res, BewardDoorbell))
+        bwd = Beward.factory(MOCK_HOST, MOCK_USER, MOCK_PASS)
+        self.assertTrue(isinstance(bwd, BewardDoorbell))
 
 
 class TestBewardGeneric(TestCase):
@@ -137,6 +135,62 @@ class TestBewardGeneric(TestCase):
 
         res = bwd.query(function, extra_params={'extra': 123})
         self.assertEqual(data, res.text)
+
+    def test_add_alarms_handler(self):
+        bwd = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
+
+        self.assertEqual(set(), bwd._alarm_handlers)
+
+        def logger1():
+            pass
+
+        def logger2():
+            pass
+
+        bwd.add_alarms_handler(logger1)
+        self.assertEqual({
+            logger1,
+        }, bwd._alarm_handlers)
+
+        bwd.add_alarms_handler(logger1)
+        self.assertEqual({
+            logger1,
+        }, bwd._alarm_handlers)
+
+        bwd.add_alarms_handler(logger2)
+        self.assertEqual({
+            logger1,
+            logger2,
+        }, bwd._alarm_handlers)
+
+    def test_remove_alarms_handler(self):
+        bwd = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
+
+        def logger1():
+            pass
+
+        def logger2():
+            pass
+
+        bwd.add_alarms_handler(logger1)
+        bwd.add_alarms_handler(logger2)
+        self.assertEqual({
+            logger1,
+            logger2,
+        }, bwd._alarm_handlers)
+
+        bwd.remove_alarms_handler(logger1)
+        self.assertEqual({
+            logger2,
+        }, bwd._alarm_handlers)
+
+        bwd.remove_alarms_handler(logger1)
+        self.assertEqual({
+            logger2,
+        }, bwd._alarm_handlers)
+
+        bwd.remove_alarms_handler(logger2)
+        self.assertEqual(set(), bwd._alarm_handlers)
 
     def test__handle_alarm(self):
         bwd = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
@@ -218,7 +272,8 @@ class TestBewardGeneric(TestCase):
             alarms2listen.append(alarm.split(';')[2])
         bwd.add_alarms_handler(_alarms_logger)
         bwd.listen_alarms(alarms=alarms2listen)
-        sleep(1)
+        sleep(0.1)
+        bwd.remove_alarms_handler(_alarms_logger)
 
         expect = [
             'DeviceOnline;True',

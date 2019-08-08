@@ -32,7 +32,7 @@ class BewardCamera(BewardGeneric):
         self._live_image_url = None
         self._rtsp_live_video_url = None
 
-    def obtain_uris(self):
+    def _obtain_uris(self):
         """Set the URIs for the camera."""
 
         self._live_image_url = self.get_url(
@@ -56,19 +56,23 @@ class BewardCamera(BewardGeneric):
         except ConnectTimeout:
             pass
 
-    def _handle_alarm(self, timestamp, alarm, state):
-        """Handle alarms from Beward device."""
+    @property
+    def live_image_url(self) -> str:
+        """Return URL to get live photo from camera."""
+        if not self._live_image_url:
+            self._obtain_uris()
+        return self._live_image_url
 
-        super()._handle_alarm(timestamp, alarm, state)
-
-        if alarm == ALARM_MOTION and state:
-            self.last_motion_timestamp = timestamp
-            self.last_motion_image = self.live_image
+    @property
+    def rtsp_live_video_url(self) -> str:
+        """Return URL to get live video from camera via RTSP protocol."""
+        if not self._live_image_url:
+            self._obtain_uris()
+        return self._rtsp_live_video_url
 
     @property
     def live_image(self) -> Optional[bytes]:
         """Return bytes of camera image."""
-
         res = self.query('images', extra_params={'channel': 0})
 
         if not res.headers.get('Content-Type') in ('image/jpeg', 'image/png'):
@@ -76,18 +80,10 @@ class BewardCamera(BewardGeneric):
 
         return res.content
 
-    @property
-    def live_image_url(self) -> str:
-        """Return URL to get live photo from camera."""
+    def _handle_alarm(self, timestamp, alarm, state):
+        """Handle alarms from Beward device."""
+        super()._handle_alarm(timestamp, alarm, state)
 
-        if not self._live_image_url:
-            self.obtain_uris()
-        return self._live_image_url
-
-    @property
-    def rtsp_live_video_url(self) -> str:
-        """Return URL to get live video from camera via RTSP protocol."""
-
-        if not self._live_image_url:
-            self.obtain_uris()
-        return self._rtsp_live_video_url
+        if alarm == ALARM_MOTION and state:
+            self.last_motion_timestamp = timestamp
+            self.last_motion_image = self.live_image

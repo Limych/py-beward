@@ -25,16 +25,13 @@ _LOGGER = logging.getLogger(__name__)
 
 # pylint: disable=R0902
 class BewardGeneric:
-    """Generic Implementation for Beward device.
-
-    """
+    """Generic Implementation for Beward device."""
 
     _class_group = 'Beward'
 
     @staticmethod
     def get_device_type(model) -> Optional[str]:
         """Detect device type for model."""
-
         if not model:
             return None
 
@@ -46,7 +43,6 @@ class BewardGeneric:
 
     # pylint: disable=W0613
     def __init__(self, host_ip, username, password, **kwargs):
-
         # Check if host_ip is a valid IPv4 representation.
         # This library does not (yet?) support IPv6
         try:
@@ -67,9 +63,10 @@ class BewardGeneric:
         self.alarm_timestamp = {
             ALARM_ONLINE: datetime.min,
         }
-        self._alarm_handlers = []
+        self._alarm_handlers = set()
 
         self._sysinfo = None
+        self._listen_alarms = False
 
     def get_url(self, function, extra_params=None, username=None,
                 password=None) -> str:
@@ -131,12 +128,14 @@ class BewardGeneric:
 
     def add_alarms_handler(self, handler: callable):
         """Add alarms handler."""
-        self._alarm_handlers.append(handler)
+        self._alarm_handlers.add(handler)
         return self
 
     def remove_alarms_handler(self, handler: callable):
         """Remove alarms handler."""
-        self._alarm_handlers.remove(handler)
+        if handler in self._alarm_handlers:
+            self._alarm_handlers.remove(handler)
+            self._listen_alarms &= (len(self._alarm_handlers) != 0)
         return self
 
     def _handle_alarm(self, timestamp, alarm, state):
@@ -165,18 +164,26 @@ class BewardGeneric:
         })
         auth = HTTPBasicAuth(self.username, self.password)
 
+        self._listen_alarms = (len(self._alarm_handlers) != 0)
+
         import threading
         thread = threading.Thread(
-            target=self._alarms_listener, args=(url, params, auth),
+            target=self.__alarms_listener, args=(url, params, auth),
             daemon=True)
         thread.start()
 
         _LOGGER.debug("Return from listen_alarms()")
 
-    def _alarms_listener(self, url: str, params, auth):
+    def __alarms_listener(self, url: str, params, auth):
         while True:
-            resp = requests.get(url, params=params, auth=auth, stream=True)
+            try:
+                resp = requests.get(url, params=params, auth=auth, stream=True)
+            except Exception:  # pragma: no cover
+                break
             _LOGGER.debug("_query ret %s", resp.status_code)
+
+            if not self._listen_alarms:
+                break
 
             if resp.status_code != 200:  # pragma: no cover
                 sleep(TIMEOUT)
@@ -197,7 +204,9 @@ class BewardGeneric:
 
             self._handle_alarm(datetime.now(), ALARM_ONLINE, False)
 
-    def get_info(self, function) -> list:
+        self._handle_alarm(datetime.now(), ALARM_ONLINE, False)
+
+    def get_info(self, function) -> dict:
         """Get info from Beward device."""
         info = {}
         data = self.query(function, extra_params={
@@ -210,7 +219,7 @@ class BewardGeneric:
         return info
 
     @property
-    def system_info(self) -> list:
+    def system_info(self) -> dict:
         """Get system info from Beward device."""
         if self._sysinfo:
             return self._sysinfo
