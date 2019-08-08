@@ -3,6 +3,7 @@
 #  Copyright (c) 2019, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
 #  Creative Commons BY-NC-SA 4.0 International Public License
 #  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
+
 import os
 from datetime import datetime
 from unittest import TestCase
@@ -53,8 +54,8 @@ class TestBewardCamera(TestCase):
         mock.register_uri("get", function_url('rtsp'))
         bwd._obtain_uris()
 
-        expect = f'http://{MOCK_USER}:{MOCK_PASS}@{MOCK_HOST}/cgi-bin/' \
-            'images_cgi?channel=0'
+        expect = f'http://{MOCK_USER}:{MOCK_PASS}@{MOCK_HOST}/cgi-bin/' + \
+                 'images_cgi?channel=0'
         self.assertEqual(expect, bwd._live_image_url)
 
         expect = f'rtsp://{MOCK_USER}:{MOCK_PASS}@{MOCK_HOST}:554/av0_0'
