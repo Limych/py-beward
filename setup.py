@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import io
+import os
 import re
 import sys
 
@@ -65,8 +66,10 @@ with io.open('README.md', encoding='utf-8') as file:
 # Extract name and e-mail ("Firstname Lastname <mail@example.org>")
 AUTHOR, EMAIL = re.match(r'(.*) <(.*)>', AUTHOR_EMAIL).groups()
 
-REQUIREMENTS = list(open('requirements.txt'))
-TEST_REQUIREMENTS = list(open('requirements_tests.txt'))
+SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
+
+REQUIREMENTS = list(open(f'{SCRIPT_DIR}/requirements.txt'))
+TEST_REQUIREMENTS = list(open(f'{SCRIPT_DIR}/requirements_tests.txt'))
 
 setup(
     name=NAME,
