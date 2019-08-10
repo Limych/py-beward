@@ -40,40 +40,64 @@ def function_url(function, host=MOCK_HOST, user=None, password=None):
         if password:
             auth += ':' + password
         auth += '@'
-    return 'http://' + auth + host + '/cgi-bin/' + function + '_cgi'
+    return 'http://' + auth + host + ':80/cgi-bin/' + function + '_cgi'
 
 
 class TestBewardCamera(TestCase):
 
+    def test___init__(self):
+        bwd = BewardCamera(MOCK_HOST, MOCK_USER, MOCK_PASS)
+        self.assertEqual(None, bwd.rtsp_port)
+        self.assertEqual(0, bwd.stream)
+
+        bwd = BewardCamera(MOCK_HOST, MOCK_USER, MOCK_PASS, rtsp_port=123,
+                           stream=2)
+        self.assertEqual(123, bwd.rtsp_port)
+        self.assertEqual(2, bwd.stream)
+
     @requests_mock.Mocker()
-    def test__obtain_uris(self, mock):
+    def test_obtain_uris(self, mock):
         bwd = BewardCamera(MOCK_HOST, MOCK_USER, MOCK_PASS)
 
         self.assertIsNone(bwd._live_image_url)
         self.assertIsNone(bwd._rtsp_live_video_url)
 
         mock.register_uri("get", function_url('rtsp'), exc=ConnectTimeout)
-        bwd._obtain_uris()
+        bwd.obtain_uris()
 
-        self.assertIsNone(bwd._rtsp_live_video_url)
+        expect = 'rtsp://' + MOCK_USER + ':' + MOCK_PASS + '@' + MOCK_HOST + \
+                 ':554/av0_0'
+        self.assertEqual(expect, bwd._rtsp_live_video_url)
 
+        bwd = BewardCamera(MOCK_HOST, MOCK_USER, MOCK_PASS, stream=1)
         mock.register_uri("get", function_url('rtsp'))
-        bwd._obtain_uris()
+        bwd.obtain_uris()
 
         expect = function_url('images', user=MOCK_USER,
                               password=MOCK_PASS) + '?channel=0'
         self.assertEqual(expect, bwd._live_image_url)
 
         expect = 'rtsp://' + MOCK_USER + ':' + MOCK_PASS + '@' + MOCK_HOST + \
-                 ':554/av0_0'
+                 ':554/av0_1'
         self.assertEqual(expect, bwd._rtsp_live_video_url)
 
+        bwd = BewardCamera(MOCK_HOST, MOCK_USER, MOCK_PASS)
         mock.register_uri("get", function_url('rtsp'),
                           text=load_fixture("rtsp.txt"))
-        bwd._obtain_uris()
+        bwd.obtain_uris()
 
         expect = 'rtsp://' + MOCK_USER + ':' + MOCK_PASS + '@' + MOCK_HOST + \
                  ':47456/av0_0'
+        self.assertEqual(expect, bwd._rtsp_live_video_url)
+
+        bwd = BewardCamera(MOCK_HOST, MOCK_USER, MOCK_PASS, rtsp_port=123,
+                           stream=2)
+        mock.register_uri("get", function_url('rtsp'),
+                          text=load_fixture("rtsp.txt"))
+        bwd.obtain_uris()
+
+        expect = 'rtsp://' + MOCK_USER + ':' + MOCK_PASS + '@' + MOCK_HOST + \
+                 ':123/av0_2'
         self.assertEqual(expect, bwd._rtsp_live_video_url)
 
     @requests_mock.Mocker()

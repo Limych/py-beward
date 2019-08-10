@@ -22,17 +22,20 @@ _LOGGER = logging.getLogger(__name__)
 class BewardCamera(BewardGeneric):
     """Beward camera controller class."""
 
-    def __init__(self, host_ip, username, password, stream=0, **kwargs):
-        super().__init__(host_ip, username, password, **kwargs)
+    def __init__(self, host, username, password, rtsp_port=None, stream=0,
+                 **kwargs):
+        super().__init__(host, username, password, **kwargs)
 
         self.last_motion_timestamp = None
         self.last_motion_image = None
 
-        self._stream = stream
+        self.rtsp_port = rtsp_port
+        self.stream = stream
+
         self._live_image_url = None
         self._rtsp_live_video_url = None
 
-    def _obtain_uris(self):
+    def obtain_uris(self):
         """Set the URIs for the camera."""
 
         self._live_image_url = self.get_url(
@@ -45,29 +48,32 @@ class BewardCamera(BewardGeneric):
             password=self.password,
         )
 
-        try:
-            info = self.get_info('rtsp')
-            url = 'rtsp://%s:%s@%s:%s/av0_%d' % (
-                self.username, self.password,
-                self.host, info.get('RtspPort', 554),
-                self._stream,
-            )
-            self._rtsp_live_video_url = url
-        except ConnectTimeout:
-            pass
+        if not self.rtsp_port:
+            try:
+                info = self.get_info('rtsp')
+                self.rtsp_port = info.get('RtspPort', 554)
+            except ConnectTimeout:
+                self.rtsp_port = 554
+
+        url = 'rtsp://%s:%s@%s:%s/av0_%d' % (
+            self.username, self.password,
+            self.host, self.rtsp_port,
+            self.stream,
+        )
+        self._rtsp_live_video_url = url
 
     @property
     def live_image_url(self) -> str:
         """Return URL to get live photo from camera."""
         if not self._live_image_url:
-            self._obtain_uris()
+            self.obtain_uris()
         return self._live_image_url
 
     @property
     def rtsp_live_video_url(self) -> str:
         """Return URL to get live video from camera via RTSP protocol."""
         if not self._live_image_url:
-            self._obtain_uris()
+            self.obtain_uris()
         return self._rtsp_live_video_url
 
     @property

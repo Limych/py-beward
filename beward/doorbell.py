@@ -19,8 +19,8 @@ _LOGGER = logging.getLogger(__name__)
 class BewardDoorbell(BewardCamera):
     """Beward doorbell controller class."""
 
-    def __init__(self, host_ip, username, password, **kwargs):
-        super().__init__(host_ip, username, password, **kwargs)
+    def __init__(self, host, username, password, **kwargs):
+        super().__init__(host, username, password, **kwargs)
 
         self.last_ding_timestamp = None
         self.last_ding_image = None

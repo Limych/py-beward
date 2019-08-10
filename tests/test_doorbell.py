@@ -26,7 +26,7 @@ def load_binary(filename):
 
 
 def function_url(function, host=MOCK_HOST):
-    return 'http://' + host + '/cgi-bin/' + function + '_cgi'
+    return 'http://' + host + ':80/cgi-bin/' + function + '_cgi'
 
 
 class TestBewardDoorbell(TestCase):

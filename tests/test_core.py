@@ -29,7 +29,7 @@ def load_fixture(filename):
 
 
 def function_url(function, host=MOCK_HOST):
-    return 'http://' + host + '/cgi-bin/' + function + '_cgi'
+    return 'http://' + host + ':80/cgi-bin/' + function + '_cgi'
 
 
 class TestBeward(TestCase):
@@ -68,6 +68,18 @@ class TestBewardGeneric(TestCase):
         except ValueError:
             pass
 
+        bwd = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
+        self.assertEqual(MOCK_HOST, bwd.host)
+        self.assertEqual(80, bwd.port)
+
+        bwd = BewardGeneric(MOCK_HOST + ':123', MOCK_USER, MOCK_PASS)
+        self.assertEqual(MOCK_HOST, bwd.host)
+        self.assertEqual(123, bwd.port)
+
+        bwd = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS, port=456)
+        self.assertEqual(MOCK_HOST, bwd.host)
+        self.assertEqual(456, bwd.port)
+
     def test_get_device_type(self):
         self.assertEqual(BEWARD_DOORBELL,
                          BewardGeneric.get_device_type('DS03M'))
@@ -80,12 +92,12 @@ class TestBewardGeneric(TestCase):
     def test_get_url(self):
         bwd = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
 
-        expect = 'http://%s/cgi-bin/systeminfo_cgi' % MOCK_HOST
+        expect = 'http://%s:80/cgi-bin/systeminfo_cgi' % MOCK_HOST
         res = bwd.get_url('systeminfo')
         #
         self.assertEqual(expect, res)
 
-        expect = 'http://%s/cgi-bin/systeminfo_cgi?arg=123' % MOCK_HOST
+        expect = 'http://%s:80/cgi-bin/systeminfo_cgi?arg=123' % MOCK_HOST
         res = bwd.get_url('systeminfo', extra_params={
             'arg': '123',
         })
@@ -93,16 +105,31 @@ class TestBewardGeneric(TestCase):
         self.assertEqual(expect, res)
 
         username = 'user'
-        expect = 'http://%s@%s/cgi-bin/systeminfo_cgi' % (username, MOCK_HOST)
+        expect = 'http://%s@%s:80/cgi-bin/systeminfo_cgi' % (
+        username, MOCK_HOST)
         res = bwd.get_url('systeminfo', username=username)
         #
         self.assertEqual(expect, res)
 
         username = 'user'
         password = 'pass'
-        expect = 'http://%s:%s@%s/cgi-bin/systeminfo_cgi' % (
+        expect = 'http://%s:%s@%s:80/cgi-bin/systeminfo_cgi' % (
             username, password, MOCK_HOST)
         res = bwd.get_url('systeminfo', username=username, password=password)
+        #
+        self.assertEqual(expect, res)
+
+        bwd = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS, port=123)
+
+        expect = 'http://%s:123/cgi-bin/systeminfo_cgi' % MOCK_HOST
+        res = bwd.get_url('systeminfo')
+        #
+        self.assertEqual(expect, res)
+
+        username = 'user'
+        expect = 'http://%s@%s:123/cgi-bin/systeminfo_cgi' % (
+            username, MOCK_HOST)
+        res = bwd.get_url('systeminfo', username=username)
         #
         self.assertEqual(expect, res)
 
