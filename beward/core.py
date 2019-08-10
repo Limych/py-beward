@@ -190,7 +190,7 @@ class BewardGeneric:
                 break
             _LOGGER.debug("_query ret %s", resp.status_code)
 
-            if not self._listen_alarms:
+            if not self._listen_alarms:  # pragma: no cover
                 break
 
             if resp.status_code != 200:  # pragma: no cover
@@ -212,7 +212,8 @@ class BewardGeneric:
 
             self._handle_alarm(datetime.now(), ALARM_ONLINE, False)
 
-        self._handle_alarm(datetime.now(), ALARM_ONLINE, False)
+        self._handle_alarm(datetime.now(), ALARM_ONLINE,
+                           False)  # pragma: no cover
 
     def get_info(self, function: str) -> dict:
         """Get info from Beward device."""

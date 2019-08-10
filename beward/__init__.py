@@ -19,7 +19,7 @@ from beward.doorbell import BewardDoorbell
 __author__ = 'Andrey "Limych" Khrolenok <andrey@khrolenok.ru>'
 # Please add the suffix "+" to the version after release, to make it
 # possible infer whether in development code from the version string
-__version__ = '0.12.0'
+__version__ = '0.13.0'
 __website__ = 'https://github.com/Limych/python-beward'
 __license__ = 'Creative Commons BY-NC-SA License'
 
