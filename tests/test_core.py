@@ -106,7 +106,7 @@ class TestBewardGeneric(TestCase):
 
         username = 'user'
         expect = 'http://%s@%s:80/cgi-bin/systeminfo_cgi' % (
-        username, MOCK_HOST)
+            username, MOCK_HOST)
         res = bwd.get_url('systeminfo', username=username)
         #
         self.assertEqual(expect, res)

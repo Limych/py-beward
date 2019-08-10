@@ -31,7 +31,7 @@ class BewardGeneric:
     _class_group = 'Beward'
 
     @staticmethod
-    def get_device_type(model: str) -> Optional[str]:
+    def get_device_type(model: Optional[str]) -> Optional[str]:
         """Detect device type for model."""
         if not model:
             return None
