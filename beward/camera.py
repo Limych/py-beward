@@ -22,6 +22,7 @@ _LOGGER = logging.getLogger(__name__)
 class BewardCamera(BewardGeneric):
     """Beward camera controller class."""
 
+    # pylint: disable=R0913
     def __init__(self, host, username, password, rtsp_port=None, stream=0,
                  **kwargs):
         super().__init__(host, username, password, **kwargs)
