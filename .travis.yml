@@ -2,11 +2,11 @@ language: python
 matrix:
   fast_finish: true
   include:
-    - python: "3.5"
+    - python: '3.5'
       env: TOXENV=py35
-    - python: "3.6"
+    - python: '3.6'
       env: TOXENV=py36
-    - python: "3.7"
+    - python: '3.7'
       env: TOXENV=lint
 install: pip install -U tox-travis coveralls
 script: tox
@@ -16,6 +16,6 @@ deploy:
   provider: pypi
   user: Limych
   password:
-    secure: 0T08gppSMCnmtRrmwIrkgF4VaKk6E0NPW4MQzNnNsQ2lj8MoKX2dtNlxgbD9sLeVjyxWVJhDZmNUiOF80r1YFL2LL40a2peYNzBPoH2qaQrq5FVUuG0oXzfTPDk0mh4ZTdRxC1S/NWQ4dbubUusG0bxIGxBiVkEOuxwwAs62+m9nNc+eDoAX4l7tLyIkECXypbgKXkELLo46PH9pJG7ug/nkZ2YvM/pt+pvFLRzLOIoT+8h4GbLoQUaDfymgd7l1Oi/cA44paWXPeSHpQIgsyLACZmObDL+tFm25/qvxRtDrFh+bKNJb0GHf11EvnJyeI9/Qh701rC9X9g8duWQrRLQ/bugbnaJZHWlEEAU2tGlr7NscC7p85GgcwHV0uSoevCm4xZUxzlrPZ3iR8JQDYGa7c9pg/w/onL3hmZL+amkCslFCnDJ0HdFvbRJE7msGOsr1vyRGOXLLaAeUqLKpvcdYDsX/uOqrfErIJ6nda38+igRSqxaU+3kvkOLVmq7crNlYtDlChabu142iE3o3Ap1zWG9KlJDoD0YTnxh2Zp2I48zmf6tqEeRnbHER/M94HVL30yM4N66rQdzgS67po0lUoX2Fm0q7mAEd7Ma6k5JEJH7sZYovJplXBhP28IniKKf3A67hGZ5sNjgFuJFzp9D35e8w+2r7kFGGpqV+La8=
+    secure: HerERVWrqdp+J1sGi0Fl7A0zj0rNdt0zMOfvmbOlxe55PYkSLAz5reZbZI4ozVTSb8KGfpGYfZmT8PrSs09C5qkMfPVDUqVXaKH2rePGW8pHK9zjGx1b+yau1Ix9jKFXdgeM1xO+3qEuOMGkxubtASby339XXWN0gLHyI6bZCNM81herr1b5tjYp+rx4pu9axykPZbVzkcs3+ukqOVh6WxYdUP++JcGmss7tMWtovqQnu4rTC0eo0FESJSUbq8uY97qKi4dM6XZIK9DIVDM7ykPEqRVryZlVmaVy9W7lGeCA559ya9Lz9dPDvw4AsQAfsCv8pYG9tKNqtMECihGut4diqI0z47FUiIO5PDPcz6bPpXRtPTNG5HZ/GcpyV7KumhecPZ3ooQbJzjliafyYU2nsRw/32hg6H6H+bsFfTym/VKk0ELt8PCxasr6tVqsBJNStwkBCJ2mgV7At3X+MTClEO+yLfnB81Q2b2XUqIoAyCMOvCR5pGEAD6k1u1YnzQ/G0EkUvP4AMuo6Vd3mnHG88XFt/eLaBUSeciy630LyPttysjzyh8GOqMecZRScb8jZZWELKabPDsWP659pScvDQ3OD3J3CGEosUOYcSN8QttmB9D8qWjFDf04hYCe/Unfq0JBh7O5f0l5Zlb7JuO7olNrqWSErLFqTzU1AUmu4=
   on:
     branch: master
