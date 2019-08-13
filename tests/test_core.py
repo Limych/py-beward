@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 
-#
 #  Copyright (c) 2019, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
 #  Creative Commons BY-NC-SA 4.0 International Public License
 #  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
-#
 
 import os
 from datetime import datetime
@@ -25,14 +23,13 @@ MOCK_PASS = 'pass'
 
 def load_fixture(filename):
     """Load a fixture."""
-
     path = os.path.join(os.path.dirname(__file__), 'fixtures', filename)
-    with open(path) as fptr:
+    with open(path, encoding='utf-8') as fptr:
         return fptr.read()
 
 
 def function_url(function, host=MOCK_HOST):
-    return 'http://' + host + '/cgi-bin/' + function + '_cgi'
+    return 'http://' + host + ':80/cgi-bin/' + function + '_cgi'
 
 
 class TestBeward(TestCase):
@@ -58,8 +55,8 @@ class TestBeward(TestCase):
         mock.register_uri("get", function_url('systeminfo'),
                           text='DeviceModel=DS06M')
 
-        res = Beward.factory(MOCK_HOST, MOCK_USER, MOCK_PASS)
-        self.assertTrue(isinstance(res, BewardDoorbell))
+        bwd = Beward.factory(MOCK_HOST, MOCK_USER, MOCK_PASS)
+        self.assertTrue(isinstance(bwd, BewardDoorbell))
 
 
 class TestBewardGeneric(TestCase):
@@ -70,6 +67,18 @@ class TestBewardGeneric(TestCase):
             self.fail()  # pragma: no cover
         except ValueError:
             pass
+
+        bwd = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
+        self.assertEqual(MOCK_HOST, bwd.host)
+        self.assertEqual(80, bwd.port)
+
+        bwd = BewardGeneric(MOCK_HOST + ':123', MOCK_USER, MOCK_PASS)
+        self.assertEqual(MOCK_HOST, bwd.host)
+        self.assertEqual(123, bwd.port)
+
+        bwd = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS, port=456)
+        self.assertEqual(MOCK_HOST, bwd.host)
+        self.assertEqual(456, bwd.port)
 
     def test_get_device_type(self):
         self.assertEqual(BEWARD_DOORBELL,
@@ -83,12 +92,12 @@ class TestBewardGeneric(TestCase):
     def test_get_url(self):
         bwd = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
 
-        expect = 'http://%s/cgi-bin/systeminfo_cgi' % MOCK_HOST
+        expect = 'http://%s:80/cgi-bin/systeminfo_cgi' % MOCK_HOST
         res = bwd.get_url('systeminfo')
         #
         self.assertEqual(expect, res)
 
-        expect = 'http://%s/cgi-bin/systeminfo_cgi?arg=123' % MOCK_HOST
+        expect = 'http://%s:80/cgi-bin/systeminfo_cgi?arg=123' % MOCK_HOST
         res = bwd.get_url('systeminfo', extra_params={
             'arg': '123',
         })
@@ -96,16 +105,31 @@ class TestBewardGeneric(TestCase):
         self.assertEqual(expect, res)
 
         username = 'user'
-        expect = 'http://%s@%s/cgi-bin/systeminfo_cgi' % (username, MOCK_HOST)
+        expect = 'http://%s@%s:80/cgi-bin/systeminfo_cgi' % (
+            username, MOCK_HOST)
         res = bwd.get_url('systeminfo', username=username)
         #
         self.assertEqual(expect, res)
 
         username = 'user'
         password = 'pass'
-        expect = 'http://%s:%s@%s/cgi-bin/systeminfo_cgi' % (
+        expect = 'http://%s:%s@%s:80/cgi-bin/systeminfo_cgi' % (
             username, password, MOCK_HOST)
         res = bwd.get_url('systeminfo', username=username, password=password)
+        #
+        self.assertEqual(expect, res)
+
+        bwd = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS, port=123)
+
+        expect = 'http://%s:123/cgi-bin/systeminfo_cgi' % MOCK_HOST
+        res = bwd.get_url('systeminfo')
+        #
+        self.assertEqual(expect, res)
+
+        username = 'user'
+        expect = 'http://%s@%s:123/cgi-bin/systeminfo_cgi' % (
+            username, MOCK_HOST)
+        res = bwd.get_url('systeminfo', username=username)
         #
         self.assertEqual(expect, res)
 
@@ -137,6 +161,62 @@ class TestBewardGeneric(TestCase):
 
         res = bwd.query(function, extra_params={'extra': 123})
         self.assertEqual(data, res.text)
+
+    def test_add_alarms_handler(self):
+        bwd = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
+
+        self.assertEqual(set(), bwd._alarm_handlers)
+
+        def logger1():
+            pass
+
+        def logger2():
+            pass
+
+        bwd.add_alarms_handler(logger1)
+        self.assertEqual({
+            logger1,
+        }, bwd._alarm_handlers)
+
+        bwd.add_alarms_handler(logger1)
+        self.assertEqual({
+            logger1,
+        }, bwd._alarm_handlers)
+
+        bwd.add_alarms_handler(logger2)
+        self.assertEqual({
+            logger1,
+            logger2,
+        }, bwd._alarm_handlers)
+
+    def test_remove_alarms_handler(self):
+        bwd = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
+
+        def logger1():
+            pass
+
+        def logger2():
+            pass
+
+        bwd.add_alarms_handler(logger1)
+        bwd.add_alarms_handler(logger2)
+        self.assertEqual({
+            logger1,
+            logger2,
+        }, bwd._alarm_handlers)
+
+        bwd.remove_alarms_handler(logger1)
+        self.assertEqual({
+            logger2,
+        }, bwd._alarm_handlers)
+
+        bwd.remove_alarms_handler(logger1)
+        self.assertEqual({
+            logger2,
+        }, bwd._alarm_handlers)
+
+        bwd.remove_alarms_handler(logger2)
+        self.assertEqual(set(), bwd._alarm_handlers)
 
     def test__handle_alarm(self):
         bwd = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
@@ -218,7 +298,8 @@ class TestBewardGeneric(TestCase):
             alarms2listen.append(alarm.split(';')[2])
         bwd.add_alarms_handler(_alarms_logger)
         bwd.listen_alarms(alarms=alarms2listen)
-        sleep(1)
+        sleep(0.1)
+        bwd.remove_alarms_handler(_alarms_logger)
 
         expect = [
             'DeviceOnline;True',

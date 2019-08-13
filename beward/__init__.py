@@ -19,7 +19,7 @@ from beward.doorbell import BewardDoorbell
 __author__ = 'Andrey "Limych" Khrolenok <andrey@khrolenok.ru>'
 # Please add the suffix "+" to the version after release, to make it
 # possible infer whether in development code from the version string
-__version__ = '0.11.0'
+__version__ = '1.0.0'
 __website__ = 'https://github.com/Limych/python-beward'
 __license__ = 'Creative Commons BY-NC-SA License'
 
@@ -44,7 +44,7 @@ class Beward:
     """Beward device factory class."""
 
     @staticmethod
-    def factory(host_ip, username, password, **kwargs) -> BewardGeneric:
+    def factory(host_ip, username, password, **kwargs):
         """Return correct class for device."""
 
         bwd = BewardGeneric(host_ip, username, password)

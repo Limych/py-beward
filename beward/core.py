@@ -15,9 +15,10 @@ from time import sleep
 from typing import Optional
 
 import requests
-from requests import ConnectTimeout, Response
+from requests import ConnectTimeout, Response, RequestException
 from requests.auth import HTTPBasicAuth
 
+from beward.util import is_valid_fqdn, normalize_fqdn
 from .const import MSG_GENERIC_FAIL, BEWARD_MODELS, TIMEOUT, ALARM_ONLINE
 
 _LOGGER = logging.getLogger(__name__)
@@ -25,16 +26,13 @@ _LOGGER = logging.getLogger(__name__)
 
 # pylint: disable=R0902
 class BewardGeneric:
-    """Generic Implementation for Beward device.
-
-    """
+    """Generic Implementation for Beward device."""
 
     _class_group = 'Beward'
 
     @staticmethod
-    def get_device_type(model) -> Optional[str]:
+    def get_device_type(model: Optional[str]) -> Optional[str]:
         """Detect device type for model."""
-
         if not model:
             return None
 
@@ -45,16 +43,22 @@ class BewardGeneric:
         return None
 
     # pylint: disable=W0613
-    def __init__(self, host_ip, username, password, **kwargs):
-
-        # Check if host_ip is a valid IPv4 representation.
-        # This library does not (yet?) support IPv6
+    def __init__(self, host: str, username: str, password: str, port=None,
+                 **kwargs):
+        if port is None:
+            try:
+                port = host.split(':')[1]
+            except IndexError:
+                pass
+        host = normalize_fqdn(host)
         try:
-            socket.inet_aton(host_ip)
+            if not is_valid_fqdn(host):
+                socket.inet_aton(host)
         except socket.error:
-            raise ValueError("Not a valid IP address string")
+            raise ValueError("Not a valid host address")
 
-        self.host = host_ip
+        self.host = host
+        self.port = int(port) if port else 80
         self.username = username
         self.password = password
         self.session = requests.session()
@@ -67,11 +71,12 @@ class BewardGeneric:
         self.alarm_timestamp = {
             ALARM_ONLINE: datetime.min,
         }
-        self._alarm_handlers = []
+        self._alarm_handlers = set()
 
         self._sysinfo = None
+        self._listen_alarms = False
 
-    def get_url(self, function, extra_params=None, username=None,
+    def get_url(self, function: str, extra_params=None, username=None,
                 password=None) -> str:
         """Get entry point for function."""
         url = 'http://'
@@ -80,12 +85,12 @@ class BewardGeneric:
             if password:
                 url += ':' + password
             url += '@'
-        url += self.host + '/cgi-bin/' + function + '_cgi'
+        url += '%s:%d/cgi-bin/%s_cgi' % (self.host, self.port, function)
         if extra_params:
             url = self.add_url_params(url, extra_params)
         return url
 
-    def add_url_params(self, url, extra_params) -> str:
+    def add_url_params(self, url: str, extra_params: dict) -> str:
         """Add params to URL."""
         from requests import PreparedRequest
 
@@ -97,7 +102,7 @@ class BewardGeneric:
 
         return req.url
 
-    def query(self, function, extra_params=None) -> Optional[Response]:
+    def query(self, function: str, extra_params=None) -> Optional[Response]:
         """Query data from Beward device."""
         url = self.get_url(function)
         _LOGGER.debug("Querying %s", url)
@@ -131,15 +136,17 @@ class BewardGeneric:
 
     def add_alarms_handler(self, handler: callable):
         """Add alarms handler."""
-        self._alarm_handlers.append(handler)
+        self._alarm_handlers.add(handler)
         return self
 
     def remove_alarms_handler(self, handler: callable):
         """Remove alarms handler."""
-        self._alarm_handlers.remove(handler)
+        if handler in self._alarm_handlers:
+            self._alarm_handlers.remove(handler)
+            self._listen_alarms &= (self._alarm_handlers == set())
         return self
 
-    def _handle_alarm(self, timestamp, alarm, state):
+    def _handle_alarm(self, timestamp: datetime, alarm: str, state: bool):
         """Handle alarms from Beward device."""
         _LOGGER.debug("Handle alarm: %s; State: %s", alarm, state)
 
@@ -150,7 +157,7 @@ class BewardGeneric:
         for handler in self._alarm_handlers:
             handler(self, timestamp, alarm, state)
 
-    def listen_alarms(self, channel=0, alarms=None):
+    def listen_alarms(self, channel: int = 0, alarms=None):
         """Listen for alarms from Beward device."""
         if alarms is None:  # pragma: no cover
             alarms = {}
@@ -165,18 +172,26 @@ class BewardGeneric:
         })
         auth = HTTPBasicAuth(self.username, self.password)
 
+        self._listen_alarms = (len(self._alarm_handlers) != 0)
+
         import threading
         thread = threading.Thread(
-            target=self._alarms_listener, args=(url, params, auth),
+            target=self.__alarms_listener, args=(url, params, auth),
             daemon=True)
         thread.start()
 
         _LOGGER.debug("Return from listen_alarms()")
 
-    def _alarms_listener(self, url: str, params, auth):
+    def __alarms_listener(self, url: str, params, auth):
         while True:
-            resp = requests.get(url, params=params, auth=auth, stream=True)
+            try:
+                resp = requests.get(url, params=params, auth=auth, stream=True)
+            except RequestException:  # pragma: no cover
+                break
             _LOGGER.debug("_query ret %s", resp.status_code)
+
+            if not self._listen_alarms:  # pragma: no cover
+                break
 
             if resp.status_code != 200:  # pragma: no cover
                 sleep(TIMEOUT)
@@ -197,7 +212,10 @@ class BewardGeneric:
 
             self._handle_alarm(datetime.now(), ALARM_ONLINE, False)
 
-    def get_info(self, function) -> list:
+        self._handle_alarm(datetime.now(), ALARM_ONLINE,
+                           False)  # pragma: no cover
+
+    def get_info(self, function: str) -> dict:
         """Get info from Beward device."""
         info = {}
         data = self.query(function, extra_params={
@@ -210,7 +228,7 @@ class BewardGeneric:
         return info
 
     @property
-    def system_info(self) -> list:
+    def system_info(self) -> dict:
         """Get system info from Beward device."""
         if self._sysinfo:
             return self._sysinfo
