@@ -4,7 +4,7 @@
 
 [![Build Status](https://img.shields.io/travis/Limych/py-beward.svg?style=popout)](https://travis-ci.org/Limych/py-beward)
 [![](https://img.shields.io/github/last-commit/Limych/py-beward.svg?style=popout)](https://github.com/Limych/py-beward/commits/master)
-[![License](https://img.shields.io/badge/license-CC--by--ns--sa-green.svg?style=popout)](LICENSE.md)
+[![License](https://img.shields.io/badge/license-CC--by--ns--sa-success.svg?style=popout)](LICENSE.md)
 [![Coverage Status](https://img.shields.io/coveralls/github/Limych/py-beward?style=popout)](https://coveralls.io/github/Limych/py-beward)
 ![Requires.io](https://img.shields.io/requires/github/Limych/py-beward)
 
