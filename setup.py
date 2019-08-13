@@ -44,7 +44,7 @@ LICENSE = metadata['license']
 DESCRIPTION = docstrings[0]
 
 CLASSIFIERS = [
-    'Development Status :: 2 - Pre-Alpha',
+    'Development Status :: 5 - Production/Stable',
     'Intended Audience :: Developers',
     'License :: Other/Proprietary License',
     'Operating System :: OS Independent',

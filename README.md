@@ -4,13 +4,16 @@
 
 [![Build Status](https://img.shields.io/travis/Limych/py-beward.svg?style=popout)](https://travis-ci.org/Limych/py-beward)
 [![](https://img.shields.io/github/last-commit/Limych/py-beward.svg?style=popout)](https://github.com/Limych/py-beward/commits/master)
-[![License](https://img.shields.io/badge/license-CC--by--ns--sa-success.svg?style=popout)](LICENSE.md)
+[![License](https://img.shields.io/pypi/l/beward?style=popout)](LICENSE.md)
+[![PyPI](https://img.shields.io/pypi/v/beward?style=popout)](https://pypi.org/project/beward/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/beward?style=popout)](https://pypi.org/project/beward/)
 [![Coverage Status](https://img.shields.io/coveralls/github/Limych/py-beward?style=popout)](https://coveralls.io/github/Limych/py-beward)
 ![Requires.io](https://img.shields.io/requires/github/Limych/py-beward)
 
 ![Project Maintenance](https://img.shields.io/badge/maintainer-Andrey%20Khrolenok%20%40Limych-blue.svg?style=popout)
 
-[![](https://img.shields.io/github/issues/Limych/py-beward/bug.svg?colorB=red&label=bugs&style=popout)](https://github.com/Limych/py-beward/issues?q=is%3Aopen+is%3Aissue+label%3ABug)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/Limych/py-beward?style=popout)](https://github.com/Limych/py-beward/pulls)
+[![Bugs](https://img.shields.io/github/issues/Limych/py-beward/bug.svg?colorB=red&label=bugs&style=popout)](https://github.com/Limych/py-beward/issues?q=is%3Aopen+is%3Aissue+label%3ABug)
 
 Python API for Beward Cameras and Doorbells. This is used in [Home Assistant component](https://github.com/Limych/ha-beward/) but should be generic enough that can be used elsewhere.
 
