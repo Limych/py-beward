@@ -56,7 +56,7 @@ class Beward:
 
         if dev_type is None:
             raise ValueError(
-                'Unknown device "%s"' % (model)
+                'Unknown device "%s"' % model
             )
 
         if dev_type == BEWARD_CAMERA:
