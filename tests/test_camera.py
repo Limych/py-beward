@@ -12,7 +12,7 @@ import requests_mock
 from requests import ConnectTimeout
 
 from beward import BewardCamera
-from beward.const import ALARM_MOTION
+from beward.const import ALARM_MOTION, ALARM_SENSOR_OUT
 
 MOCK_HOST = '192.168.0.2'
 MOCK_USER = 'user'
@@ -45,15 +45,20 @@ def function_url(function, host=MOCK_HOST, user=None, password=None):
 
 class TestBewardCamera(TestCase):
 
-    def test___init__(self):
+    @requests_mock.Mocker()
+    def test___init__(self, mock):
         bwd = BewardCamera(MOCK_HOST, MOCK_USER, MOCK_PASS)
         self.assertEqual(None, bwd.rtsp_port)
         self.assertEqual(0, bwd.stream)
+
+        mock.register_uri("get", function_url('controller'),
+                          text=load_fixture("controller.txt"))
 
         bwd = BewardCamera(MOCK_HOST, MOCK_USER, MOCK_PASS, rtsp_port=123,
                            stream=2)
         self.assertEqual(123, bwd.rtsp_port)
         self.assertEqual(2, bwd.stream)
+        self.assertEqual(1, bwd._outputs_num)
 
     @requests_mock.Mocker()
     def test_obtain_uris(self, mock):
@@ -138,17 +143,59 @@ class TestBewardCamera(TestCase):
         self.assertEqual(image, res)
 
     @requests_mock.Mocker()
-    def test__handle_alarm(self, mock):
+    def test_motion(self, mock):
         bwd = BewardCamera(MOCK_HOST, MOCK_USER, MOCK_PASS)
         image = load_binary("image.jpg")
-
-        # Check initial state
-        self.assertIsNone(bwd.last_motion_timestamp)
-        self.assertIsNone(bwd.last_motion_image)
-
-        ts1 = datetime.now()
         mock.register_uri("get", function_url('images'), content=image,
                           headers={'Content-Type': 'image/jpeg'})
+
+        # Check initial state
+        self.assertIsNone(bwd.motion)
+        self.assertIsNone(bwd.motion_timestamp)
+        self.assertIsNone(bwd.motion_image)
+
+        ts1 = datetime.now()
         bwd._handle_alarm(ts1, ALARM_MOTION, True)
-        self.assertEqual(ts1, bwd.last_motion_timestamp)
-        self.assertEqual(image, bwd.last_motion_image)
+        self.assertEqual(True, bwd.motion)
+        self.assertEqual(ts1, bwd.alarm_timestamp[ALARM_MOTION])
+        self.assertEqual(ts1, bwd.motion_timestamp)
+        self.assertEqual(image, bwd.motion_image)
+
+        ts2 = datetime.fromtimestamp(ts1.timestamp() + 1)
+        bwd._handle_alarm(ts2, ALARM_MOTION, False)
+        self.assertEqual(False, bwd.motion)
+        self.assertEqual(ts2, bwd.alarm_timestamp[ALARM_MOTION])
+        self.assertEqual(ts1, bwd.motion_timestamp)
+        self.assertEqual(image, bwd.motion_image)
+
+    @requests_mock.Mocker()
+    def test_output1(self, mock):
+        bwd = BewardCamera(MOCK_HOST, MOCK_USER, MOCK_PASS)
+
+        # Check initial state
+        self.assertIsNone(bwd.output1)
+        self.assertIsNone(bwd.output1_timestamp)
+
+        ts1 = datetime.now()
+        bwd._handle_alarm(ts1, ALARM_SENSOR_OUT, True)
+        self.assertEqual(True, bwd.output1)
+        self.assertEqual(ts1, bwd.alarm_timestamp[ALARM_SENSOR_OUT])
+        self.assertEqual(ts1, bwd.output1_timestamp)
+
+        ts2 = datetime.fromtimestamp(ts1.timestamp() + 1)
+        bwd._handle_alarm(ts2, ALARM_SENSOR_OUT, False)
+        self.assertEqual(False, bwd.output1)
+        self.assertEqual(ts2, bwd.alarm_timestamp[ALARM_SENSOR_OUT])
+        self.assertEqual(ts1, bwd.output1_timestamp)
+
+    @requests_mock.Mocker()
+    def test_output1_set(self, mock):
+        bwd = BewardCamera(MOCK_HOST, MOCK_USER, MOCK_PASS)
+
+        # Check initial state
+        self.assertIsNone(bwd.output1)
+        self.assertIsNone(bwd.output1_timestamp)
+
+        # TODO
+
+    # TODO: Multiple Sensor outs

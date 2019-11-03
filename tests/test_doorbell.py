@@ -32,17 +32,27 @@ def function_url(function, host=MOCK_HOST):
 class TestBewardDoorbell(TestCase):
 
     @requests_mock.Mocker()
-    def test__handle_alarm(self, mock):
+    def test_ding(self, mock):
         bwd = BewardDoorbell(MOCK_HOST, MOCK_USER, MOCK_PASS)
         image = load_binary("image.jpg")
-
-        # Check initial state
-        self.assertIsNone(bwd.last_motion_timestamp)
-        self.assertIsNone(bwd.last_motion_image)
-
-        ts1 = datetime.now()
         mock.register_uri("get", function_url('images'), content=image,
                           headers={'Content-Type': 'image/jpeg'})
+
+        # Check initial state
+        self.assertIsNone(bwd.ding)
+        self.assertIsNone(bwd.ding_timestamp)
+        self.assertIsNone(bwd.ding_image)
+
+        ts1 = datetime.now()
         bwd._handle_alarm(ts1, ALARM_SENSOR, True)
-        self.assertEqual(ts1, bwd.last_ding_timestamp)
-        self.assertEqual(image, bwd.last_ding_image)
+        self.assertEqual(True, bwd.ding)
+        self.assertEqual(ts1, bwd.alarm_timestamp[ALARM_SENSOR])
+        self.assertEqual(ts1, bwd.ding_timestamp)
+        self.assertEqual(image, bwd.ding_image)
+
+        ts2 = datetime.fromtimestamp(ts1.timestamp() + 1)
+        bwd._handle_alarm(ts2, ALARM_SENSOR, False)
+        self.assertEqual(False, bwd.ding)
+        self.assertEqual(ts2, bwd.alarm_timestamp[ALARM_SENSOR])
+        self.assertEqual(ts1, bwd.ding_timestamp)
+        self.assertEqual(image, bwd.ding_image)

@@ -71,6 +71,7 @@ class BewardGeneric:
         self.alarm_timestamp = {
             ALARM_ONLINE: datetime.min,
         }
+        self.alarm_on_timestamp = self.alarm_timestamp.copy()
         self._alarm_handlers = set()
 
         self._sysinfo = None
@@ -146,16 +147,21 @@ class BewardGeneric:
             self._listen_alarms &= (self._alarm_handlers == set())
         return self
 
-    def _handle_alarm(self, timestamp: datetime, alarm: str, state: bool):
+    def _handle_alarm(self, timestamp: datetime, alarm: str, state: bool,
+                      channel: int = 0):
         """Handle alarms from Beward device."""
         _LOGGER.debug("Handle alarm: %s; State: %s", alarm, state)
 
         self.last_activity = timestamp
         self.alarm_timestamp[alarm] = timestamp
         self.alarm_state[alarm] = state
+        if state:
+            self.alarm_on_timestamp[alarm] = timestamp
+
+        # TODO: Multiple Sensor outs
 
         for handler in self._alarm_handlers:
-            handler(self, timestamp, alarm, state)
+            handler(self, timestamp, alarm, state, channel)
 
     def listen_alarms(self, channel: int = 0, alarms=None):
         """Listen for alarms from Beward device."""
@@ -203,12 +209,12 @@ class BewardGeneric:
                 if line:
                     _LOGGER.debug("Alarm: %s", line)
 
-                    date, time, alert, state, _ = str(line).split(';', 5)
+                    date, time, alert, state, channel = str(line).split(';')
                     timestamp = datetime.strptime(date + ' ' + time,
                                                   '%Y-%m-%d %H:%M:%S')
                     state = (state != '0')
 
-                    self._handle_alarm(timestamp, alert, state)
+                    self._handle_alarm(timestamp, alert, state, channel)
 
             self._handle_alarm(datetime.now(), ALARM_ONLINE, False)
 

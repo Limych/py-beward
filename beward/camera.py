@@ -9,11 +9,12 @@
 #
 
 import logging
+import warnings
 from typing import Optional
 
 from requests import ConnectTimeout
 
-from beward.const import ALARM_MOTION
+from beward.const import ALARM_MOTION, ALARM_SENSOR_OUT
 from .core import BewardGeneric
 
 _LOGGER = logging.getLogger(__name__)
@@ -27,14 +28,19 @@ class BewardCamera(BewardGeneric):
                  **kwargs):
         super().__init__(host, username, password, **kwargs)
 
-        self.last_motion_timestamp = None
-        self.last_motion_image = None
+        self._motion_image = None
 
         self.rtsp_port = rtsp_port
         self.stream = stream
 
         self._live_image_url = None
         self._rtsp_live_video_url = None
+
+        self._outputs_num = 0
+        try:
+            self._outputs_num = int(self.get_info('controller').get('Type', 0))
+        except Exception:
+            pass
 
     def obtain_uris(self):
         """Set the URIs for the camera."""
@@ -87,10 +93,51 @@ class BewardCamera(BewardGeneric):
 
         return res.content
 
-    def _handle_alarm(self, timestamp, alarm, state):
+    def _handle_alarm(self, timestamp, alarm, state, channel=0):
         """Handle alarms from Beward device."""
-        super()._handle_alarm(timestamp, alarm, state)
+        super()._handle_alarm(timestamp, alarm, state, channel)
 
         if alarm == ALARM_MOTION and state:
-            self.last_motion_timestamp = timestamp
-            self.last_motion_image = self.live_image
+            self._motion_image = self.live_image
+
+    @property
+    def motion(self):
+        return self.alarm_state.get(ALARM_MOTION)
+
+    @property
+    def motion_timestamp(self):
+        return self.alarm_on_timestamp.get(ALARM_MOTION)
+
+    @property
+    def last_motion_timestamp(self):  # pragma: no cover
+        warnings.warn('The "last_motion_timestamp" property was renamed '
+                      'to "motion_timestamp"', DeprecationWarning)
+        return self.motion_timestamp
+
+    @property
+    def motion_image(self):
+        return self._motion_image
+
+    @property
+    def last_motion_image(self):  # pragma: no cover
+        warnings.warn('The "last_motion_image" property was renamed '
+                      'to "motion_image"', DeprecationWarning)
+        return self.motion_image
+
+    @property
+    def output1(self):
+        return self.alarm_state.get(ALARM_SENSOR_OUT)
+
+    @property
+    def output1_timestamp(self):
+        return self.alarm_on_timestamp.get(ALARM_SENSOR_OUT)
+
+    @output1.setter
+    def output1(self, state):
+        self.query('alarmout', extra_params={
+            'channel': 0,
+            'Output': 0,
+            'Status': int(state),
+        })
+
+    # TODO: Multiple Sensor outs

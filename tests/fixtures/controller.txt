@@ -1,0 +1,6 @@
+Type=1
+Output1=open
+Delay1=1
+Status1=0
+CloseByFace1=open
+PlaySound=close

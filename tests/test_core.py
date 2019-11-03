@@ -41,7 +41,7 @@ class TestBeward(TestCase):
 
         try:
             Beward.factory(MOCK_HOST, MOCK_USER, MOCK_PASS)
-            self.fail()
+            self.fail()  # pragma: no cover
         except ValueError:
             pass
 
@@ -167,10 +167,10 @@ class TestBewardGeneric(TestCase):
 
         self.assertEqual(set(), bwd._alarm_handlers)
 
-        def logger1():
+        def logger1():  # pragma: no cover
             pass
 
-        def logger2():
+        def logger2():  # pragma: no cover
             pass
 
         bwd.add_alarms_handler(logger1)
@@ -192,10 +192,10 @@ class TestBewardGeneric(TestCase):
     def test_remove_alarms_handler(self):
         bwd = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
 
-        def logger1():
+        def logger1():  # pragma: no cover
             pass
 
-        def logger2():
+        def logger2():  # pragma: no cover
             pass
 
         bwd.add_alarms_handler(logger1)
@@ -240,7 +240,7 @@ class TestBewardGeneric(TestCase):
             ALARM_MOTION: ts1,
         }, bwd.alarm_timestamp)
 
-        ts2 = datetime.now()
+        ts2 = datetime.fromtimestamp(ts1.timestamp() + 1)
         bwd._handle_alarm(ts2, ALARM_SENSOR, True)
         self.assertEqual({
             ALARM_ONLINE: False,
@@ -253,7 +253,7 @@ class TestBewardGeneric(TestCase):
             ALARM_SENSOR: ts2,
         }, bwd.alarm_timestamp)
 
-        ts3 = datetime.now()
+        ts3 = datetime.fromtimestamp(ts1.timestamp() + 2)
         bwd._handle_alarm(ts3, ALARM_MOTION, False)
         self.assertEqual({
             ALARM_ONLINE: False,
@@ -274,7 +274,7 @@ class TestBewardGeneric(TestCase):
         log = []
         logging = True
 
-        def _alarms_logger(device, timestamp, alarm, state):
+        def _alarms_logger(device, timestamp, alarm, state, channel=0):
             nonlocal logging
             if not logging:
                 return
@@ -283,7 +283,9 @@ class TestBewardGeneric(TestCase):
                 log.append(';'.join((str(alarm), str(state))))
                 logging = state
             else:
-                log.append(';'.join((str(timestamp), str(alarm), str(state))))
+                log.append(';'.join((
+                    str(timestamp), str(alarm), str(state), str(channel)
+                )))
 
         # Check initial state
         self.assertEqual({
@@ -313,20 +315,20 @@ class TestBewardGeneric(TestCase):
             '2019-07-28;00:57:27;MotionDetection;1;0',
         ]
         ex_log = [
-            '2019-07-28 00:57:27;MotionDetection;True'
+            '2019-07-28 00:57:27;MotionDetection;True;0'
         ]
         self._listen_alarms_tester(alarms, ex_log)
 
         alarms.append('2019-07-28;00:57:28;MotionDetection;0;0')
-        ex_log.append('2019-07-28 00:57:28;MotionDetection;False')
+        ex_log.append('2019-07-28 00:57:28;MotionDetection;False;0')
         self._listen_alarms_tester(alarms, ex_log)
 
         alarms.append('2019-07-28;15:51:52;SensorAlarm;1;0')
-        ex_log.append('2019-07-28 15:51:52;SensorAlarm;True')
+        ex_log.append('2019-07-28 15:51:52;SensorAlarm;True;0')
         self._listen_alarms_tester(alarms, ex_log)
 
         alarms.append('2019-07-28;15:51:53;SensorAlarm;0;0')
-        ex_log.append('2019-07-28 15:51:53;SensorAlarm;False')
+        ex_log.append('2019-07-28 15:51:53;SensorAlarm;False;0')
         self._listen_alarms_tester(alarms, ex_log)
 
     @requests_mock.Mocker()

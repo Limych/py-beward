@@ -9,6 +9,7 @@
 #
 
 import logging
+import warnings
 
 from beward.const import ALARM_SENSOR
 from .camera import BewardCamera
@@ -22,13 +23,35 @@ class BewardDoorbell(BewardCamera):
     def __init__(self, host, username, password, **kwargs):
         super().__init__(host, username, password, **kwargs)
 
-        self.last_ding_timestamp = None
-        self.last_ding_image = None
+        self._ding_image = None
 
-    def _handle_alarm(self, timestamp, alarm, state):
+    def _handle_alarm(self, timestamp, alarm, state, channel=0):
         """Handle alarms from Beward device."""
-        super()._handle_alarm(timestamp, alarm, state)
+        super()._handle_alarm(timestamp, alarm, state, channel)
 
         if alarm == ALARM_SENSOR and state:
-            self.last_ding_timestamp = timestamp
-            self.last_ding_image = self.live_image
+            self._ding_image = self.live_image
+
+    @property
+    def ding(self):
+        return self.alarm_state.get(ALARM_SENSOR)
+
+    @property
+    def ding_timestamp(self):
+        return self.alarm_on_timestamp.get(ALARM_SENSOR)
+
+    @property
+    def last_ding_timestamp(self):  # pragma: no cover
+        warnings.warn('The "last_ding_timestamp" property was renamed '
+                      'to "ding_timestamp"', DeprecationWarning)
+        return self.ding_timestamp
+
+    @property
+    def ding_image(self):
+        return self._ding_image
+
+    @property
+    def last_ding_image(self):  # pragma: no cover
+        warnings.warn('The "last_ding_image" property was renamed '
+                      'to "ding_image"', DeprecationWarning)
+        return self.ding_image

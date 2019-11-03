@@ -2,3 +2,5 @@
 2019-07-28;00:57:28;MotionDetection;0;0
 2019-07-28;15:51:52;SensorAlarm;1;0
 2019-07-28;15:51:53;SensorAlarm;0;0
+2019-10-31;23:17:21;SensorOutAlarm;1;0
+2019-10-31;23:17:22;SensorOutAlarm;0;0
