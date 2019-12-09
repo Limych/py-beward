@@ -19,7 +19,7 @@ from beward.doorbell import BewardDoorbell
 __author__ = 'Andrey "Limych" Khrolenok <andrey@khrolenok.ru>'
 # Please add the suffix "+" to the version after release, to make it
 # possible infer whether in development code from the version string
-__version__ = '1.0.2'
+__version__ = '1.0.3'
 __website__ = 'https://github.com/Limych/python-beward'
 __license__ = 'Creative Commons BY-NC-SA License'
 
@@ -56,7 +56,7 @@ class Beward:
 
         if dev_type is None:
             raise ValueError(
-                'Unknown device "%s"' % (model)
+                'Unknown device "%s"' % model
             )
 
         if dev_type == BEWARD_CAMERA:
