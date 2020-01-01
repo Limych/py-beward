@@ -66,7 +66,7 @@ with io.open('README.md', encoding='utf-8') as file:
 AUTHOR, EMAIL = re.match(r'(.*) <(.*)>', AUTHOR_EMAIL).groups()
 
 REQUIREMENTS = list(open('requirements.txt'))
-TEST_REQUIREMENTS = list(open('requirements_tests.txt'))
+TEST_REQUIREMENTS = list(open('requirements-tests.txt'))
 
 setup(
     name=NAME,
