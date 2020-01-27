@@ -5,6 +5,10 @@ repos:
         name: tox
         entry: tox
         language: system
+  - repo: https://github.com/PyCQA/pylint
+    rev: pylint-2.4.2
+    hooks:
+      - id: pylint
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.4.0
     hooks:
