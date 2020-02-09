@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 """
 Beward Cameras and Doorbells API module setup
 """

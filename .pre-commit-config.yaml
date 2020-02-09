@@ -3,14 +3,15 @@ repos:
     hooks:
       - id: tox
         name: tox
-        entry: tox
+        entry: tox -e py37
         language: system
-  - repo: https://github.com/PyCQA/pylint
-    rev: pylint-2.4.2
-    hooks:
       - id: pylint
+        name: pylint
+        entry: python3 -m pylint.__main__
+        language: system
+        types: [python]
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.4.0
+    rev: v2.5.0
     hooks:
       - id: check-json
       - id: check-yaml
