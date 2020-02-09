@@ -1,5 +1,7 @@
 #!/usr/bin/env python
-"""Module setup."""
+"""
+Beward Cameras and Doorbells API module setup
+"""
 
 import io
 import re
@@ -10,7 +12,8 @@ from setuptools.command.test import test as TestCommand
 
 
 class PyTest(TestCommand):
-    """Test controller"""
+    """ PyTest controller. """
+
     # Code from here:
     # https://docs.pytest.org/en/latest/goodpractices.html#manual-integration
 
@@ -21,7 +24,7 @@ class PyTest(TestCommand):
         self.test_args = ['-m', 'not integration']
         self.test_suite = True
 
-    # pylint: disable=C0415
+    # pylint: disable=C0415,E0401
     def run_tests(self):
         # import here, cause outside the eggs aren't loaded
         import pytest

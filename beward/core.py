@@ -10,12 +10,14 @@
 
 import logging
 import socket
+import threading
 from datetime import datetime
 from time import sleep
 from typing import Optional
 
+# pylint: disable=E0401
 import requests
-from requests import ConnectTimeout, Response, RequestException
+from requests import ConnectTimeout, Response, RequestException, PreparedRequest
 from requests.auth import HTTPBasicAuth
 
 from beward.util import is_valid_fqdn, normalize_fqdn
@@ -93,8 +95,6 @@ class BewardGeneric:
 
     def add_url_params(self, url: str, extra_params: dict) -> str:
         """Add params to URL."""
-        from requests import PreparedRequest
-
         params = self.params.copy()
         params.update(extra_params)
 
@@ -158,6 +158,7 @@ class BewardGeneric:
         if state:
             self.alarm_on_timestamp[alarm] = timestamp
 
+        # pylint: disable=W0511
         # TODO: Multiple Sensor outs
 
         for handler in self._alarm_handlers:
@@ -180,7 +181,6 @@ class BewardGeneric:
 
         self._listen_alarms = (len(self._alarm_handlers) != 0)
 
-        import threading
         thread = threading.Thread(
             target=self.__alarms_listener, args=(url, params, auth),
             daemon=True)
