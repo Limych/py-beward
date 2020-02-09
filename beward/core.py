@@ -15,7 +15,6 @@ from datetime import datetime
 from time import sleep
 from typing import Optional
 
-# pylint: disable=E0401
 import requests
 from requests import ConnectTimeout, Response, RequestException, PreparedRequest
 from requests.auth import HTTPBasicAuth
