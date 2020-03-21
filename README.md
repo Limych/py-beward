@@ -77,3 +77,6 @@ check [the contributor's page][contributors].
 creative commons Attribution-NonCommercial-ShareAlike 4.0 International License
 
 See separate [license file](LICENSE.md) for full text.
+
+[limych]: https://github.com/Limych
+[contributors]: https://github.com/Limych/py-beward/graphs/contributors
