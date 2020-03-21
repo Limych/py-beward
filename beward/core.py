@@ -16,8 +16,7 @@ from time import sleep
 from typing import Optional
 
 import requests
-from requests import ConnectTimeout, Response, RequestException
-from requests import PreparedRequest
+from requests import ConnectTimeout, Response, RequestException, PreparedRequest
 from requests.auth import HTTPBasicAuth
 
 from beward.util import is_valid_fqdn, normalize_fqdn

@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+"""
+Beward Cameras and Doorbells API module setup
+"""
 
 import io
 import re
@@ -9,15 +12,19 @@ from setuptools.command.test import test as TestCommand
 
 
 class PyTest(TestCommand):
+    """ PyTest controller. """
+
     # Code from here:
     # https://docs.pytest.org/en/latest/goodpractices.html#manual-integration
 
+    # pylint: disable=W0201
     def finalize_options(self):
         TestCommand.finalize_options(self)
         # we don't run integration tests which need an actual Beward device
         self.test_args = ['-m', 'not integration']
         self.test_suite = True
 
+    # pylint: disable=C0415,E0401
     def run_tests(self):
         # import here, cause outside the eggs aren't loaded
         import pytest
@@ -27,6 +34,7 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 
+# pylint: disable=C0103
 src = io.open('beward/__init__.py', encoding='utf-8').read()
 metadata = dict(re.findall("__([a-z]+)__ = '([^']+)'", src))
 docstrings = re.findall('"""(.*?)"""', src, re.MULTILINE | re.DOTALL)
@@ -66,7 +74,7 @@ with io.open('README.md', encoding='utf-8') as file:
 AUTHOR, EMAIL = re.match(r'(.*) <(.*)>', AUTHOR_EMAIL).groups()
 
 REQUIREMENTS = list(open('requirements.txt'))
-TEST_REQUIREMENTS = list(open('requirements_tests.txt'))
+TEST_REQUIREMENTS = list(open('requirements-tests.txt'))
 
 setup(
     name=NAME,
