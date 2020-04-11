@@ -39,7 +39,7 @@ class BewardCamera(BewardGeneric):
         self._outputs_num = 0
         try:
             self._outputs_num = int(self.get_info('controller').get('Type', 0))
-        except Exception:
+        except Exception:   # pylint: disable=W0703
             pass
 
     def obtain_uris(self):
@@ -102,42 +102,94 @@ class BewardCamera(BewardGeneric):
 
     @property
     def motion(self):
+        """Get motion alarm state"""
         return self.alarm_state.get(ALARM_MOTION)
 
     @property
     def motion_timestamp(self):
+        """Get last motion timestamp"""
         return self.alarm_on_timestamp.get(ALARM_MOTION)
 
     @property
     def last_motion_timestamp(self):  # pragma: no cover
+        """Get last motion timestamp"""
         warnings.warn('The "last_motion_timestamp" property was renamed '
                       'to "motion_timestamp"', DeprecationWarning)
         return self.motion_timestamp
 
     @property
     def motion_image(self):
+        """Get last motion image"""
         return self._motion_image
 
     @property
     def last_motion_image(self):  # pragma: no cover
+        """Get last motion image"""
         warnings.warn('The "last_motion_image" property was renamed '
                       'to "motion_image"', DeprecationWarning)
         return self.motion_image
 
     @property
     def output1(self):
+        """Get 1st output state"""
         return self.alarm_state.get(ALARM_SENSOR_OUT)
 
     @property
     def output1_timestamp(self):
+        """Get 1st output last state change timestamp"""
         return self.alarm_on_timestamp.get(ALARM_SENSOR_OUT)
 
     @output1.setter
     def output1(self, state):
+        """Set 1st output state"""
         self.query('alarmout', extra_params={
             'channel': 0,
             'Output': 0,
             'Status': int(state),
         })
 
-    # TODO: Multiple Sensor outs
+    @property
+    def output2(self):
+        """Get 2nd output state"""
+        # pylint: disable=W0511
+        # TODO: Make correct state getting
+        return self.alarm_state.get(ALARM_SENSOR_OUT)
+
+    @property
+    def output2_timestamp(self):
+        """Get 2nd output last state change timestamp"""
+        # pylint: disable=W0511
+        # TODO: Make correct timestamp getting
+        return self.alarm_on_timestamp.get(ALARM_SENSOR_OUT)
+
+    @output2.setter
+    def output2(self, state):
+        """Set 2nd output state"""
+        self.query('alarmout', extra_params={
+            'channel': 0,
+            'Output': 1,
+            'Status': int(state),
+        })
+
+    @property
+    def output3(self):
+        """Get 3th output state"""
+        # pylint: disable=W0511
+        # TODO: Make correct state getting
+        return self.alarm_state.get(ALARM_SENSOR_OUT)
+
+    @property
+    def output3_timestamp(self):
+        """Get 3th output last state change timestamp"""
+        # pylint: disable=W0511
+        # TODO: Make correct timestamp getting
+        return self.alarm_on_timestamp.get(ALARM_SENSOR_OUT)
+
+    @output3.setter
+    def output3(self, state):
+        """Set 3th output state"""
+        self.query('alarmout', extra_params={
+            'channel': 0,
+            'Output': 2,
+            'Status': int(state),
+        })

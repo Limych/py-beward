@@ -34,24 +34,29 @@ class BewardDoorbell(BewardCamera):
 
     @property
     def ding(self):
+        """Get ding alarm state"""
         return self.alarm_state.get(ALARM_SENSOR)
 
     @property
     def ding_timestamp(self):
+        """Get last ding alarm timestamp"""
         return self.alarm_on_timestamp.get(ALARM_SENSOR)
 
     @property
     def last_ding_timestamp(self):  # pragma: no cover
+        """Get last ding alarm timestamp"""
         warnings.warn('The "last_ding_timestamp" property was renamed '
                       'to "ding_timestamp"', DeprecationWarning)
         return self.ding_timestamp
 
     @property
     def ding_image(self):
+        """Get last ding alarm image"""
         return self._ding_image
 
     @property
     def last_ding_image(self):  # pragma: no cover
+        """Get last ding alarm image"""
         warnings.warn('The "last_ding_image" property was renamed '
                       'to "ding_image"', DeprecationWarning)
         return self.ding_image
