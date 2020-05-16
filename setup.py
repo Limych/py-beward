@@ -5,7 +5,6 @@ Beward Cameras and Doorbells API module setup
 
 import re
 import sys
-from typing import List
 
 from setuptools import setup
 from setuptools.command.test import test as TestCommand
@@ -36,7 +35,7 @@ class PyTest(TestCommand):
 
 def load_requirements(fpath: str) -> list:
     """Load requirements from file."""
-    data: List[str] = list(open(fpath))
+    data = list(open(fpath))
     imp = re.compile(r'^(-r|--requirement)\s+(\S+)')
     reqs = []
     for i in data:

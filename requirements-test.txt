@@ -5,6 +5,7 @@ mock
 mypy
 pre-commit
 pylint
+pylint-strict-informational==0.1
 pytest
 pytest-cov
 requests-mock
