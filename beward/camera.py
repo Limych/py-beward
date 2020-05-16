@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """Beward camera controller."""
 
 #
@@ -11,9 +9,9 @@
 import logging
 from typing import Optional
 
+from beward.const import ALARM_MOTION
 from requests import ConnectTimeout
 
-from beward.const import ALARM_MOTION
 from .core import BewardGeneric
 
 _LOGGER = logging.getLogger(__name__)
@@ -22,9 +20,9 @@ _LOGGER = logging.getLogger(__name__)
 class BewardCamera(BewardGeneric):
     """Beward camera controller class."""
 
-    # pylint: disable=R0913
-    def __init__(self, host, username, password, rtsp_port=None, stream=0,
-                 **kwargs):
+    # pylint: disable=too-many-arguments
+    def __init__(self, host, username, password, rtsp_port=None, stream=0, **kwargs):
+        """Initialize Beward camera controller."""
         super().__init__(host, username, password, **kwargs)
 
         self.last_motion_timestamp = None
@@ -40,10 +38,8 @@ class BewardCamera(BewardGeneric):
         """Set the URIs for the camera."""
 
         self._live_image_url = self.get_url(
-            'images',
-            extra_params={
-                'channel': 0,
-            },
+            "images",
+            extra_params={"channel": 0},
             # Add authentication data
             username=self.username,
             password=self.password,
@@ -51,14 +47,16 @@ class BewardCamera(BewardGeneric):
 
         if not self.rtsp_port:
             try:
-                info = self.get_info('rtsp')
-                self.rtsp_port = info.get('RtspPort', 554)
+                info = self.get_info("rtsp")
+                self.rtsp_port = info.get("RtspPort", 554)
             except ConnectTimeout:
                 self.rtsp_port = 554
 
-        url = 'rtsp://%s:%s@%s:%s/av0_%d' % (
-            self.username, self.password,
-            self.host, self.rtsp_port,
+        url = "rtsp://%s:%s@%s:%s/av0_%d" % (
+            self.username,
+            self.password,
+            self.host,
+            self.rtsp_port,
             self.stream,
         )
         self._rtsp_live_video_url = url
@@ -80,9 +78,9 @@ class BewardCamera(BewardGeneric):
     @property
     def live_image(self) -> Optional[bytes]:
         """Return bytes of camera image."""
-        res = self.query('images', extra_params={'channel': 0})
+        res = self.query("images", extra_params={"channel": 0})
 
-        if not res.headers.get('Content-Type') in ('image/jpeg', 'image/png'):
+        if not res.headers.get("Content-Type") in ("image/jpeg", "image/png"):
             return None
 
         return res.content

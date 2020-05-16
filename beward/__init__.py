@@ -39,7 +39,7 @@ logging.getLogger(__name__).addHandler(logging.NullHandler())
 _LOGGER = logging.getLogger(__name__)
 
 
-# pylint: disable=R0903
+# pylint: disable=too-few-public-methods
 class Beward:
     """Beward device factory class."""
 

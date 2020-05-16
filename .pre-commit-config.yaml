@@ -68,9 +68,10 @@ repos:
         language: script
         types: [python]
         require_serial: true
-        files: ^custom_components/.+\.py$
+        files: ^beward/.+\.py$
       - id: pylint
         name: pylint
         entry: python3 -m pylint.__main__
         language: system
         types: [python]
+        files: ^beward/.+\.py$
