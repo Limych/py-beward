@@ -89,7 +89,6 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-/.idea/
 
 # Spyder project settings
 .spyderproject
@@ -104,5 +103,9 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-/test*.py
+# IDE workspaces
 .idea/
+.vscode/
+
+.devcontainer
+/test*.py

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """Python API for Beward Cameras and Doorbells."""
 
 #
@@ -19,19 +17,19 @@ from beward.doorbell import BewardDoorbell
 __author__ = 'Andrey "Limych" Khrolenok <andrey@khrolenok.ru>'
 # Please add the suffix "+" to the version after release, to make it
 # possible infer whether in development code from the version string
-__version__ = '1.0.6'
-__website__ = 'https://github.com/Limych/python-beward'
-__license__ = 'Creative Commons BY-NC-SA License'
+__version__ = "1.0.7"
+__website__ = "https://github.com/Limych/python-beward"
+__license__ = "Creative Commons BY-NC-SA License"
 
 VERSION = __version__
 
 # You really should not `import *` - it is poor practice
 # but if you do, here is what you get:
 __all__ = [
-    'Beward',
-    'BewardGeneric',
-    'BewardCamera',
-    'BewardDoorbell',
+    "Beward",
+    "BewardGeneric",
+    "BewardCamera",
+    "BewardDoorbell",
 ]
 
 # http://docs.python.org/2/howto/logging.html#library-config
@@ -48,16 +46,13 @@ class Beward:
     @staticmethod
     def factory(host_ip, username, password, **kwargs):
         """Return correct class for device."""
-
         bwd = BewardGeneric(host_ip, username, password)
-        model = bwd.system_info.get('DeviceModel')
+        model = bwd.system_info.get("DeviceModel")
         dev_type = bwd.get_device_type(model)
         inst = None
 
         if dev_type is None:
-            raise ValueError(
-                'Unknown device "%s"' % model
-            )
+            raise ValueError('Unknown device "%s"' % model)
 
         if dev_type == BEWARD_CAMERA:
             inst = BewardCamera(host_ip, username, password, **kwargs)
@@ -65,5 +60,5 @@ class Beward:
         if dev_type == BEWARD_DOORBELL:
             inst = BewardDoorbell(host_ip, username, password, **kwargs)
 
-        _LOGGER.debug('Factory create instance of %s', inst.__class__)
+        _LOGGER.debug("Factory create instance of %s", inst.__class__)
         return inst
