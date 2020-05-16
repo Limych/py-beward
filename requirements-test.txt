@@ -1,0 +1,11 @@
+-r requirements.txt
+-r requirements-test-pre-commit.txt
+coveralls
+mock
+mypy
+pre-commit
+pylint
+pytest
+pytest-cov
+requests-mock
+tox
