@@ -1,24 +1,22 @@
 #!/usr/bin/env python
-"""
-Beward Cameras and Doorbells API module setup
-"""
+"""Beward Cameras and Doorbells API module setup."""
 
 import re
 import sys
-from typing import List
 
 from setuptools import setup
 from setuptools.command.test import test as TestCommand
 
 
 class PyTest(TestCommand):
-    """ PyTest controller. """
+    """PyTest controller."""
 
     # Code from here:
     # https://docs.pytest.org/en/latest/goodpractices.html#manual-integration
 
     # pylint: disable=attribute-defined-outside-init
     def finalize_options(self):
+        """Finalize test command options."""
         TestCommand.finalize_options(self)
         # we don't run integration tests which need an actual Beward device
         self.test_args = ['-m', 'not integration']
@@ -26,6 +24,7 @@ class PyTest(TestCommand):
 
     # pylint: disable=import-outside-toplevel,import-error
     def run_tests(self):
+        """Run tests."""
         # import here, cause outside the eggs aren't loaded
         import pytest
         import shlex
@@ -36,7 +35,7 @@ class PyTest(TestCommand):
 
 def load_requirements(fpath: str) -> list:
     """Load requirements from file."""
-    data: List[str] = list(open(fpath))
+    data = list(open(fpath))
     imp = re.compile(r'^(-r|--requirement)\s+(\S+)')
     reqs = []
     for i in data:

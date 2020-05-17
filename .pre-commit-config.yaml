@@ -3,7 +3,7 @@ repos:
     rev: v2.4.1
     hooks:
       - id: pyupgrade
-        args: [--py37-plus]
+        args: [--py3-plus]
   - repo: https://github.com/psf/black
     rev: 19.10b0
     hooks:
@@ -68,9 +68,10 @@ repos:
         language: script
         types: [python]
         require_serial: true
-        files: ^custom_components/.+\.py$
+        files: ^beward/.+\.py$
       - id: pylint
         name: pylint
         entry: python3 -m pylint.__main__
         language: system
         types: [python]
+        files: ^beward/.+\.py$

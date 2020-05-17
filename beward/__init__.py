@@ -17,7 +17,7 @@ from beward.doorbell import BewardDoorbell
 __author__ = 'Andrey "Limych" Khrolenok <andrey@khrolenok.ru>'
 # Please add the suffix "+" to the version after release, to make it
 # possible infer whether in development code from the version string
-__version__ = "1.0.7"
+__version__ = "1.0.8"
 __website__ = "https://github.com/Limych/python-beward"
 __license__ = "Creative Commons BY-NC-SA License"
 
@@ -39,7 +39,7 @@ logging.getLogger(__name__).addHandler(logging.NullHandler())
 _LOGGER = logging.getLogger(__name__)
 
 
-# pylint: disable=R0903
+# pylint: disable=too-few-public-methods
 class Beward:
     """Beward device factory class."""
 

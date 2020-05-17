@@ -1,11 +1,13 @@
 -r requirements.txt
--r requirements-test-pre-commit.txt
 coveralls
 mock
 mypy
 pre-commit
 pylint
+pylint-strict-informational==0.1
 pytest
 pytest-cov
 requests-mock
 tox
+flake8-docstrings==1.5.0
+flake8==3.8.1

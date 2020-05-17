@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """Beward doorbell controller."""
 
 #
@@ -11,6 +9,7 @@
 import logging
 
 from beward.const import ALARM_SENSOR
+
 from .camera import BewardCamera
 
 _LOGGER = logging.getLogger(__name__)
@@ -20,6 +19,7 @@ class BewardDoorbell(BewardCamera):
     """Beward doorbell controller class."""
 
     def __init__(self, host, username, password, **kwargs):
+        """Initialize Beward doorbell controller."""
         super().__init__(host, username, password, **kwargs)
 
         self.last_ding_timestamp = None
