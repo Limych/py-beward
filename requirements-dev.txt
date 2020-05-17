@@ -1,3 +1,4 @@
+-r requirements-test.txt
 bandit==1.6.2
 black==19.10b0
 codespell==1.16.0
