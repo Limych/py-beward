@@ -1,0 +1,13 @@
+-r requirements.txt
+coveralls~=3.0
+mock~=4.0
+mypy==0.800
+pre-commit~=2.10
+pylint~=2.6
+pylint-strict-informational==0.1
+pytest~=6.2
+pytest-cov~=2.11
+requests-mock~=1.8
+tox~=3.21
+flake8-docstrings~=1.5
+flake8~=3.8

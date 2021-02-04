@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """Constants."""
 
 #
@@ -11,20 +9,20 @@
 TIMEOUT = 3
 
 # Error strings
-MSG_GENERIC_FAIL = 'Sorry.. Something went wrong...'
+MSG_GENERIC_FAIL = "Sorry.. Something went wrong..."
 
 # Alarms
-ALARM_ONLINE = 'DeviceOnline'
-ALARM_MOTION = 'MotionDetection'
-ALARM_SENSOR = 'SensorAlarm'
-ALARM_SENSOR_OUT = 'SensorOutAlarm'
+ALARM_ONLINE = "DeviceOnline"
+ALARM_MOTION = "MotionDetection"
+ALARM_SENSOR = "SensorAlarm"
+ALARM_SENSOR_OUT = "SensorOutAlarm"
 
 # Device types
-BEWARD_CAMERA = 'camera'
-BEWARD_DOORBELL = 'doorbell'
+BEWARD_CAMERA = "camera"
+BEWARD_DOORBELL = "doorbell"
 
 # Beward models
 BEWARD_MODELS = {
-    BEWARD_CAMERA: '',
-    BEWARD_DOORBELL: 'DS03M DS06M DS06A(P) S06A',
+    BEWARD_CAMERA: "",
+    BEWARD_DOORBELL: "DK103M DS03M DS05M(P) DS06M DS06A(P) S06A S06M",
 }
