@@ -6,3 +6,4 @@ isort~=5.7
 pydocstyle~=5.1
 pyupgrade~=2.9
 yamllint~=1.26
+PyGithub~=1.54
