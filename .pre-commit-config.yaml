@@ -52,10 +52,6 @@ repos:
       - id: no-commit-to-branch
         args:
           - --branch=master
-  - repo: https://github.com/adrienverge/yamllint.git
-    rev: v1.23.0
-    hooks:
-      - id: yamllint
   - repo: local
     hooks:
       # Run mypy through our wrapper script in order to get the possible
@@ -64,7 +60,7 @@ repos:
       # shell.
       - id: mypy
         name: mypy
-        entry: script/run-in-env.sh mypy
+        entry: bin/run-in-env.sh mypy
         language: script
         types: [python]
         require_serial: true

@@ -18,7 +18,7 @@ __author__ = 'Andrey "Limych" Khrolenok <andrey@khrolenok.ru>'
 # Please add the suffix "+" to the version after release, to make it
 # possible infer whether in development code from the version string
 __version__ = "1.0.8"
-__website__ = "https://github.com/Limych/python-beward"
+__website__ = "https://github.com/Limych/py-beward"
 __license__ = "Creative Commons BY-NC-SA License"
 
 VERSION = __version__

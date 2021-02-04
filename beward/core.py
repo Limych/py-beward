@@ -53,8 +53,8 @@ class BewardGeneric:
         try:
             if not is_valid_fqdn(host):
                 socket.inet_aton(host)
-        except OSError:
-            raise ValueError("Not a valid host address")
+        except OSError as exc:
+            raise ValueError("Not a valid host address") from exc
 
         self.host = host
         self.port = int(port) if port else 80
