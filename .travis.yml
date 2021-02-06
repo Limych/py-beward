@@ -18,7 +18,7 @@ install: pip install -U tox-travis coveralls
 script: tox
 cache: pip
 after_success:
-    - test TOXENV = "cov" && coveralls
+    - test $TOXENV = "cov" && coveralls
 deploy:
   provider: pypi
   user: Limych
