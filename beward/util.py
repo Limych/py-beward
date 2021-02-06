@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-
-"""Utilites."""
+"""Utilities."""
 
 #  Copyright (c) 2019, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
 #  Creative Commons BY-NC-SA 4.0 International Public License
@@ -27,8 +25,8 @@ def is_valid_fqdn(hostname) -> bool:
     hostname = normalize_fqdn(hostname)
     if not hostname or len(hostname) > 253:
         return False
-    dn_seq = hostname.split('.')
-    if re.match(r'[0-9]+$', dn_seq[-1]):
+    dn_seq = hostname.split(".")
+    if re.match(r"[0-9]+$", dn_seq[-1]):
         return False
-    ldh_re = re.compile(r'^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$', re.IGNORECASE)
+    ldh_re = re.compile(r"^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$", re.IGNORECASE)
     return all(ldh_re.match(x) for x in dn_seq)
