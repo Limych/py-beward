@@ -10,6 +10,8 @@ matrix:
       env: TOXENV=py38
     - python: '3.9'
       env: TOXENV=lint
+    - python: '3.9'
+      env: TOXENV=cov
 install: pip install -U tox-travis coveralls
 script: tox
 cache: pip
