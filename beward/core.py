@@ -30,6 +30,7 @@ class BewardGeneric:
     _class_group = "Beward"
 
     @staticmethod
+    # pylint: disable=unsubscriptable-object
     def get_device_type(model: Optional[str]) -> Optional[str]:
         """Detect device type for model."""
         if not model:
@@ -100,6 +101,7 @@ class BewardGeneric:
 
         return req.url
 
+    # pylint: disable=unsubscriptable-object
     def query(self, function: str, extra_params=None) -> Optional[Response]:
         """Query data from Beward device."""
         url = self.get_url(function)
@@ -233,6 +235,7 @@ class BewardGeneric:
         return self._sysinfo
 
     @property
+    # pylint: disable=unsubscriptable-object
     def device_type(self) -> Optional[str]:
         """Detect device type."""
         return self.get_device_type(self.system_info.get("DeviceModel"))

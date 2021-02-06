@@ -76,6 +76,7 @@ class BewardCamera(BewardGeneric):
         return self._rtsp_live_video_url
 
     @property
+    # pylint: disable=unsubscriptable-object
     def live_image(self) -> Optional[bytes]:
         """Return bytes of camera image."""
         res = self.query("images", extra_params={"channel": 0})
