@@ -29,8 +29,8 @@ jobs:
         pip install -r requirements-test.txt
     - name: "Lint with flake8 & pylint"
       run: |
-        flake8
-        pylint beward
+        flake8 beward tests
+        pylint beward tests
     - name: "Calculate coverage"
       run: |
         pytest --basetemp=$RUNNER_TEMP --durations=10 -n auto --dist=loadfile -qq -o console_output_style=count -p no:sugar --cov --cov-report= {posargs}
