@@ -30,12 +30,12 @@ jobs:
     - name: "Lint with flake8 & pylint"
       run: |
         flake8
-        pylint {env:PYLINT_ARGS:} {posargs} beward
+        pylint beward
     - name: "Calculate coverage"
       run: |
         pytest --basetemp=$RUNNER_TEMP --durations=10 -n auto --dist=loadfile -qq -o console_output_style=count -p no:sugar --cov --cov-report= {posargs}
         ./bin/check_dirty
-    - name: "Coveralls Parallel"
+    - name: "Coveralls"
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
