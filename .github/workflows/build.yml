@@ -34,7 +34,7 @@ jobs:
         pylint beward tests
     - name: "Calculate coverage"
       run: |
-        pytest --basetemp=$RUNNER_TEMP --durations=10 -n auto --dist=loadfile -qq -o console_output_style=count -p no:sugar --cov --cov-report=
+        pytest --basetemp=$RUNNER_TEMP --durations=10 -n auto --dist=loadfile -qq -o console_output_style=count -p no:sugar --cov --cov-report= xml
         ./bin/check_dirty
     - name: "Coveralls"
       uses: coverallsapp/github-action@master
