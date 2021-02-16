@@ -1,0 +1,74 @@
+---
+name: "Python package"
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    name: "Lint package"
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: "Set up Python 3.x"
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - name: "Cache pip"
+      uses: actions/cache@v2
+      with:
+        # This path is specific to Ubuntu
+        path: ~/.cache/pip
+        # Look to see if there is a cache hit for the corresponding requirements file
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+          ${{ runner.os }}-
+    - name: "Install dependencies"
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements-test.txt
+    - name: "Lint with flake8 & pylint"
+      run: |
+        flake8
+        pylint {env:PYLINT_ARGS:} {posargs} beward
+    - name: "Calculate coverage"
+      run: |
+        pytest --basetemp=$RUNNER_TEMP --durations=10 -n auto --dist=loadfile -qq -o console_output_style=count -p no:sugar --cov --cov-report= {posargs}
+        ./bin/check_dirty
+    - name: "Coveralls Parallel"
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  test:
+    name: "Test package"
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: "Cache pip"
+      uses: actions/cache@v2
+      with:
+        # This path is specific to Ubuntu
+        path: ~/.cache/pip
+        # Look to see if there is a cache hit for the corresponding requirements file
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+          ${{ runner.os }}-
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements-test.txt
+        pip install pytest-xdist
+    - name: Test with pytest
+      run: |
+        pytest --basetemp=$RUNNER_TEMP --durations=10 -n auto --dist=loadfile -qq -o console_output_style=count -p no:sugar
+        ./bin/check_dirty
