@@ -34,13 +34,12 @@ jobs:
         pylint beward tests
     - name: "Calculate coverage"
       run: |
-        pytest --basetemp=$RUNNER_TEMP --durations=10 -n auto --dist=loadfile -qq -o console_output_style=count -p no:sugar --cov --cov-report= xml
+        pytest --basetemp=$RUNNER_TEMP --durations=10 -n auto --dist=loadfile -qq -o console_output_style=count -p no:sugar --cov --cov-report=
         ./bin/check_dirty
-    - name: "Coveralls"
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: .coverage
+    - name: "Send coverage to Coveralls"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: coveralls
 
   test:
     name: "Test package"
