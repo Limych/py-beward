@@ -1,0 +1,72 @@
+---
+name: Upload Python Package
+
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - '[0-9]*' # Push events to matching versions, i.e. 1.0, 20.15.10
+      - 'v[0-9]*' # Push events to matching versions, i.e. v1.0, v20.15.10
+
+jobs:
+  release:
+    name: "Create Release"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@master
+
+      - run: |
+          echo "release_version=`echo ${{ github.ref }} | sed s/v//`" >> $GITHUB_ENV
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: "Install requirements"
+        run: |
+          python -m pip install --upgrade pip
+          pip install setuptools wheel
+          pip install -r ./requirements-dev.txt
+
+      - name: "Create Release"
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release v${{ env.release_version }}
+          body: |
+            Changes in this Release
+          draft: false
+          prerelease: false
+
+      - name: "Update release notes"
+        run: python ./bin/gen_releasenotes --token ${{ secrets.GITHUB_TOKEN }} --repo ${{ github.repository }} --release ${{ github.ref }}
+
+  deploy:
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@master
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.x'
+
+      - name: "Install dependencies"
+        run: |
+          python -m pip install --upgrade pip
+          pip install setuptools wheel twine
+
+      - name: "Build and publish"
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: |
+          python setup.py sdist bdist_wheel
+          twine upload dist/*
