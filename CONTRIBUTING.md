@@ -1,4 +1,4 @@
-# Contribution guidelines
+# Contributing to this repository <!-- omit in toc -->
 
 Contributing to this project should be as easy and transparent as possible, whether it's:
 
@@ -9,7 +9,9 @@ Contributing to this project should be as easy and transparent as possible, whet
 
 ## IMPORTANT! Install development environment first
 
-When making changes in code, please use the existing development environment - this will save you from many errors and help create more convenient code to support. To install the environment, run the `dev-setup.sh` script.
+When making changes in code, please use the existing development environment — this will save you from many errors and help create more convenient code to support.
+
+To install the environment, run the `./bin/setup` script.
 
 ## Github is used for everything
 
@@ -21,10 +23,6 @@ Pull requests are the best way to propose changes to the codebase.
 2. If you've changed something, update the documentation.
 3. Make sure your code lints (using black).
 4. Issue that pull request!
-
-## Any contributions you make will be under the MIT Software License
-
-In short, when you submit code changes, your submissions are understood to be under the same [MIT License](http://choosealicense.com/licenses/mit/) that covers the project. Feel free to contact the maintainers if that's a concern.
 
 ## Report bugs using Github's [issues](../../issues)
 
@@ -49,6 +47,10 @@ People *love* thorough bug reports. I'm not even kidding.
 
 Use [black](https://github.com/ambv/black) to make sure the code follows the style.
 
+This program (and not only this) is automatically applied on code commit if you set up the developer environment as indicated at the beginning of this document. Please make this set up. It will greatly facilitate your work.
+
 ## License
 
-By contributing, you agree that your contributions will be licensed under its MIT License.
+By contributing, you agree that your contributions will be licensed under its [MIT License](http://choosealicense.com/licenses/mit/).
+
+In short, when you submit code changes, your submissions are understood to be under the same License that covers the whole project. Feel free to contact the maintainers if that's a concern.
