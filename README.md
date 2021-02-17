@@ -2,7 +2,6 @@
 
 # py-beward
 
-[![Build Status](https://img.shields.io/travis/Limych/py-beward.svg?style=popout)](https://travis-ci.org/Limych/py-beward)
 [![GitHub Activity](https://img.shields.io/github/commit-activity/y/Limych/py-beward.svg?style=popout)](https://github.com/Limych/py-beward/commits/master)
 [![](https://img.shields.io/github/last-commit/Limych/py-beward.svg?style=popout)](https://github.com/Limych/py-beward/commits/master)
 [![License](https://img.shields.io/pypi/l/beward?style=popout)](LICENSE.md)
