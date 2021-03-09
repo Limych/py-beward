@@ -1,0 +1,9 @@
+-r requirements-test.txt
+bandit~=1.7
+black==20.8b1
+codespell~=1.17
+isort~=5.7
+pydocstyle~=5.1
+pyupgrade~=2.9
+yamllint~=1.26
+PyGithub~=1.54
