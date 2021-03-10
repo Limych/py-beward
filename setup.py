@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Beward Cameras and Doorbells API module setup."""
+"""Library module setup."""
 
 import re
 import sys
@@ -49,15 +49,15 @@ def load_requirements(fpath: str) -> list:
     return reqs
 
 
-src = open('beward/__init__.py', encoding='utf-8').read()
+src = open('beward/__init__.py', encoding='utf-8').read()   # fixme
 metadata = dict(re.findall(r'__([a-z]+)__ = "([^"]+)"', src))
 metadata.update(dict(re.findall(r"__([a-z]+)__ = '([^']+)'", src)))
 docstrings = re.findall(r'"""(.*?)"""', src, re.MULTILINE | re.DOTALL)
 
-NAME = 'beward'
+NAME = 'beward'  # fixme
 
 PACKAGES = (
-    'beward',
+    'beward',  # fixme
 )
 
 AUTHOR_EMAIL = metadata['author']
@@ -66,7 +66,7 @@ WEBSITE = metadata['website']
 LICENSE = metadata['license']
 DESCRIPTION = docstrings[0]
 
-CLASSIFIERS = [
+CLASSIFIERS = [  # fixme
     'Development Status :: 5 - Production/Stable',
     'Intended Audience :: Developers',
     'License :: Other/Proprietary License',
