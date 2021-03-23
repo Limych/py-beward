@@ -1,7 +1,7 @@
 """Constants."""
 
 # Base library constants
-VERSION = "0.1.0.dev0"
+VERSION = "1.0.0"
 AUTHOR = "Andrey Khrolenok <andrey@khrolenok.ru>"
 LICENSE = "MIT License"
 WEBSITE = "https://github.com/Limych/py-blueprint"
