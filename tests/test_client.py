@@ -1,6 +1,11 @@
 """Test test_client."""
 
+import pytest
+
 from blueprint_client.client import Client
+
+# All test coroutines will be treated as marked.
+pytestmark = pytest.mark.asyncio
 
 
 async def test_get_data(test_client: Client, test_data):
