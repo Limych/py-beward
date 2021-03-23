@@ -1,0 +1,11 @@
+{
+  "username": "test_user",
+  "password": "test_pass",
+  "data": {
+    "time": "datetime",
+    "static": "Some sample static text.",
+    "bool_on": true,
+    "bool_off": false,
+    "none": null
+  }
+}
