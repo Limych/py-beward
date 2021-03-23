@@ -1,16 +1,14 @@
-"""Beward camera controller."""
-
-#
-#  Copyright (c) 2019, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
+#  Copyright (c) 2019-2021, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
 #  Creative Commons BY-NC-SA 4.0 International Public License
 #  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
-#
+"""Beward camera controller."""
 
 import logging
 from typing import Optional
 
-from beward.const import ALARM_MOTION
 from requests import ConnectTimeout
+
+from beward.const import ALARM_MOTION
 
 from .core import BewardGeneric
 
@@ -76,6 +74,7 @@ class BewardCamera(BewardGeneric):
         return self._rtsp_live_video_url
 
     @property
+    # pylint: disable=unsubscriptable-object
     def live_image(self) -> Optional[bytes]:
         """Return bytes of camera image."""
         res = self.query("images", extra_params={"channel": 0})

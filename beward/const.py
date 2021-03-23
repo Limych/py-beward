@@ -1,10 +1,25 @@
-"""Constants."""
-
-#
-#  Copyright (c) 2019, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
+#  Copyright (c) 2019-2021, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
 #  Creative Commons BY-NC-SA 4.0 International Public License
 #  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
-#
+"""Constants."""
+
+# Base library constants
+NAME = "Beward Client"
+VERSION = "1.0.13"
+AUTHOR = 'Andrey "Limych" Khrolenok <andrey@khrolenok.ru>'
+LICENSE = "Creative Commons BY-NC-SA License"
+WEBSITE = "https://github.com/Limych/py-beward"
+ISSUE_URL = "https://github.com/Limych/py-beward/issues"
+
+STARTUP_MESSAGE = f"""
+-------------------------------------------------------------------
+{NAME}
+Version: {VERSION}
+If you have ANY issues with this you need to open an issue here:
+{ISSUE_URL}
+-------------------------------------------------------------------
+"""
+
 
 TIMEOUT = 3
 

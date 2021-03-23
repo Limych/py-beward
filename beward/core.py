@@ -1,22 +1,20 @@
-"""Beward devices controller core."""
-
-#
-#  Copyright (c) 2019, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
+#  Copyright (c) 2019-2021, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
 #  Creative Commons BY-NC-SA 4.0 International Public License
 #  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
-#
+"""Beward devices controller core."""
 
-from datetime import datetime
 import logging
 import socket
 import threading
+from datetime import datetime
 from time import sleep
 from typing import Optional
 
-from beward.util import is_valid_fqdn, normalize_fqdn
 import requests
 from requests import ConnectTimeout, PreparedRequest, RequestException, Response
 from requests.auth import HTTPBasicAuth
+
+from beward.util import is_valid_fqdn, normalize_fqdn
 
 from .const import ALARM_ONLINE, BEWARD_MODELS, MSG_GENERIC_FAIL, TIMEOUT
 
@@ -30,6 +28,7 @@ class BewardGeneric:
     _class_group = "Beward"
 
     @staticmethod
+    # pylint: disable=unsubscriptable-object
     def get_device_type(model: Optional[str]) -> Optional[str]:
         """Detect device type for model."""
         if not model:
@@ -100,6 +99,7 @@ class BewardGeneric:
 
         return req.url
 
+    # pylint: disable=unsubscriptable-object
     def query(self, function: str, extra_params=None) -> Optional[Response]:
         """Query data from Beward device."""
         url = self.get_url(function)
@@ -140,7 +140,7 @@ class BewardGeneric:
         """Remove alarms handler."""
         if handler in self._alarm_handlers:
             self._alarm_handlers.remove(handler)
-            self._listen_alarms &= self._alarm_handlers == set()
+            self._listen_alarms = len(self._alarm_handlers) != 0
         return self
 
     def _handle_alarm(self, timestamp: datetime, alarm: str, state: bool):
@@ -233,6 +233,7 @@ class BewardGeneric:
         return self._sysinfo
 
     @property
+    # pylint: disable=unsubscriptable-object
     def device_type(self) -> Optional[str]:
         """Detect device type."""
         return self.get_device_type(self.system_info.get("DeviceModel"))
