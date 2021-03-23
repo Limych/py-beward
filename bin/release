@@ -21,8 +21,8 @@ if output=$(git status --porcelain) && [[ -n "$output" ]]; then
     exit 2
 fi
 
-const_path=$(find . -name __init__.py -not -path "./bin/*" -not -path "./venv/*" -not -path "./tests/*")
-version=$(grep "^__version__ =" ${const_path} | sed -E "s/^[^\"]+\"([^\"]*).*$/\\1/")
+const_path=$(find . -name const.py -not -path "./bin/*" -not -path "./venv/*" -not -path "./tests/*")
+version=$(grep "^VERSION =" ${const_path} | sed -E "s/^[^\"]+\"([^\"]*).*$/\\1/")
 
 if [[ -z $1 ]]; then
     log.fatal "Please, describe new version number as first argument."
@@ -33,8 +33,7 @@ fi
 new=$(echo "${1}" | sed -E "s/\+.*//")
 
 log.info "Patch files to version '${new}'..."
-sed -i -E "s/(^__version__ = \")[^\"]*/\\1${new}/" ${const_path}
-./bin/update_manifest
+sed -i -E "s/(^VERSION = \")[^\"]*/\\1${new}/" ${const_path}
 git commit -a --no-verify -m "Bump version"
 git tag -a "$new" -m "v$new"
 log.info "Commit tagged as v$new"
@@ -46,5 +45,4 @@ else
 fi
 
 log.info "Patch files to version '${dev}'..."
-sed -i -E "s/(^__version__ = \")[^\"]*/\\1${dev}/" ${const_path}
-./bin/update_manifest
+sed -i -E "s/(^VERSION = \")[^\"]*/\\1${dev}/" ${const_path}

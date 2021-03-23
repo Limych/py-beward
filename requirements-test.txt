@@ -9,5 +9,5 @@ pytest~=6.2
 pytest-asyncio~=0.14
 pytest-cov~=2.11
 requests-mock~=1.8
-flake8-docstrings~=1.5
-flake8~=3.8
+flake8-docstrings~=1.6
+flake8~=3.9
