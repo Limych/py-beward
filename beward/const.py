@@ -5,7 +5,7 @@
 
 # Base library constants
 NAME = "Beward Client"
-VERSION = "1.0.13.dev2"
+VERSION = "1.0.13"
 AUTHOR = 'Andrey "Limych" Khrolenok <andrey@khrolenok.ru>'
 LICENSE = "Creative Commons BY-NC-SA License"
 WEBSITE = "https://github.com/Limych/py-beward"
