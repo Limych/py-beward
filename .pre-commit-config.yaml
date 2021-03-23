@@ -1,11 +1,11 @@
 repos:
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.4.1
+    rev: v2.7.4
     hooks:
       - id: pyupgrade
         args: [--py3-plus]
   - repo: https://github.com/psf/black
-    rev: 19.10b0
+    rev: 20.8b1
     hooks:
       - id: black
         args:
@@ -30,7 +30,7 @@ repos:
           - pydocstyle==5.0.2
         files: ^.+\.py$
   - repo: https://github.com/PyCQA/bandit
-    rev: 1.6.2
+    rev: 1.7.0
     hooks:
       - id: bandit
         args:
@@ -40,7 +40,7 @@ repos:
         files: ^.+\.py$
         exclude: ^[^/]+\.py$
   - repo: https://github.com/pre-commit/mirrors-isort
-    rev: v4.3.21
+    rev: v5.6.4
     hooks:
       - id: isort
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -49,6 +49,7 @@ repos:
       - id: check-executables-have-shebangs
         stages: [manual]
       - id: check-json
+        files: ^.+\.json$
       - id: trailing-whitespace
 #      - id: no-commit-to-branch
 #        args:
@@ -61,14 +62,14 @@ repos:
       # shell.
       - id: mypy
         name: mypy
-        entry: bin/run-in-env.sh mypy
+        entry: bin/run-in-env mypy
         language: script
         types: [python]
         require_serial: true
         files: ^.+\.py$
       - id: pylint
         name: pylint
-        entry: python3 -m pylint.__main__
+        entry: bin/run-in-env pylint
         language: system
         types: [python]
         files: ^.+\.py$

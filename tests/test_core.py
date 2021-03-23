@@ -1,34 +1,18 @@
+# pylint: disable=protected-access,redefined-outer-name,no-value-for-parameter
 """Test to verify that Beward library works."""
 
-#  Copyright (c) 2019, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
-#  Creative Commons BY-NC-SA 4.0 International Public License
-#  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
-
 from datetime import datetime
-import os
 from time import sleep
 from unittest import TestCase
 
-from beward import Beward, BewardDoorbell, BewardGeneric
-from beward.const import ALARM_MOTION, ALARM_ONLINE, ALARM_SENSOR, BEWARD_DOORBELL
 import requests
 import requests_mock
 
-MOCK_HOST = "192.168.0.2"
-MOCK_USER = "user"
-MOCK_PASS = "pass"
+from beward import Beward, BewardDoorbell, BewardGeneric
+from beward.const import ALARM_MOTION, ALARM_ONLINE, ALARM_SENSOR, BEWARD_DOORBELL
 
-
-def load_fixture(filename):
-    """Load a fixture."""
-    path = os.path.join(os.path.dirname(__file__), "fixtures", filename)
-    with open(path, encoding="utf-8") as fptr:
-        return fptr.read()
-
-
-def function_url(function, host=MOCK_HOST):
-    """Make function URL."""
-    return "http://" + host + ":80/cgi-bin/" + function + "_cgi"
+from . import function_url, load_fixture
+from .const import MOCK_HOST, MOCK_PASS, MOCK_USER
 
 
 class TestBeward(TestCase):
@@ -47,7 +31,7 @@ class TestBeward(TestCase):
         except ValueError:
             pass
 
-        # TODO: BewardCamera
+        # TODO: BewardCamera; pylint: disable=fixme
         # mock.register_uri("get", function_url('systeminfo'),
         #                   text='DeviceModel=????')
         #
@@ -273,6 +257,7 @@ class TestBewardGeneric(TestCase):
         bwd.listen_alarms(alarms=alarms2listen)
         sleep(0.1)
         bwd.remove_alarms_handler(_alarms_logger)
+        sleep(0.1)
 
         expect = [
             "DeviceOnline;True",
@@ -283,9 +268,7 @@ class TestBewardGeneric(TestCase):
 
     def test_listen_alarms(self):
         """Test that listen alarms."""
-        alarms = [
-            "2019-07-28;00:57:27;MotionDetection;1;0",
-        ]
+        alarms = ["2019-07-28;00:57:27;MotionDetection;1;0"]
         ex_log = ["2019-07-28 00:57:27;MotionDetection;True"]
         self._listen_alarms_tester(alarms, ex_log)
 
@@ -311,8 +294,8 @@ class TestBewardGeneric(TestCase):
 
         expect = {}
         for env in data.splitlines():
-            (k, v) = env.split("=", 2)
-            expect[k] = v
+            (k, val) = env.split("=", 2)
+            expect[k] = val
 
         self.assertEqual(expect, bwd.system_info)
 

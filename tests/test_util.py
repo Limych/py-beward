@@ -1,8 +1,5 @@
+# pylint: disable=protected-access,redefined-outer-name
 """Test to verify that Beward library works."""
-
-#  Copyright (c) 2019, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
-#  Creative Commons BY-NC-SA 4.0 International Public License
-#  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
 from unittest import TestCase
 
@@ -91,10 +88,12 @@ class TestUtil(TestCase):
         """Test FQDN validations."""
         self.assertFalse(is_valid_fqdn("192.168.0.1"))
 
+    # pylint: disable=invalid-name
     def assertValidFQDN(self, *seq):
         """Positive assert function for FQDN validations."""
         self.assertTrue(self._is_valid_fqdn_from_labels_sequence(seq))
 
+    # pylint: disable=invalid-name
     def assertInvalidFQDN(self, *seq):
         """Negative assert function for FQDN validations."""
         self.assertFalse(self._is_valid_fqdn_from_labels_sequence(seq))

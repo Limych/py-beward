@@ -1,27 +1,15 @@
-"""Python API for Beward Cameras and Doorbells."""
-
-#
-#  Copyright (c) 2019, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
+#  Copyright (c) 2019-2021, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
 #  Creative Commons BY-NC-SA 4.0 International Public License
 #  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
-#
+"""Python API for Beward Cameras and Doorbells."""
 
 import logging
 
 # Will be parsed by setup.py to determine package metadata
 from beward.camera import BewardCamera
-from beward.const import BEWARD_CAMERA, BEWARD_DOORBELL
+from beward.const import BEWARD_CAMERA, BEWARD_DOORBELL, STARTUP_MESSAGE
 from beward.core import BewardGeneric
 from beward.doorbell import BewardDoorbell
-
-__author__ = 'Andrey "Limych" Khrolenok <andrey@khrolenok.ru>'
-# Please add the suffix "+" to the version after release, to make it
-# possible infer whether in development code from the version string
-__version__ = "1.0.13.dev2"
-__website__ = "https://github.com/Limych/py-beward"
-__license__ = "Creative Commons BY-NC-SA License"
-
-VERSION = __version__
 
 # You really should not `import *` - it is poor practice
 # but if you do, here is what you get:
@@ -32,11 +20,13 @@ __all__ = [
     "BewardDoorbell",
 ]
 
+_LOGGER = logging.getLogger(__name__)
+#
 # http://docs.python.org/2/howto/logging.html#library-config
 # Avoids spurious error messages if no logger is configured by the user
-logging.getLogger(__name__).addHandler(logging.NullHandler())
-
-_LOGGER = logging.getLogger(__name__)
+_LOGGER.addHandler(logging.NullHandler())
+#
+_LOGGER.info(STARTUP_MESSAGE)
 
 
 # pylint: disable=too-few-public-methods
