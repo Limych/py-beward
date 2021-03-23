@@ -1,6 +1,11 @@
 """Client."""
 
 import datetime
+import logging
+
+from .const import VERSION
+
+_LOGGER = logging.getLogger(__name__)
 
 
 class Client:
@@ -8,6 +13,8 @@ class Client:
 
     def __init__(self, username, password):
         """Init."""
+        _LOGGER.info("Blueprint sample client. v%s", VERSION)
+
         self.username = username
         self.password = password
         self.something = None
