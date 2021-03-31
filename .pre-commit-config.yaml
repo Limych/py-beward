@@ -51,9 +51,10 @@ repos:
       - id: check-json
         files: ^.+\.json$
       - id: trailing-whitespace
+      # Uncomment lines below if you want to follow classical GitHub flow style development
 #      - id: no-commit-to-branch
 #        args:
-#          - --branch=master
+#          - --branch=dev
   - repo: local
     hooks:
       # Run mypy through our wrapper script in order to get the possible
@@ -73,7 +74,7 @@ repos:
         language: system
         types: [python]
         files: ^.+\.py$
-        # Uncomment lines below to test code on every commit
+      # Uncomment lines below to test code on every commit
 #      - id: pytest
 #        name: pytest
 #        entry: bin/run-in-env pytest
