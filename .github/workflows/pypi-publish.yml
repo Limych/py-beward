@@ -7,7 +7,6 @@ name: "Upload Python Package to PyPi"
 
 on:
   push:
-    # Sequence of patterns matched against refs/tags
     tags:
       - "[v0-9]+.[0-9]+*"
 
