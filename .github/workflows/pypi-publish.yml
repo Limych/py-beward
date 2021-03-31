@@ -9,8 +9,7 @@ on:
   push:
     # Sequence of patterns matched against refs/tags
     tags:
-      - '[0-9]*' # Push events to matching versions, i.e. 1.0, 20.15.10
-      - 'v[0-9]*' # Push events to matching versions, i.e. v1.0, v20.15.10
+      - "[v0-9]+.[0-9]+*"
 
 jobs:
   release:
