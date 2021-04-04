@@ -1,57 +1,67 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Create a report to help us improve this project
 title: ''
 labels: 'bug'
 assignees: ''
 
 ---
-## Checklist
-- [ ] I updated the component to the latest version available
 
+<!-- Please READ THIS FIRST
 
+Before opening a new issue, please check if a similar one is already open
 
-<!-- Before you open a new issue, search through the existing issues to see if others have had the same problem.
+DO NOT DELETE ANY TEXT from this template! Otherwise, your issue may be closed without comment.
 
-Issues not containing the minimum requirements will be closed:
-
-- Issues without a description (using the header is not good enough) will be closed.
-- Issues without debug logging will be closed.
-- Issues without configuration will be closed
+Please check if the bug is already reported and add more information there instead of creating a new report.
 
 -->
 
-## Version of the component
+**Environment**
 <!--
-If you are not using the newest version, download and try that before opening an issue.
-If you are unsure about the version check the __init__.py file.
+If you are not using the newest release, download and try that before opening an issue.
 -->
-Version:
 
-## Describe the bug
+- This component release with the issue:
+- Last working this component release (if known):
 
-_A clear and concise description of what the bug is._
+**Describe the bug**
+<!--
+  Make a brief description of the problem you are experiencing
+-->
 
-## To Reproduce
-This is the configuration I used:
+
+**Configuration.yaml**
 ```yaml
 
-Add your configs here.
+Add your configs here if any.
 
 ```
 
-## Debug log
-<!-- To enable debug logs check this https://www.home-assistant.io/components/logger/ -->
+**Steps to Reproduce**
+<!--
+  Please list the steps needed to reproduce the issue
+-->
+
+
+**Expected behavior**
+<!--
+  Insert a brief description of the expected behavior is
+-->
+
+
+**Debug log**
+<!--
+  To enable debug logs check "Troubleshooting" section of README of this component
+  or this https://www.home-assistant.io/components/logger/
+-->
 ```text
 
 Add your logs here.
 
 ```
 
-## Expected behavior
-
-_A clear and concise description of what you expected to happen._
-
-## Additional context
-
-_Add any other context about the problem here._
+**Additional context**
+<!--
+  Add any other context about the problem here.
+-->
