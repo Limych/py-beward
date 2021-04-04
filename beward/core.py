@@ -238,7 +238,6 @@ class BewardGeneric:
         """Detect device type."""
         return self.get_device_type(self.system_info.get("DeviceModel"))
 
-    @property
     def is_online(self) -> bool:
         """Return True if entity is online."""
         try:
@@ -251,4 +250,4 @@ class BewardGeneric:
     @property
     def available(self) -> bool:
         """Return True if entity is available."""
-        return self.is_online
+        return self.is_online()

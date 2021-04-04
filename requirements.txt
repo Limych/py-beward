@@ -1,1 +1,2 @@
 requests~=2.25
+hexdump==3.3

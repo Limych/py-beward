@@ -18,6 +18,16 @@ pip install beward
 
 ## Usage example
 
+Discovery devices:
+```python
+from beward import Beward
+
+
+for dev in Beward.discovery().values():
+    print(f"Found device \"{dev.DeviceName}\" at http://{dev.HostIp}:{dev.HttpPort}")
+```
+
+Initialize one device and listen for events:
 ```python
 import time
 
