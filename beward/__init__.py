@@ -157,14 +157,14 @@ class Beward:
 
                 if mac not in devices:
                     dev = {
-                        "DeviceId": device_id,
-                        "DeviceName": name,
-                        "HostIp": host_ip,
-                        "HttpPort": http_port,
-                        "DataPort": data_port,
-                        "MAC": mac,
-                        "NetMask": net_mask,
-                        "GateIp": gate_ip,
+                        "device_id": device_id,
+                        "name": name,
+                        "host_ip": host_ip,
+                        "http_port": http_port,
+                        "data_port": data_port,
+                        "mac": mac,
+                        "net_mask": net_mask,
+                        "gate_ip": gate_ip,
                     }
                     devices[mac] = namedtuple("BewardDevice", dev.keys())(*dev.values())
 

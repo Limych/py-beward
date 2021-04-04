@@ -24,7 +24,7 @@ from beward import Beward
 
 
 for dev in Beward.discovery().values():
-    print(f"Found device \"{dev.DeviceName}\" at http://{dev.HostIp}:{dev.HttpPort}")
+    print(f"Found device \"{dev.name}\" at http://{dev.host_ip}:{dev.http_port}")
 ```
 
 Initialize one device and listen for events:
