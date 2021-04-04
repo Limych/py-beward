@@ -48,7 +48,7 @@ class Beward:
     """Beward device factory class."""
 
     @staticmethod
-    def discovery():
+    def discovery():  # pragma: no cover
         """Discover Beward devices in local network."""
         server = socket(AF_INET, SOCK_DGRAM)
         server.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
