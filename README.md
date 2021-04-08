@@ -21,7 +21,7 @@ File | Purpose
 
 ## How?
 
-* …or create a new repository on the command line
+* …or create a new repository on the command line:
     ```bash
     # Initialize your new origin repository
     git init
@@ -37,7 +37,7 @@ File | Purpose
     git push -u origin main
     ```
 
-* …or apply blueprint to existent repository
+* …or apply blueprint to an existing repository from the command line:
     ```bash
     # Apply blueprint repository
     git remote add blueprint https://github.com/Limych/py-blueprint.git
