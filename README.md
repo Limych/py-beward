@@ -48,7 +48,7 @@ File | Purpose
     git push -u origin main
     ```
 
-After these steps, your repository will developing on a own branch. But in parallel there will be a repository of blueprint, new changes in which you can always apply with a couple of simple commands:
+After these steps, your repository will developing on a own branch. But in parallel there will be this blueprint repository, new changes in which you can always apply with a couple of simple commands:
 ```bash
 ./bin/update
 git merge blueprint/dev
