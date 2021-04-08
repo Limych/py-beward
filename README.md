@@ -21,9 +21,9 @@ File | Purpose
 
 ## How?
 
-* Make new repository:
+* …or create a new repository on the command line
     ```bash
-    # Fetch GitHub repository
+    # Initialize your new origin repository
     git init
     git remote add origin https://github.com/YOUR_NEW_REPOSITORY
 
@@ -32,15 +32,27 @@ File | Purpose
     git fetch blueprint dev
     git reset --hard blueprint/dev
     git branch -M dev
+
+    # Push changes to origin repository
+    git push -u origin main
     ```
 
-* or Apply blueprint to existent repository:
+* …or apply blueprint to existent repository
     ```bash
     # Apply blueprint repository
     git remote add blueprint https://github.com/Limych/py-blueprint.git
     git fetch blueprint dev
     git merge blueprint/dev --allow-unrelated-histories
+
+    # Push changes to origin repository
+    git push -u origin main
     ```
+
+After these steps, your repository will developing on a own branch. But in parallel there will be a repository of blueprint, new changes in which you can always apply with a couple of simple commands:
+```bash
+./bin/update
+git merge blueprint/dev
+```
 
 ***
 README content if this was a published component:
