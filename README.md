@@ -1,5 +1,53 @@
 *Please :star: this repo if you find it useful*
 
+# Notice
+
+This repository are not meant to be used by a user, but as a "blueprint" that developers
+can build upon, to make more awesome stuff.
+
+HAVE FUN! 😎
+
+## Why?
+
+This is simple, by having... #todo
+
+## What?
+
+This repository contains multiple files, here is a overview:
+
+File | Purpose
+-- | --
+`...` | #todo
+
+## How?
+
+* Make new repository:
+    ```bash
+    # Fetch GitHub repository
+    git init
+    git remote add origin https://github.com/YOUR_NEW_REPOSITORY
+
+    # Apply blueprint repository
+    git remote add blueprint https://github.com/Limych/py-blueprint.git
+    git fetch blueprint dev
+    git reset --hard blueprint/dev
+    git branch -M dev
+    ```
+
+* or Apply blueprint to existent repository:
+    ```bash
+    # Apply blueprint repository
+    git remote add blueprint https://github.com/Limych/py-blueprint.git
+    git fetch blueprint dev
+    git merge blueprint/dev --allow-unrelated-histories
+    ```
+
+***
+README content if this was a published component:
+***
+
+*Please :star: this repo if you find it useful*
+
 # Blueprint Client
 
 [![PyPI version][pypi-shield]][pypi]
