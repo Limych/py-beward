@@ -54,6 +54,11 @@ After these steps, your repository will developing on a own branch. But in paral
 git merge blueprint/dev
 ```
 
+**Note:** Please, before starting to develop your own code, initialize the development environment with the command
+```bash
+./bin/setup
+```
+
 ***
 README content if this was a published component:
 ***
@@ -113,7 +118,7 @@ MIT License
 See separate [license file](LICENSE.md) for full text.
 
 [contributors]: https://github.com/Limych/py-blueprint/graphs/contributors
-[license]: https://github.com/Limych/ha-blueprint/blob/main/LICENSE.md
+[license]: https://github.com/Limych/py-blueprint/blob/main/LICENSE.md
 [license-shield]: https://img.shields.io/pypi/l/blueprint_client.svg?style=popout
 [maintained]: https://img.shields.io/maintenance/yes/2021.svg?style=popout
 [maintainer]: https://github.com/Limych
