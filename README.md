@@ -34,7 +34,7 @@ File | Purpose
     git branch -M dev
 
     # Push changes to origin repository
-    git push -u origin main
+    git push -u origin dev
     ```
 
 * …or apply blueprint to an existing repository from the command line:
@@ -45,7 +45,7 @@ File | Purpose
     git merge blueprint/dev --allow-unrelated-histories
 
     # Push changes to origin repository
-    git push -u origin main
+    git push -u origin dev
     ```
 
 After these steps, your repository will developing on a own branch. But in parallel there will be this blueprint repository, new changes in which you can always apply with a couple of simple commands:
