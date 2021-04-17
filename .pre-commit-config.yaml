@@ -70,7 +70,7 @@ repos:
         files: ^.+\.py$
       - id: pylint
         name: pylint
-        entry: bin/run-in-env pylint
+        entry: bin/run-in-env python3 -m pylint
         language: system
         types: [python]
         files: ^.+\.py$
