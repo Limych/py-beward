@@ -6,7 +6,7 @@ pre-commit~=2.12
 pylint~=2.7
 pylint-strict-informational==0.1
 pytest~=6.2
-pytest-asyncio~=0.14
+pytest-asyncio~=0.15
 pytest-cov~=2.11
 requests-mock~=1.8
 flake8-docstrings~=1.6
