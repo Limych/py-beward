@@ -4,7 +4,7 @@ bandit~=1.7
 black==21.5b0
 codespell~=2.0
 isort~=5.8
-pydocstyle~=6.0
+pydocstyle~=6.1
 pyupgrade~=2.14
 yamllint~=1.26
 PyGithub~=1.55
