@@ -63,12 +63,16 @@ jobs:
 
   tests:
     name: "Test package"
-    runs-on: ${{ matrix.os }}
+    needs: lint
+    runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
       matrix:
-        os: [ubuntu-latest]
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: [3.6, 3.7, 3.9]  # py38 was processed on lint job stage
+        experimental: [false]
+        include:
+          - python-version: '3.10-dev'
+            experimental: true
     steps:
       - name: "Checkout code"
         uses: actions/checkout@master
