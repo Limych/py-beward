@@ -1,5 +1,70 @@
 *Please :star: this repo if you find it useful*
 
+# Notice
+
+This repository are not meant to be used by a user, but as a "blueprint" that developers
+can build upon, to make more awesome stuff.
+
+HAVE FUN! 😎
+
+## Why?
+
+This is simple, by having... #todo
+
+## What?
+
+This repository contains multiple files, here is a overview:
+
+File | Purpose
+-- | --
+`...` | #todo
+
+## How?
+
+* …or create a new repository on the command line:
+    ```bash
+    # Initialize your new origin repository
+    git init
+    git remote add origin https://github.com/YOUR_NEW_REPOSITORY
+
+    # Apply blueprint repository
+    git remote add blueprint https://github.com/Limych/py-blueprint.git
+    git fetch blueprint dev
+    git reset --hard blueprint/dev
+    git branch -M dev
+
+    # Push changes to origin repository
+    git push -u origin dev
+    ```
+
+* …or apply blueprint to an existing repository from the command line:
+    ```bash
+    # Apply blueprint repository
+    git remote add blueprint https://github.com/Limych/py-blueprint.git
+    git fetch blueprint dev
+    git merge blueprint/dev --allow-unrelated-histories
+
+    # Push changes to origin repository
+    git push -u origin dev
+    ```
+
+After these steps, your repository will developing on a own branch. But in parallel there will be this blueprint repository, new changes in which you can always apply with a couple of simple commands:
+```bash
+./bin/update
+git merge blueprint/dev
+```
+
+**Note:** Please, before starting to develop your own code, initialize the development environment with the command
+```bash
+./bin/setup
+```
+
+***
+README content if this was a published component:
+***
+
+*Please :star: this repo if you find it useful*
+
 # py-beward
 
 [![PyPI version][pypi-shield]][pypi]

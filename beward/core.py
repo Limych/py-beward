@@ -70,9 +70,18 @@ class BewardGeneric:
             ALARM_ONLINE: datetime.min,
         }
         self._alarm_handlers = set()
+        self._alarm_listeners = []
 
         self._sysinfo = None
         self._listen_alarms = False
+        self._listener = None
+
+    def __del__(self):
+        """Destructor."""
+        self._listen_alarms = False
+
+        if self._listener:
+            self._listener.join()
 
     def get_url(
         self, function: str, extra_params=None, username=None, password=None
@@ -168,15 +177,16 @@ class BewardGeneric:
 
         self._listen_alarms = len(self._alarm_handlers) != 0
 
-        thread = threading.Thread(
+        self._listener = threading.Thread(
             target=self.__alarms_listener, args=(url, params, auth), daemon=True
         )
-        thread.start()
+        self._listener.start()
+        self._alarm_listeners.append(self._listener)
 
         _LOGGER.debug("Return from listen_alarms()")
 
     def __alarms_listener(self, url: str, params, auth):
-        while True:
+        while self._listen_alarms:
             try:
                 resp = requests.get(url, params=params, auth=auth, stream=True)
             except RequestException:  # pragma: no cover
@@ -193,6 +203,9 @@ class BewardGeneric:
             self._handle_alarm(datetime.now(), ALARM_ONLINE, True)
 
             for line in resp.iter_lines(chunk_size=1, decode_unicode=True):
+                if not self._listen_alarms:  # pragma: no cover
+                    break
+
                 if line:
                     _LOGGER.debug("Alarm: %s", line)
 
