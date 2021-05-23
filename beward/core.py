@@ -43,6 +43,10 @@ class BewardGeneric:
     # pylint: disable=unused-argument
     def __init__(self, host: str, username: str, password: str, port=None, **kwargs):
         """Initialize generic Beward device controller."""
+        self._sysinfo = None
+        self._listen_alarms = False
+        self._listener = None
+
         if port is None:
             try:
                 port = host.split(":")[1]
@@ -71,10 +75,6 @@ class BewardGeneric:
         }
         self._alarm_handlers = set()
         self._alarm_listeners = []
-
-        self._sysinfo = None
-        self._listen_alarms = False
-        self._listener = None
 
     def __del__(self):
         """Destructor."""
