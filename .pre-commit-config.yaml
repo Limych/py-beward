@@ -51,6 +51,7 @@ repos:
       - id: check-json
         files: ^.+\.json$
       - id: trailing-whitespace
+      # Uncomment lines below if you want to follow classical GitHub flow style development
 #      - id: no-commit-to-branch
 #        args:
 #          - --branch=master
@@ -69,7 +70,14 @@ repos:
         files: ^.+\.py$
       - id: pylint
         name: pylint
-        entry: bin/run-in-env pylint
+        entry: bin/run-in-env python3 -m pylint
         language: system
         types: [python]
         files: ^.+\.py$
+      # Uncomment lines below to test code on every commit
+      - id: pytest
+        name: pytest
+        entry: bin/run-in-env pytest
+        language: system
+        pass_filenames: false
+        always_run: true

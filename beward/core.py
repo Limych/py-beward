@@ -43,6 +43,10 @@ class BewardGeneric:
     # pylint: disable=unused-argument
     def __init__(self, host: str, username: str, password: str, port=None, **kwargs):
         """Initialize generic Beward device controller."""
+        self._sysinfo = None
+        self._listen_alarms = False
+        self._listener = None
+
         if port is None:
             try:
                 port = host.split(":")[1]
@@ -70,9 +74,14 @@ class BewardGeneric:
             ALARM_ONLINE: datetime.min,
         }
         self._alarm_handlers = set()
+        self._alarm_listeners = []
 
-        self._sysinfo = None
+    def __del__(self):
+        """Destructor."""
         self._listen_alarms = False
+
+        if self._listener:
+            self._listener.join()
 
     def get_url(
         self, function: str, extra_params=None, username=None, password=None
@@ -168,15 +177,16 @@ class BewardGeneric:
 
         self._listen_alarms = len(self._alarm_handlers) != 0
 
-        thread = threading.Thread(
+        self._listener = threading.Thread(
             target=self.__alarms_listener, args=(url, params, auth), daemon=True
         )
-        thread.start()
+        self._listener.start()
+        self._alarm_listeners.append(self._listener)
 
         _LOGGER.debug("Return from listen_alarms()")
 
     def __alarms_listener(self, url: str, params, auth):
-        while True:
+        while self._listen_alarms:
             try:
                 resp = requests.get(url, params=params, auth=auth, stream=True)
             except RequestException:  # pragma: no cover
@@ -193,6 +203,9 @@ class BewardGeneric:
             self._handle_alarm(datetime.now(), ALARM_ONLINE, True)
 
             for line in resp.iter_lines(chunk_size=1, decode_unicode=True):
+                if not self._listen_alarms:  # pragma: no cover
+                    break
+
                 if line:
                     _LOGGER.debug("Alarm: %s", line)
 
@@ -238,7 +251,6 @@ class BewardGeneric:
         """Detect device type."""
         return self.get_device_type(self.system_info.get("DeviceModel"))
 
-    @property
     def is_online(self) -> bool:
         """Return True if entity is online."""
         try:
@@ -251,4 +263,4 @@ class BewardGeneric:
     @property
     def available(self) -> bool:
         """Return True if entity is available."""
-        return self.is_online
+        return self.is_online()

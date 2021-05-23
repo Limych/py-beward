@@ -1,10 +1,10 @@
 -r requirements-test.txt
-awesomeversion~=21.2
+awesomeversion~=21.5
 bandit~=1.7
-black==20.8b1
+black==21.5b1
 codespell~=2.0
 isort~=5.8
-pydocstyle~=6.0
-pyupgrade~=2.11
+pydocstyle~=6.1
+pyupgrade~=2.18
 yamllint~=1.26
-PyGithub~=1.54
+PyGithub~=1.55
