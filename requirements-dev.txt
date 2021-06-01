@@ -1,7 +1,7 @@
 -r requirements-test.txt
 awesomeversion~=21.5
 bandit~=1.7
-black==21.5b1
+black==21.5b2
 codespell~=2.0
 isort~=5.8
 pydocstyle~=6.1
