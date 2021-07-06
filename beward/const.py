@@ -5,7 +5,7 @@
 
 # Base library constants
 NAME = "Beward Client"
-VERSION = "1.0.15"
+VERSION = "1.1.0"
 AUTHOR = 'Andrey "Limych" Khrolenok <andrey@khrolenok.ru>'
 LICENSE = "Creative Commons BY-NC-SA License"
 WEBSITE = "https://github.com/Limych/py-beward"
@@ -39,5 +39,5 @@ BEWARD_DOORBELL = "doorbell"
 # Beward models
 BEWARD_MODELS = {
     BEWARD_CAMERA: "",
-    BEWARD_DOORBELL: "DK103M DS03M DS05M(P) DS06M DS06A(P) S06A S06M",
+    BEWARD_DOORBELL: "DK103 DK103M DS03M DS05M(P) DS06M DS06A(P) S06A S06M",
 }

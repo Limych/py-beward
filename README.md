@@ -1,77 +1,13 @@
 *Please :star: this repo if you find it useful*
 
-# Notice
-
-This repository are not meant to be used by a user, but as a "blueprint" that developers
-can build upon, to make more awesome stuff.
-
-HAVE FUN! 😎
-
-## Why?
-
-This is simple, by having... #todo
-
-## What?
-
-This repository contains multiple files, here is a overview:
-
-File | Purpose
--- | --
-`...` | #todo
-
-## How?
-
-* …or create a new repository on the command line:
-    ```bash
-    # Initialize your new origin repository
-    git init
-    git remote add origin https://github.com/YOUR_NEW_REPOSITORY
-
-    # Apply blueprint repository
-    git remote add blueprint https://github.com/Limych/py-blueprint.git
-    git fetch blueprint dev
-    git reset --hard blueprint/dev
-    git branch -M dev
-
-    # Push changes to origin repository
-    git push -u origin dev
-    ```
-
-* …or apply blueprint to an existing repository from the command line:
-    ```bash
-    # Apply blueprint repository
-    git remote add blueprint https://github.com/Limych/py-blueprint.git
-    git fetch blueprint dev
-    git merge blueprint/dev --allow-unrelated-histories
-
-    # Push changes to origin repository
-    git push -u origin dev
-    ```
-
-After these steps, your repository will developing on a own branch. But in parallel there will be this blueprint repository, new changes in which you can always apply with a couple of simple commands:
-```bash
-./bin/update
-git merge blueprint/dev
-```
-
-**Note:** Please, before starting to develop your own code, initialize the development environment with the command
-```bash
-./bin/setup
-```
-
-***
-README content if this was a published component:
-***
-
-*Please :star: this repo if you find it useful*
-
 # py-beward
 
 [![PyPI version][pypi-shield]][pypi]
 [![PyPI Python version][pypi-pyversion]][pypi]
 [![Maintained][Maintained]](#)
 
-[![Project Maintenance][maintainer-shield]][maintainer]
+[![Project Maintenance][maintenance-shield]][user_profile]
+[![Support me on Patreon][patreon-shield]][patreon]
 
 _Python API for Beward Cameras and Doorbells. This is used in [Home Assistant component](https://github.com/Limych/ha-beward/) but should be generic enough that can be used elsewhere._
 
@@ -147,8 +83,10 @@ See separate [license file](LICENSE.md) for full text.
 [license]: https://github.com/Limych/ha-beward/blob/main/LICENSE.md
 [license-shield]: https://img.shields.io/badge/license-Creative_Commons_BY--NC--SA_License-lightgray.svg?style=popout
 [maintained]: https://img.shields.io/maintenance/yes/2021.svg?style=popout
-[maintainer]: https://github.com/Limych
-[maintainer-shield]: https://img.shields.io/badge/maintainer-Andrey%20Khrolenok%20%40Limych-blue.svg?style=popout
+[maintenance-shield]: https://img.shields.io/badge/maintainer-Andrey%20Khrolenok%20%40Limych-blue.svg?style=popout
+[user_profile]: https://github.com/Limych
 [pypi]: https://pypi.org/project/beward/
 [pypi-pyversion]: https://img.shields.io/pypi/pyversions/beward.svg?style=popout
 [pypi-shield]: https://img.shields.io/pypi/v/beward.svg?style=popout
+[patreon-shield]: https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3DLimych%26type%3Dpatrons&style=popout
+[patreon]: https://www.patreon.com/join/limych
