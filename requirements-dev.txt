@@ -3,7 +3,7 @@ awesomeversion~=21.6
 bandit~=1.7
 black==21.5b2
 codespell~=2.0
-isort~=5.8
+isort~=5.9
 pydocstyle~=6.1
 pyupgrade~=2.18
 yamllint~=1.26
