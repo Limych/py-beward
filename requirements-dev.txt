@@ -1,5 +1,4 @@
 -r requirements-test.txt
-awesomeversion~=21.12
 bandit~=1.7
 black==21.12b0
 codespell~=2.1
