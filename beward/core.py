@@ -93,7 +93,7 @@ class BewardGeneric:
             if password:
                 url += ":" + password
             url += "@"
-        url += "%s:%d/cgi-bin/%s_cgi" % (self.host, self.port, function)
+        url += f"{self.host}:{self.port}/cgi-bin/{function}_cgi"
         if extra_params:
             url = self.add_url_params(url, extra_params)
         return url
@@ -133,7 +133,7 @@ class BewardGeneric:
             _LOGGER.error("Error! %s", err_msg)
             raise
 
-        if req.status_code == 200 or req.status_code == 204:
+        if req.status_code in (200, 204):
             response = req
 
         if response is None:  # pragma: no cover

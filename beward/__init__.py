@@ -145,6 +145,7 @@ class Beward:
                     _unpack_ip(net_mask),
                     _unpack_ip(gate_ip),
                 )
+                # pylint: disable=consider-using-f-string
                 mac = ":".join("%02x" % i for i in mac)
 
                 _LOGGER.info(
@@ -186,7 +187,7 @@ class Beward:
         dev_type = bwd.get_device_type(model)
 
         if dev_type is None:
-            raise ValueError('Unknown device "%s"' % model)
+            raise ValueError(f'Unknown device "{model}"')
 
         inst = None
 
