@@ -2,7 +2,7 @@
 awesomeversion~=21.12
 bandit~=1.7
 black==21.12b0
-codespell~=2.0
+codespell~=2.1
 isort~=5.10
 pydocstyle~=6.1
 pyupgrade~=2.31
