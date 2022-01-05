@@ -50,14 +50,10 @@ class BewardCamera(BewardGeneric):
             except ConnectTimeout:
                 self.rtsp_port = 554
 
-        url = "rtsp://%s:%s@%s:%s/av0_%d" % (
-            self.username,
-            self.password,
-            self.host,
-            self.rtsp_port,
-            self.stream,
+        self._rtsp_live_video_url = (
+            f"rtsp://{self.username}:{self.password}@"
+            f"{self.host}:{self.rtsp_port}/av0_{self.stream}"
         )
-        self._rtsp_live_video_url = url
 
     @property
     def live_image_url(self) -> str:
