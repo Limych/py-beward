@@ -2,7 +2,7 @@
 coveralls~=3.1
 mock~=4.0
 mypy==0.930
-pre-commit~=2.13
+pre-commit~=2.16
 pylint~=2.8
 pylint-strict-informational==0.1
 pytest~=6.2
