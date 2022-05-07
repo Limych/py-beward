@@ -36,7 +36,8 @@ class PyTest(TestCommand):
 
 def load_requirements(fpath: str) -> list:
     """Load requirements from file."""
-    data = list(open(fpath))
+    with open(fpath, encoding="utf-8") as fpt:
+        data = list(fpt)
     imp = re.compile(r"^(-r|--requirement)\s+(\S+)")
     reqs = []
     for i in data:
@@ -50,7 +51,8 @@ def load_requirements(fpath: str) -> list:
     return reqs
 
 
-src = open("beward/const.py", encoding="utf-8").read()
+with open("beward/const.py", encoding="utf-8") as fp:
+    src = fp.read()
 metadata = dict(re.findall(r'([a-z]+) = "([^"]+)"', src, re.IGNORECASE))
 metadata.update(dict(re.findall(r"([a-z]+) = '([^']+)'", src, re.IGNORECASE)))
 docstrings = re.findall(r'"""(.*?)"""', src, re.MULTILINE | re.DOTALL)
@@ -71,7 +73,6 @@ CLASSIFIERS = [
     "License :: Other/Proprietary License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
