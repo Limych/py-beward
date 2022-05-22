@@ -1,4 +1,4 @@
-#  Copyright (c) 2019-2021, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
+#  Copyright (c) 2019-2022, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
 #  Creative Commons BY-NC-SA 4.0 International Public License
 #  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
 """Python API for Beward Cameras and Doorbells."""
@@ -21,7 +21,12 @@ from _socket import (
 
 # Will be parsed by setup.py to determine package metadata
 from beward.camera import BewardCamera
-from beward.const import BEWARD_CAMERA, BEWARD_DOORBELL, STARTUP_MESSAGE
+from beward.const import (
+    BEWARD_CAMERA,
+    BEWARD_DOORBELL,
+    NEW_DEVICE_ISSUE_URL,
+    STARTUP_MESSAGE,
+)
 from beward.core import BewardGeneric
 from beward.doorbell import BewardDoorbell
 
@@ -187,7 +192,10 @@ class Beward:
         dev_type = bwd.get_device_type(model)
 
         if dev_type is None:
-            raise ValueError(f'Unknown device "{model}"')
+            raise ValueError(
+                f'Unknown device "{model}". '
+                f"Please, open new issue here: {NEW_DEVICE_ISSUE_URL}"
+            )
 
         inst = None
 
