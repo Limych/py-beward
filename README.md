@@ -112,6 +112,8 @@ The original setup of this library is by [Andrey "Limych" Khrolenok](https://git
 
 For a full list of all authors and contributors, check [the contributor's page][contributors].
 
+This project was created and is updated using the [Py-Blueprint template](https://github.com/Limych/py-blueprint). You can use this template to maintain your own projects.
+
 ## License
 
 MIT License
