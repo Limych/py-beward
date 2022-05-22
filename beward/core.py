@@ -1,9 +1,10 @@
-#  Copyright (c) 2019-2021, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
+#  Copyright (c) 2019-2022, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
 #  Creative Commons BY-NC-SA 4.0 International Public License
 #  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
 """Beward devices controller core."""
 
 import logging
+import re
 import socket
 import threading
 from datetime import datetime
@@ -33,6 +34,8 @@ class BewardGeneric:
         """Detect device type for model."""
         if not model:
             return None
+
+        model = re.sub(r"_rev.+$", "", model)
 
         for dev_type, models in BEWARD_MODELS.items():
             if model in models.split():
