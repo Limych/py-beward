@@ -4,6 +4,6 @@ black==22.3.0
 codespell~=2.1
 isort~=5.10
 pydocstyle~=6.1
-pyupgrade~=2.32
+pyupgrade~=2.34
 yamllint~=1.26
 PyGithub~=1.55
