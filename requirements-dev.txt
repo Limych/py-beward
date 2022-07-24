@@ -5,5 +5,5 @@ codespell~=2.1
 isort~=5.10
 pydocstyle~=6.1
 pyupgrade~=2.32
-yamllint~=1.26
+yamllint~=1.27
 PyGithub~=1.55
