@@ -1,6 +1,6 @@
 -r requirements-test.txt
 bandit~=1.7
-black==22.8.0
+black==22.10.0
 codespell~=2.2
 isort~=5.10
 pydocstyle~=6.1
