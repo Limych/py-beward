@@ -21,7 +21,7 @@ jobs:
       - name: "Set up Python"
         uses: actions/setup-python@v4.5.0
         with:
-          python-version: '3.10'
+          python-version: '3.11'
 
       - name: "Cache pip"
         uses: actions/cache@v3.2.6
@@ -69,11 +69,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.7, 3.8, 3.9]  # Python 3.10 was processed on lint job stage
-        experimental: [false]
-        include:
-          - python-version: '3.11-dev'
-            experimental: true
+        python-version: [3.7, 3.8, 3.9, 3.10]  # Python 3.11 was processed on lint job stage
     steps:
       - name: "Checkout code"
         uses: actions/checkout@master
