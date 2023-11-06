@@ -55,7 +55,7 @@ jobs:
       - name: "Calculate coverage"
         run: |
           pytest --basetemp=$RUNNER_TEMP --durations=10 -n auto --dist=loadfile -qq -o console_output_style=count -p no:sugar --cov --cov-report=
-          ./bin/check_dirty
+          ./scripts/check_dirty
 
       - name: "Send coverage to Coveralls"
         env:
@@ -106,4 +106,4 @@ jobs:
       - name: "Run tests with pytest"
         run: |
           pytest --basetemp=$RUNNER_TEMP --durations=10 -n auto --dist=loadfile -qq -o console_output_style=count -p no:sugar
-          ./bin/check_dirty
+          ./scripts/check_dirty
