@@ -69,7 +69,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.7, 3.8, 3.9, 3.10]  # Python 3.11 was processed on lint job stage
+        python-version: [3.7, 3.8, 3.9, "3.10"]  # Python 3.11 was processed on lint job stage
     steps:
       - name: "Checkout code"
         uses: actions/checkout@master
