@@ -1,11 +1,11 @@
 repos:
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.7.4
+    rev: v3.3.1
     hooks:
       - id: pyupgrade
-        args: [--py3-plus]
+        args: [ --py310-plus ]
   - repo: https://github.com/psf/black
-    rev: 22.3.0
+    rev: 23.1.0
     hooks:
       - id: black
         args:
@@ -21,8 +21,8 @@ repos:
           - --skip="./.*,*.csv,*.json"
           - --quiet-level=2
         exclude_types: [csv, json]
-  - repo: https://gitlab.com/pycqa/flake8
-    rev: 3.8.1
+  - repo: https://github.com/pycqa/flake8.git
+    rev: 6.0.0
     hooks:
       - id: flake8
         additional_dependencies:
@@ -30,7 +30,7 @@ repos:
           - pydocstyle==5.0.2
         files: ^.+\.py$
   - repo: https://github.com/PyCQA/bandit
-    rev: 1.7.0
+    rev: 1.7.4
     hooks:
       - id: bandit
         args:
@@ -40,11 +40,11 @@ repos:
         files: ^.+\.py$
         exclude: ^[^/]+\.py$
   - repo: https://github.com/pre-commit/mirrors-isort
-    rev: v5.6.4
+    rev: v5.10.1
     hooks:
       - id: isort
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.5.0
+    rev: v4.4.0
     hooks:
       - id: check-executables-have-shebangs
         stages: [manual]
@@ -63,21 +63,21 @@ repos:
       # shell.
       - id: mypy
         name: mypy
-        entry: bin/run-in-env mypy
+        entry: scripts/run-in-env mypy
         language: script
         types: [python]
         require_serial: true
         files: ^.+\.py$
       - id: pylint
         name: pylint
-        entry: bin/run-in-env python3 -m pylint
+        entry: scripts/run-in-env python3 -m pylint
         language: system
         types: [python]
         files: ^.+\.py$
       # Uncomment lines below to test code on every commit
 #      - id: pytest
 #        name: pytest
-#        entry: bin/run-in-env pytest
+#        entry: scripts/run-in-env pytest
 #        language: system
 #        pass_filenames: false
 #        always_run: true

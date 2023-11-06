@@ -36,7 +36,8 @@ class PyTest(TestCommand):
 
 def load_requirements(fpath: str) -> list:
     """Load requirements from file."""
-    data = list(open(fpath))
+    with open(fpath, encoding="utf8") as f_req:
+        data = list(f_req)
     imp = re.compile(r"^(-r|--requirement)\s+(\S+)")
     reqs = []
     for i in data:
@@ -50,14 +51,15 @@ def load_requirements(fpath: str) -> list:
     return reqs
 
 
-src = open("blueprint_client/const.py", encoding="utf-8").read()
+with open("blueprint_client/const.py", encoding="utf-8") as file:
+    src = file.read()
 metadata = dict(re.findall(r'([a-z]+) = "([^"]+)"', src, re.IGNORECASE))
 metadata.update(dict(re.findall(r"([a-z]+) = '([^']+)'", src, re.IGNORECASE)))
 docstrings = re.findall(r'"""(.*?)"""', src, re.MULTILINE | re.DOTALL)
 
 NAME = "blueprint_client"
 
-PACKAGES = [x for x in find_packages() if x not in ["bin", "tests"]]
+PACKAGES = [x for x in find_packages() if x not in ["scripts", "tests"]]
 
 VERSION = metadata["VERSION"]
 AUTHOR_EMAIL = metadata.get("AUTHOR", "Unknown <no@email.com>")

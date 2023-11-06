@@ -47,7 +47,7 @@ jobs:
           prerelease: ${{ env.is_prerelease }}
 
       - name: "Update release notes"
-        run: python ./bin/gen_releasenotes --token ${{ secrets.GITHUB_TOKEN }} --repo ${{ github.repository }} --release ${{ github.ref }}
+        run: python ./scripts/gen_releasenotes --token ${{ secrets.GITHUB_TOKEN }} --repo ${{ github.repository }} --release ${{ github.ref }}
 
   deploy:
     name: "Deploy Release to PyPi"

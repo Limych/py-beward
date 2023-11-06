@@ -50,13 +50,13 @@ File | Purpose
 
 After these steps, your repository will developing on a own branch. But in parallel there will be this blueprint repository, new changes in which you can always apply with a couple of simple commands:
 ```bash
-./bin/update
+./scripts/update
 git merge blueprint/dev
 ```
 
 **Note:** Please, before starting to develop your own code, initialize the development environment with the command
 ```bash
-./bin/setup
+./scripts/setup
 ```
 
 ***
