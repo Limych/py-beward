@@ -9,9 +9,9 @@ import socket
 import threading
 from datetime import datetime
 from time import sleep
-from typing import Optional
 
 import requests
+from pip._internal.utils.misc import redact_auth_from_url
 from requests import ConnectTimeout, PreparedRequest, RequestException, Response
 from requests.auth import HTTPBasicAuth
 
@@ -30,7 +30,7 @@ class BewardGeneric:
 
     @staticmethod
     # pylint: disable=unsubscriptable-object
-    def get_device_type(model: Optional[str]) -> Optional[str]:
+    def get_device_type(model: str | None) -> str | None:
         """Detect device type for model."""
         if not model:
             return None
@@ -112,10 +112,10 @@ class BewardGeneric:
         return req.url
 
     # pylint: disable=unsubscriptable-object
-    def query(self, function: str, extra_params=None) -> Optional[Response]:
+    def query(self, function: str, extra_params=None) -> Response | None:
         """Query data from Beward device."""
         url = self.get_url(function)
-        _LOGGER.debug("Querying %s", url)
+        _LOGGER.debug("Querying %s", redact_auth_from_url(url))
 
         response = None
 
@@ -140,7 +140,7 @@ class BewardGeneric:
             response = req
 
         if response is None:  # pragma: no cover
-            _LOGGER.debug("%s", MSG_GENERIC_FAIL)
+            _LOGGER.debug(MSG_GENERIC_FAIL)
         return response
 
     def add_alarms_handler(self, handler: callable):
@@ -172,7 +172,7 @@ class BewardGeneric:
             alarms = {}
 
         url = self.get_url("alarmchangestate")
-        _LOGGER.debug("Querying %s", url)
+        _LOGGER.debug("Querying %s", redact_auth_from_url(url))
 
         params = self.params.copy()
         params.update({"channel": channel, "parameter": ";".join(set(alarms))})
@@ -191,7 +191,9 @@ class BewardGeneric:
     def __alarms_listener(self, url: str, params, auth):
         while self._listen_alarms:
             try:
-                resp = requests.get(url, params=params, auth=auth, stream=True)
+                resp = requests.get(
+                    url, params=params, auth=auth, stream=True, timeout=10
+                )
             except RequestException:  # pragma: no cover
                 break
             _LOGGER.debug("_query ret %s", resp.status_code)
@@ -250,10 +252,11 @@ class BewardGeneric:
 
     @property
     # pylint: disable=unsubscriptable-object
-    def device_type(self) -> Optional[str]:
+    def device_type(self) -> str | None:
         """Detect device type."""
         return self.get_device_type(self.system_info.get("DeviceModel"))
 
+    @property
     def is_online(self) -> bool:
         """Return True if entity is online."""
         try:
@@ -266,4 +269,4 @@ class BewardGeneric:
     @property
     def available(self) -> bool:
         """Return True if entity is available."""
-        return self.is_online()
+        return self.is_online
