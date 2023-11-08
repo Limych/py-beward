@@ -3,6 +3,8 @@
 #  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
 """Beward devices controller core."""
 
+from __future__ import annotations
+
 import logging
 import re
 import socket
@@ -30,7 +32,7 @@ class BewardGeneric:
 
     @staticmethod
     # pylint: disable=unsubscriptable-object
-    def get_device_type(model: str | None) -> str | None:
+    def get_device_type(model):
         """Detect device type for model."""
         if not model:
             return None
