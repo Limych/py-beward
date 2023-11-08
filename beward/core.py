@@ -1,4 +1,4 @@
-#  Copyright (c) 2019-2022, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
+#  Copyright (c) 2019-2023, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
 #  Creative Commons BY-NC-SA 4.0 International Public License
 #  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
 """Beward devices controller core."""
@@ -13,10 +13,10 @@ from datetime import datetime
 from time import sleep
 
 import requests
-from pip._internal.utils.misc import redact_auth_from_url
 from requests import ConnectTimeout, PreparedRequest, RequestException, Response
 from requests.auth import HTTPBasicAuth
 
+import beward
 from beward.util import is_valid_fqdn, normalize_fqdn
 
 from .const import ALARM_ONLINE, BEWARD_MODELS, MSG_GENERIC_FAIL, TIMEOUT
@@ -48,6 +48,8 @@ class BewardGeneric:
     # pylint: disable=unused-argument
     def __init__(self, host: str, username: str, password: str, port=None, **kwargs):
         """Initialize generic Beward device controller."""
+        beward.init()
+
         self._sysinfo = None
         self._listen_alarms = False
         self._listener = None
@@ -117,7 +119,7 @@ class BewardGeneric:
     def query(self, function: str, extra_params=None) -> Response | None:
         """Query data from Beward device."""
         url = self.get_url(function)
-        _LOGGER.debug("Querying %s", redact_auth_from_url(url))
+        _LOGGER.debug("Querying %s", beward.redact_auth_from_url(url))
 
         response = None
 
@@ -174,7 +176,7 @@ class BewardGeneric:
             alarms = {}
 
         url = self.get_url("alarmchangestate")
-        _LOGGER.debug("Querying %s", redact_auth_from_url(url))
+        _LOGGER.debug("Querying %s", beward.redact_auth_from_url(url))
 
         params = self.params.copy()
         params.update({"channel": channel, "parameter": ";".join(set(alarms))})

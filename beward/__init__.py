@@ -1,10 +1,11 @@
-#  Copyright (c) 2019-2022, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
+#  Copyright (c) 2019-2023, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
 #  Creative Commons BY-NC-SA 4.0 International Public License
 #  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
 """Python API for Beward Cameras and Doorbells."""
 
 import logging
 import struct
+import urllib.parse
 from collections import namedtuple
 
 import hexdump
@@ -44,8 +45,63 @@ _LOGGER = logging.getLogger(__name__)
 # http://docs.python.org/2/howto/logging.html#library-config
 # Avoids spurious error messages if no logger is configured by the user
 _LOGGER.addHandler(logging.NullHandler())
-#
-_LOGGER.info(STARTUP_MESSAGE)
+
+
+def init():  # pragma: no cover
+    """Run component initialization."""
+    _LOGGER.info(STARTUP_MESSAGE)
+
+    # Disable this function to run only once
+    init.__code__ = (lambda: None).__code__
+
+
+def split_auth_from_netloc(netloc: str):  # pragma: no cover
+    """
+    Parse out and remove the auth information from a netloc.
+
+    Returns: (netloc, (username, password)).
+    """
+    if "@" not in netloc:
+        return netloc, (None, None)
+
+    # Split from the right because that's how urllib.parse.urlsplit()
+    # behaves if more than one @ is present (which can be checked using
+    # the password attribute of urlsplit()'s return value).
+    auth, netloc = netloc.rsplit("@", 1)
+    pw = None
+    if ":" in auth:
+        # Split from the left because that's how urllib.parse.urlsplit()
+        # behaves if more than one : is present (which again can be checked
+        # using the password attribute of the return value)
+        user, pw = auth.split(":", 1)
+    else:
+        user, pw = auth, None
+
+    user = urllib.parse.unquote(user)
+    if pw is not None:
+        pw = urllib.parse.unquote(pw)
+
+    return netloc, (user, pw)
+
+
+def redact_auth_from_url(netloc: str) -> str:  # pragma: no cover
+    """
+    Replace the sensitive data in a netloc with "****", if it exists.
+
+    For example:
+        - "user:pass@example.com" returns "user:****@example.com"
+        - "accesstoken@example.com" returns "****@example.com"
+    """
+    netloc, (user, password) = split_auth_from_netloc(netloc)
+    if user is None:
+        return netloc
+    if password is None:
+        user = "****"
+        password = ""
+    else:
+        user = urllib.parse.quote(user)
+        password = ":****"
+    return f"{user}{password}@{netloc}"
 
 
 # pylint: disable=too-few-public-methods
@@ -55,6 +111,8 @@ class Beward:
     @staticmethod
     def discovery():  # pragma: no cover
         """Discover Beward devices in local network."""
+        init()
+
         server = socket(AF_INET, SOCK_DGRAM)
         server.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
         server.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
@@ -187,6 +245,8 @@ class Beward:
     @staticmethod
     def factory(host_ip: str, username: str, password: str, **kwargs):
         """Return correct class for device."""
+        init()
+
         bwd = BewardGeneric(host_ip, username, password)
         model = bwd.system_info.get("DeviceModel")
         dev_type = bwd.get_device_type(model)
