@@ -19,7 +19,7 @@ jobs:
           echo "package=`ls -F | grep \/$ | grep -v "bin\|examples\|tests" | sed -n "s/\///g;1p"`" >> $GITHUB_ENV
 
       - name: "Set up Python"
-        uses: actions/setup-python@v4.5.0
+        uses: actions/setup-python@v4.7.1
         with:
           python-version: '3.11'
 
@@ -75,7 +75,7 @@ jobs:
         uses: actions/checkout@master
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4.5.0
+        uses: actions/setup-python@v4.7.1
         with:
           python-version: ${{ matrix.python-version }}
 
