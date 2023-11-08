@@ -7,3 +7,4 @@ pydocstyle~=6.1
 pyupgrade~=3.3
 yamllint~=1.28
 PyGithub~=2.1
+pre-commit~=3.5
