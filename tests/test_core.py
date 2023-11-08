@@ -36,7 +36,7 @@ def test___init__failing(host):
         (MOCK_HOST, 456, MOCK_HOST, 456),
     ],
 )
-def test___init__(host: str, port: int | None, host_exp: str, port_exp: int):
+def test___init__(host: str, port, host_exp: str, port_exp: int):
     """Test class initialization."""
     bwd = BewardGeneric(host, MOCK_USER, MOCK_PASS, port=port)
     assert bwd.host == host_exp
