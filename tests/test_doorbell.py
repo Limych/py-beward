@@ -2,7 +2,6 @@
 """Test to verify that Beward library works."""
 
 from datetime import datetime
-from unittest import TestCase
 
 import requests_mock
 
@@ -13,18 +12,16 @@ from . import function_url, load_binary
 from .const import MOCK_HOST, MOCK_PASS, MOCK_USER
 
 
-class TestBewardDoorbell(TestCase):
-    """Test case for BewardDoorbell class."""
+def test__handle_alarm():
+    """Test that handle alarms."""
+    image = load_binary("image.jpg")
 
-    @requests_mock.Mocker()
-    def test__handle_alarm(self, mock):
-        """Test that handle alarms."""
-        bwd = BewardDoorbell(MOCK_HOST, MOCK_USER, MOCK_PASS)
-        image = load_binary("image.jpg")
+    with requests_mock.Mocker() as mock:
+        beward = BewardDoorbell(MOCK_HOST, MOCK_USER, MOCK_PASS)
 
         # Check initial state
-        self.assertIsNone(bwd.last_motion_timestamp)
-        self.assertIsNone(bwd.last_motion_image)
+        assert beward.last_motion_timestamp is None
+        assert beward.last_motion_image is None
 
         ts1 = datetime.now()
         mock.register_uri(
@@ -33,6 +30,6 @@ class TestBewardDoorbell(TestCase):
             content=image,
             headers={"Content-Type": "image/jpeg"},
         )
-        bwd._handle_alarm(ts1, ALARM_SENSOR, True)
-        self.assertEqual(ts1, bwd.last_ding_timestamp)
-        self.assertEqual(image, bwd.last_ding_image)
+        beward._handle_alarm(ts1, ALARM_SENSOR, True)
+        assert beward.last_ding_timestamp == ts1
+        assert beward.last_ding_image == image

@@ -5,6 +5,11 @@ import threading
 
 import pytest
 
+from beward import BewardGeneric
+
+from tests import MOCK_HOST
+from tests.const import MOCK_PASS, MOCK_USER
+
 INSTANCES = []
 
 
@@ -23,3 +28,9 @@ def verify_cleanup():
 
     threads = frozenset(threading.enumerate()) - threads_before
     assert not threads
+
+
+@pytest.fixture
+def beward() -> BewardGeneric:
+    """Make test Beward instance."""
+    return BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)

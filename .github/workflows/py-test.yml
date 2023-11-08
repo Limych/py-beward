@@ -19,12 +19,12 @@ jobs:
           echo "package=`ls -F | grep \/$ | grep -v "bin\|examples\|tests" | sed -n "s/\///g;1p"`" >> $GITHUB_ENV
 
       - name: "Set up Python"
-        uses: actions/setup-python@v4.2.0
+        uses: actions/setup-python@v4.5.0
         with:
-          python-version: '3.10'
+          python-version: '3.11'
 
       - name: "Cache pip"
-        uses: actions/cache@v3.0.8
+        uses: actions/cache@v3.2.6
         with:
           # This path is specific to Ubuntu
           path: ~/.cache/pip
@@ -55,7 +55,7 @@ jobs:
       - name: "Calculate coverage"
         run: |
           pytest --basetemp=$RUNNER_TEMP --durations=10 -n auto --dist=loadfile -qq -o console_output_style=count -p no:sugar --cov --cov-report=
-          ./bin/check_dirty
+          ./scripts/check_dirty
 
       - name: "Send coverage to Coveralls"
         env:
@@ -69,22 +69,18 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.7, 3.8, 3.9]  # Python 3.10 was processed on lint job stage
-        experimental: [false]
-        include:
-          - python-version: '3.11-dev'
-            experimental: true
+        python-version: [3.7, 3.8, 3.9, "3.10"]  # Python 3.11 was processed on lint job stage
     steps:
       - name: "Checkout code"
         uses: actions/checkout@master
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4.2.0
+        uses: actions/setup-python@v4.5.0
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: "Cache pip"
-        uses: actions/cache@v3.0.8
+        uses: actions/cache@v3.2.6
         with:
           # This path is specific to Ubuntu
           path: ~/.cache/pip
@@ -110,4 +106,4 @@ jobs:
       - name: "Run tests with pytest"
         run: |
           pytest --basetemp=$RUNNER_TEMP --durations=10 -n auto --dist=loadfile -qq -o console_output_style=count -p no:sugar
-          ./bin/check_dirty
+          ./scripts/check_dirty

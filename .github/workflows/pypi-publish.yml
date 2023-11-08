@@ -23,7 +23,7 @@ jobs:
           echo "is_prerelease=`if echo ${{ github.ref }} | grep -qE "(a|b|rc|dev)"; then echo true; else echo false; fi`" >> $GITHUB_ENV
 
       - name: "Set up Python"
-        uses: actions/setup-python@v4.2.0
+        uses: actions/setup-python@v4.5.0
         with:
           python-version: '3.x'
 
@@ -47,7 +47,7 @@ jobs:
           prerelease: ${{ env.is_prerelease }}
 
       - name: "Update release notes"
-        run: python ./bin/gen_releasenotes --token ${{ secrets.GITHUB_TOKEN }} --repo ${{ github.repository }} --release ${{ github.ref }}
+        run: python ./scripts/gen_releasenotes --token ${{ secrets.GITHUB_TOKEN }} --repo ${{ github.repository }} --release ${{ github.ref }}
 
   deploy:
     name: "Deploy Release to PyPi"
@@ -58,7 +58,7 @@ jobs:
         uses: actions/checkout@master
 
       - name: "Set up Python"
-        uses: actions/setup-python@v4.2.0
+        uses: actions/setup-python@v4.5.0
         with:
           python-version: '3.x'
 

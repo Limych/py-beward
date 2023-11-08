@@ -3,4 +3,4 @@
 
 MOCK_HOST = "192.168.0.2"
 MOCK_USER = "user"
-MOCK_PASS = "pass"
+MOCK_PASS = "password"

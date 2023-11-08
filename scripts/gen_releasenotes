@@ -66,7 +66,7 @@ def get_commits(repo: Repository, since: datetime, until: datetime):
     return reversed(list(commits)[:-1])
 
 
-def get_release_tags(repo: Repository) -> List[Tag.Tag]:
+def get_release_tags(repo: Repository) -> list[Tag.Tag]:
     """Get list of all release tags from repository."""
     tags = list(
         filter(lambda tag: is_pep440(tag.name.lstrip("v")), list(repo.get_tags()))
@@ -76,7 +76,7 @@ def get_release_tags(repo: Repository) -> List[Tag.Tag]:
     return tags
 
 
-def get_period(repo: Repository, release: Optional[str] = None) -> List[datetime]:
+def get_period(repo: Repository, release: str | None = None) -> list[datetime]:
     """Return time period for release notes."""
     data = [datetime.now()]
     dateformat = "%a, %d %b %Y %H:%M:%S GMT"
@@ -98,7 +98,7 @@ def get_period(repo: Repository, release: Optional[str] = None) -> List[datetime
     return list(reversed(data[-2:]))
 
 
-def gen_changes(repo: Repository, tag: Optional[str] = None) -> Tuple[str, str, str]:
+def gen_changes(repo: Repository, tag: str | None = None) -> tuple[str, str, str]:
     """Generate list of commits."""
     all_changes = ""
     human_changes = ""
