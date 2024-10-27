@@ -27,6 +27,7 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     #
     # Specify the Python versions you support here.
+    "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",

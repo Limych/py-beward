@@ -91,6 +91,7 @@ jobs:
             pip install -r requirements.txt
           fi
           pip install pytest-xdist
+          pip install -e .
 
       - name: "Run tests with pytest"
         run: |
