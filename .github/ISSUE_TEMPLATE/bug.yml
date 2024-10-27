@@ -1,0 +1,65 @@
+---
+name: "Bug report"
+description: "Create a report to help us improve this project"
+labels: "bug"
+body:
+- type: markdown
+  attributes:
+    value: Before you open a new issue, search through the existing issues to see if others have had the same problem.
+- type: checkboxes
+  attributes:
+    label: Checklist
+    options:
+      - label: I have using the newest release.
+        required: true
+      - label: I have enabled debug logging for my installation.
+        required: true
+      - label: I have filled out the issue template to the best of my ability.
+        required: true
+      - label: This issue only contains 1 bug (if you have multiple bugs, open one issue for each bug).
+        required: true
+      - label: This issue is not a duplicate issue of any [previous issues](https://github.com/Limych/py-blueprint/issues?q=is%3Aissue+label%3A%22bug%22+)..
+        required: true
+- type: textarea
+  attributes:
+    label: Environment
+    description: ""
+    value: |
+      - This component release with the issue:
+      - Last working this component release (if known):
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: "Describe the bug"
+    description: "A clear and concise description of what the bug is."
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: Reproduction steps
+    description: "Without steps to reproduce, it will be hard to fix. It is very important that you fill out this part. Issues without it will be closed."
+    value: |
+      1.
+      2.
+      3.
+      ...
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: Expected behavior
+    description: "Insert a brief description of the expected behavior is."
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: "Debug logs"
+    description: ""
+    render: text
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: "Diagnostics dump"
+    description: "Drag the diagnostics dump file here. (see https://www.home-assistant.io/integrations/diagnostics/ for info)"
