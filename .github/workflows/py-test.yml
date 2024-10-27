@@ -37,16 +37,13 @@ jobs:
             python -m pip install --upgrade pip
             # Prefer requirements-dev.txt
             if [ -f requirements-dev.txt ]; then
-              scripts/install_requirements requirements-dev.txt "${{ secrets.ADMIN_GITHUB_TOKEN }}"
+              pip install -r requirements-dev.txt
             elif [ -f requirements-test.txt ]; then
-              scripts/install_requirements requirements-test.txt "${{ secrets.ADMIN_GITHUB_TOKEN }}"
+              pip install -r requirements-test.txt
             elif [ -f requirements.txt ]; then
-              scripts/install_requirements requirements.txt "${{ secrets.ADMIN_GITHUB_TOKEN }}"
+              pip install -r requirements.txt
             fi
-
-            if [ -d custom_components ]; then
-              echo '"""Stub."""' >custom_components/__init__.py
-            fi
+            pip install pytest-xdist
 
         - name: "Lint"
           run: python3 -m ruff check .
