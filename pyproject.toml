@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "blueprint_client"
 requires-python = ">=3.10"
-dynamic = ["version"]
+dynamic = ["version", "dependencies"]
 description = "Blueprint Client"
 authors = [
     { name = "Andrey Khrolenok", email = "andrey@khrolenok.ru" },
