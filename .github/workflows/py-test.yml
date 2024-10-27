@@ -19,12 +19,12 @@ jobs:
           echo "package=`ls -F | grep \/$ | grep -v "bin\|examples\|tests" | sed -n "s/\///g;1p"`" >> $GITHUB_ENV
 
       - name: "Set up Python"
-        uses: actions/setup-python@v5.3
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
       - name: "Cache pip"
-        uses: actions/cache@v4.1
+        uses: actions/cache@v4
         with:
           # This path is specific to Ubuntu
           path: ~/.cache/pip
@@ -75,12 +75,12 @@ jobs:
         uses: actions/checkout@master
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5.3
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: "Cache pip"
-        uses: actions/cache@v4.1
+        uses: actions/cache@v4
         with:
           # This path is specific to Ubuntu
           path: ~/.cache/pip
