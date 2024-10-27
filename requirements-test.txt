@@ -2,7 +2,7 @@
 async-timeout
 asynctest~=0.13
 colorlog~=6.8
-coveralls~=3.3
+coveralls~=4.0
 mock~=5.1
 mypy~=1.13
 pytest>=7.2
