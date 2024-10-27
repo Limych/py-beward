@@ -35,7 +35,6 @@ docstrings = re.findall(r'"""(.*?)"""', src, re.MULTILINE | re.DOTALL)
 VERSION = metadata["VERSION"]
 
 REQUIREMENTS = load_requirements("requirements.txt")
-TEST_REQUIREMENTS = load_requirements("requirements-test.txt")
 
 setup(
     version=VERSION,
