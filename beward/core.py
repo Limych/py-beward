@@ -10,7 +10,7 @@ import logging
 import re
 import socket
 import threading
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from http import HTTPStatus
 from time import sleep
 from typing import Any
@@ -26,7 +26,7 @@ from .const import ALARM_ONLINE, BEWARD_MODELS, MSG_GENERIC_FAIL, TIMEOUT
 
 _LOGGER = logging.getLogger(__name__)
 
-local_tz = datetime.now(UTC).astimezone().tzinfo
+local_tz = datetime.now(timezone.utc).astimezone().tzinfo  # noqa: UP017
 
 
 # pylint: disable=too-many-instance-attributes
