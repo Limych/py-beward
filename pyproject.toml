@@ -1,8 +1,11 @@
-# The contents of this file is based on https://github.com/home-assistant/core/blob/dev/pyproject.toml
+[project]
+name = "integration_blueprint"
+requires-python = ">=3.12"
 
+[tool.ruff]
 target-version = "py312"
 
-[lint]
+[tool.ruff.lint]
 select = [
     "ALL",
 ]
@@ -17,14 +20,14 @@ ignore = [
     "PLR2044", # Line with empty comment
 ]
 
-[lint.flake8-pytest-style]
+[tool.ruff.lint.flake8-pytest-style]
 fixture-parentheses = false
 
-[lint.pyupgrade]
+[tool.ruff.lint.pyupgrade]
 keep-runtime-typing = true
 
-[lint.mccabe]
+[tool.ruff.lint.mccabe]
 max-complexity = 25
 
-[lint.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "tests/*.py" = ["ANN001", "ANN201", "ARG001", "PLR2004", "S101", "S311", "SLF001"]
