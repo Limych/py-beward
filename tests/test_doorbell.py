@@ -9,7 +9,7 @@ from beward import BewardDoorbell
 from beward.const import ALARM_SENSOR
 
 from . import function_url, load_binary
-from .const import MOCK_HOST, MOCK_PASS, MOCK_USER
+from .const import MOCK_HOST, MOCK_PASS, MOCK_USER, local_tz
 
 
 def test__handle_alarm():
@@ -23,13 +23,13 @@ def test__handle_alarm():
         assert beward.last_motion_timestamp is None
         assert beward.last_motion_image is None
 
-        ts1 = datetime.now()
+        ts1 = datetime.now(local_tz)
         mock.register_uri(
             "get",
             function_url("images"),
             content=image,
             headers={"Content-Type": "image/jpeg"},
         )
-        beward._handle_alarm(ts1, ALARM_SENSOR, True)
+        beward._handle_alarm(ts1, ALARM_SENSOR, state=True)
         assert beward.last_ding_timestamp == ts1
         assert beward.last_ding_image == image

@@ -1,27 +1,32 @@
-#  Copyright (c) 2019-2022, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
+#  Copyright (c) 2019-2023, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
 #  Creative Commons BY-NC-SA 4.0 International Public License
 #  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
 """Beward devices controller core."""
 
 from __future__ import annotations
 
+import contextlib
 import logging
 import re
 import socket
 import threading
-from datetime import datetime
+from datetime import datetime, timezone
+from http import HTTPStatus
 from time import sleep
+from typing import Any
 
 import requests
-from pip._internal.utils.misc import redact_auth_from_url
 from requests import ConnectTimeout, PreparedRequest, RequestException, Response
 from requests.auth import HTTPBasicAuth
 
+import beward
 from beward.util import is_valid_fqdn, normalize_fqdn
 
 from .const import ALARM_ONLINE, BEWARD_MODELS, MSG_GENERIC_FAIL, TIMEOUT
 
 _LOGGER = logging.getLogger(__name__)
+
+local_tz = datetime.now(timezone.utc).astimezone().tzinfo  # noqa: UP017
 
 
 # pylint: disable=too-many-instance-attributes
@@ -32,7 +37,7 @@ class BewardGeneric:
 
     @staticmethod
     # pylint: disable=unsubscriptable-object
-    def get_device_type(model):
+    def get_device_type(model: str | None) -> str | None:
         """Detect device type for model."""
         if not model:
             return None
@@ -46,23 +51,31 @@ class BewardGeneric:
         return None
 
     # pylint: disable=unused-argument
-    def __init__(self, host: str, username: str, password: str, port=None, **kwargs):
+    def __init__(
+        self,
+        host: str,
+        username: str,
+        password: str,
+        port: int | str | None = None,
+        **kwargs: Any,  # noqa: ARG002
+    ) -> None:
         """Initialize generic Beward device controller."""
+        beward.init()
+
         self._sysinfo = None
         self._listen_alarms = False
         self._listener = None
 
         if port is None:
-            try:
+            with contextlib.suppress(IndexError):
                 port = host.split(":")[1]
-            except IndexError:
-                pass
         host = normalize_fqdn(host)
         try:
             if not is_valid_fqdn(host):
                 socket.inet_aton(host)
         except OSError as exc:
-            raise ValueError("Not a valid host address") from exc
+            msg = "Not a valid host address"
+            raise ValueError(msg) from exc
 
         self.host = host
         self.port = int(port) if port else 80
@@ -81,7 +94,7 @@ class BewardGeneric:
         self._alarm_handlers = set()
         self._alarm_listeners = []
 
-    def __del__(self):
+    def __del__(self) -> None:
         """Destructor."""
         self._listen_alarms = False
 
@@ -89,7 +102,11 @@ class BewardGeneric:
             self._listener.join()
 
     def get_url(
-        self, function: str, extra_params=None, username=None, password=None
+        self,
+        function: str,
+        extra_params: dict | None = None,
+        username: str | None = None,
+        password: str | None = None,
     ) -> str:
         """Get entry point for function."""
         url = "http://"
@@ -114,10 +131,10 @@ class BewardGeneric:
         return req.url
 
     # pylint: disable=unsubscriptable-object
-    def query(self, function: str, extra_params=None) -> Response | None:
+    def query(self, function: str, extra_params: dict | None = None) -> Response | None:
         """Query data from Beward device."""
         url = self.get_url(function)
-        _LOGGER.debug("Querying %s", redact_auth_from_url(url))
+        _LOGGER.debug("Querying %s", beward.redact_auth_from_url(url))
 
         response = None
 
@@ -134,8 +151,8 @@ class BewardGeneric:
             req = self.session.get(url, params=params, auth=auth, timeout=TIMEOUT)
             _LOGGER.debug("_query ret %s", req.status_code)
 
-        except Exception as err_msg:
-            _LOGGER.error("Error! %s", err_msg)
+        except Exception:
+            _LOGGER.exception("Error!")
             raise
 
         if req.status_code in (200, 204):
@@ -145,19 +162,19 @@ class BewardGeneric:
             _LOGGER.debug(MSG_GENERIC_FAIL)
         return response
 
-    def add_alarms_handler(self, handler: callable):
+    def add_alarms_handler(self, handler: callable) -> BewardGeneric:
         """Add alarms handler."""
         self._alarm_handlers.add(handler)
         return self
 
-    def remove_alarms_handler(self, handler: callable):
+    def remove_alarms_handler(self, handler: callable) -> BewardGeneric:
         """Remove alarms handler."""
         if handler in self._alarm_handlers:
             self._alarm_handlers.remove(handler)
             self._listen_alarms = len(self._alarm_handlers) != 0
         return self
 
-    def _handle_alarm(self, timestamp: datetime, alarm: str, state: bool):
+    def _handle_alarm(self, timestamp: datetime, alarm: str, state: bool) -> None:  # noqa: FBT001
         """Handle alarms from Beward device."""
         _LOGGER.debug("Handle alarm: %s; State: %s", alarm, state)
 
@@ -168,13 +185,13 @@ class BewardGeneric:
         for handler in self._alarm_handlers:
             handler(self, timestamp, alarm, state)
 
-    def listen_alarms(self, channel: int = 0, alarms=None):
+    def listen_alarms(self, channel: int = 0, alarms: Any = None) -> None:
         """Listen for alarms from Beward device."""
         if alarms is None:  # pragma: no cover
             alarms = {}
 
         url = self.get_url("alarmchangestate")
-        _LOGGER.debug("Querying %s", redact_auth_from_url(url))
+        _LOGGER.debug("Querying %s", beward.redact_auth_from_url(url))
 
         params = self.params.copy()
         params.update({"channel": channel, "parameter": ";".join(set(alarms))})
@@ -190,7 +207,7 @@ class BewardGeneric:
 
         _LOGGER.debug("Return from listen_alarms()")
 
-    def __alarms_listener(self, url: str, params, auth):
+    def __alarms_listener(self, url: str, params: Any, auth: Any) -> None:
         while self._listen_alarms:
             try:
                 resp = requests.get(
@@ -203,11 +220,11 @@ class BewardGeneric:
             if not self._listen_alarms:  # pragma: no cover
                 break
 
-            if resp.status_code != 200:  # pragma: no cover
+            if resp.status_code != HTTPStatus.OK:  # pragma: no cover
                 sleep(TIMEOUT)
                 continue
 
-            self._handle_alarm(datetime.now(), ALARM_ONLINE, True)
+            self._handle_alarm(datetime.now(local_tz), ALARM_ONLINE, state=True)
 
             for line in resp.iter_lines(chunk_size=1, decode_unicode=True):
                 if not self._listen_alarms:  # pragma: no cover
@@ -219,14 +236,16 @@ class BewardGeneric:
                     date, time, alert, state, _ = str(line).split(";", 5)
                     timestamp = datetime.strptime(
                         date + " " + time, "%Y-%m-%d %H:%M:%S"
-                    )
+                    ).replace(tzinfo=local_tz)
                     state = state != "0"
 
                     self._handle_alarm(timestamp, alert, state)
 
-            self._handle_alarm(datetime.now(), ALARM_ONLINE, False)
+            self._handle_alarm(datetime.now(local_tz), ALARM_ONLINE, state=False)
 
-        self._handle_alarm(datetime.now(), ALARM_ONLINE, False)  # pragma: no cover
+        self._handle_alarm(
+            datetime.now(local_tz), ALARM_ONLINE, state=False
+        )  # pragma: no cover
 
     def get_info(self, function: str) -> dict:
         """Get info from Beward device."""
@@ -245,10 +264,8 @@ class BewardGeneric:
             return self._sysinfo
 
         self._sysinfo = {}
-        try:
+        with contextlib.suppress(ConnectTimeout):
             self._sysinfo = self.get_info("systeminfo")
-        except ConnectTimeout:
-            pass
 
         return self._sysinfo
 

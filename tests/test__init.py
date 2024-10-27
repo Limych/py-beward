@@ -17,10 +17,12 @@ def test_factory():
             "get", function_url("systeminfo"), text="DeviceModel=NONEXISTENT"
         )
 
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError):  # noqa: PT011
             Beward.factory(MOCK_HOST, MOCK_USER, MOCK_PASS)
 
+        # ruff: noqa: ERA001, TD002
         # TODO: BewardCamera; pylint: disable=fixme
+        # 123
         # mock.register_uri("get", function_url('systeminfo'),
         #                   text='DeviceModel=????')
         #

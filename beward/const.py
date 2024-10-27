@@ -1,26 +1,25 @@
-#  Copyright (c) 2019-2022, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
+#  Copyright (c) 2019-2024, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
 #  Creative Commons BY-NC-SA 4.0 International Public License
 #  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
 """Constants."""
 
+from importlib import metadata
+
 # Base library constants
-NAME = "Beward Client"
-VERSION = "1.1.9"
-AUTHOR = 'Andrey "Limych" Khrolenok <andrey@khrolenok.ru>'
-LICENSE = "Creative Commons BY-NC-SA License"
-WEBSITE = "https://github.com/Limych/py-beward"
-ISSUE_URL = "https://github.com/Limych/py-beward/issues"
-NEW_DEVICE_ISSUE_URL = "https://github.com/Limych/py-beward/issues/new?assignees=&labels=enhancement&template=new_device.md&title="
+VERSION = "1.1.10"
+
+mdata = metadata.metadata(__package__)
+
+URLS = dict(x.split(", ") for x in mdata.get_all("Project-URL"))
 
 STARTUP_MESSAGE = f"""
 -------------------------------------------------------------------
-{NAME}
-Version: {VERSION}
+{mdata["Summary"]}
+Version: {mdata["Version"]}
 If you have ANY issues with this you need to open an issue here:
-{ISSUE_URL}
+{URLS["Issues"]}
 -------------------------------------------------------------------
 """
-
 
 TIMEOUT = 3
 
@@ -40,6 +39,6 @@ BEWARD_DOORBELL = "doorbell"
 # Beward models
 BEWARD_MODELS = {
     BEWARD_CAMERA: "B102S",
-    BEWARD_DOORBELL: "ALP-600 DC11EP DK103 DK103M DKS20210 DS03M DS05M(P) DS06M "
+    BEWARD_DOORBELL: "ALP-600 DC11EP DK103 DK103M DKS20210 DS03M DS05M(P) DS06 DS06M "
     "DS06A(P) DS07P-LP DSN06PS DSN23215PS S06A S06M",
 }

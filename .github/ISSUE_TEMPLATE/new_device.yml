@@ -1,0 +1,32 @@
+---
+name: "New device"
+description: "Report new Beward device"
+labels: "enhancement"
+body:
+- type: markdown
+  attributes:
+    value: Before you open a new issue, search through the existing issues to see if others have had the same problem.
+- type: checkboxes
+  attributes:
+    label: Checklist
+    options:
+      - label: I have using the newest release.
+        required: true
+      - label: I have filled out the issue template to the best of my ability.
+        required: true
+      - label: This issue only contains 1 new device (if you have multiple new devices, open one issue for each device).
+        required: true
+      - label: This issue is not a duplicate issue of any [previous issues](https://github.com/Limych/py-blueprint/issues?q=is%3Aissue+label%3A%22enhancement%22+)..
+        required: true
+- type: textarea
+  attributes:
+    label: Device ID as it was detected by `py-beward` library
+    description: ""
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: Web-link to official device's description
+    description: ""
+  validations:
+    required: true

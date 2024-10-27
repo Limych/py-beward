@@ -4,6 +4,8 @@
 """Beward doorbell controller."""
 
 import logging
+from datetime import datetime
+from typing import Any
 
 from beward.const import ALARM_SENSOR
 
@@ -15,14 +17,14 @@ _LOGGER = logging.getLogger(__name__)
 class BewardDoorbell(BewardCamera):
     """Beward doorbell controller class."""
 
-    def __init__(self, host, username, password, **kwargs):
+    def __init__(self, host: str, username: str, password: str, **kwargs: Any) -> None:
         """Initialize Beward doorbell controller."""
         super().__init__(host, username, password, **kwargs)
 
         self.last_ding_timestamp = None
         self.last_ding_image = None
 
-    def _handle_alarm(self, timestamp, alarm, state):
+    def _handle_alarm(self, timestamp: datetime, alarm: str, state: bool) -> None:  # noqa: FBT001
         """Handle alarms from Beward device."""
         super()._handle_alarm(timestamp, alarm, state)
 
