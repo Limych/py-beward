@@ -1,6 +1,9 @@
 # pylint: disable=protected-access,redefined-outer-name
 """Test to verify that Beward library works."""
 
+import contextlib
+from typing import Any
+
 from beward.util import is_valid_fqdn, normalize_fqdn
 
 
@@ -22,14 +25,10 @@ def test_normalize_fqdn():
 def test_is_valid_fqdn__label_too_long():
     """Test FQDN validations."""
     assertValidFQDN("b" * 63, "com")
-    try:
+    with contextlib.suppress(UnicodeError):
         assertInvalidFQDN("A" * 64, "com")
-    except UnicodeError:
-        pass
-    try:
+    with contextlib.suppress(UnicodeError):
         assertInvalidFQDN("b" * 63, "A" * 64, "com")
-    except UnicodeError:
-        pass
 
 
 def test_is_valid_fqdn__name_too_long_254_octets():
@@ -93,18 +92,18 @@ def test_rfc_3696_s_2__invalid():
     assert is_valid_fqdn("192.168.0.1") is False
 
 
-def _is_valid_fqdn_from_labels_sequence(fqdn_labels_sequence):
+def _is_valid_fqdn_from_labels_sequence(fqdn_labels_sequence) -> bool:
     fqdn = ".".join(fqdn_labels_sequence)
     return is_valid_fqdn(fqdn)
 
 
 # pylint: disable=invalid-name
-def assertValidFQDN(*seq):
+def assertValidFQDN(*seq: Any) -> None:  # noqa: N802
     """Positive assert function for FQDN validations."""
     assert _is_valid_fqdn_from_labels_sequence(seq) is True
 
 
 # pylint: disable=invalid-name
-def assertInvalidFQDN(*seq):
+def assertInvalidFQDN(*seq: Any) -> None:  # noqa: N802
     """Negative assert function for FQDN validations."""
     assert _is_valid_fqdn_from_labels_sequence(seq) is False

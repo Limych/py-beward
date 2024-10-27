@@ -1,5 +1,6 @@
 # pylint: disable=protected-access,redefined-outer-name,no-value-for-parameter
 """Test to verify that Beward library works."""
+
 import logging
 from datetime import datetime
 from time import sleep
@@ -18,25 +19,25 @@ from beward.const import (
 )
 
 from . import function_url, load_fixture
-from .const import MOCK_HOST, MOCK_PASS, MOCK_USER
+from .const import MOCK_HOST, MOCK_PASS, MOCK_USER, local_tz
 
 
 @pytest.mark.parametrize("host", ["265.265.265.265", "-1.-1.-1.-1"])
-def test___init__failing(host):
+def test___init__failing(host) -> None:
     """Test class initialization failing."""
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError):  # noqa: PT011
         BewardGeneric(host, MOCK_USER, MOCK_PASS)
 
 
 @pytest.mark.parametrize(
-    "host, port, host_exp, port_exp",
+    ("host", "port", "host_exp", "port_exp"),
     [
         (MOCK_HOST, None, MOCK_HOST, 80),
         (MOCK_HOST + ":123", None, MOCK_HOST, 123),
         (MOCK_HOST, 456, MOCK_HOST, 456),
     ],
 )
-def test___init__(host: str, port, host_exp: str, port_exp: int):
+def test___init__(host: str, port, host_exp: str, port_exp: int) -> None:
     """Test class initialization."""
     bwd = BewardGeneric(host, MOCK_USER, MOCK_PASS, port=port)
     assert bwd.host == host_exp
@@ -44,7 +45,7 @@ def test___init__(host: str, port, host_exp: str, port_exp: int):
 
 
 @pytest.mark.parametrize(
-    "device, dev_type",
+    ("device", "dev_type"),
     [
         ("B102S", BEWARD_CAMERA),
         ("DS03M", BEWARD_DOORBELL),
@@ -53,12 +54,12 @@ def test___init__(host: str, port, host_exp: str, port_exp: int):
         ("NONEXISTENT", None),
     ],
 )
-def test_get_device_type(device: str, dev_type: str):
+def test_get_device_type(device: str, dev_type: str) -> None:
     """Test that correct device type detection."""
     assert BewardGeneric.get_device_type(device) == dev_type
 
 
-def test_get_url(beward):
+def test_get_url(beward) -> None:
     """Test that correct URLs composing."""
     expect = f"http://{MOCK_HOST}:80/cgi-bin/systeminfo_cgi"
     res = beward.get_url("systeminfo")
@@ -77,7 +78,7 @@ def test_get_url(beward):
     assert res == expect
 
     username = "user"
-    password = "pass"
+    password = "pass"  # noqa: S105
     expect = f"http://{username}:{password}@{MOCK_HOST}:80/cgi-bin/systeminfo_cgi"
     res = beward.get_url("systeminfo", username=username, password=password)
     #
@@ -97,7 +98,7 @@ def test_get_url(beward):
     assert res == expect
 
 
-def test_add_url_param(beward):
+def test_add_url_param(beward) -> None:
     """Test that correct URLs parameters adding."""
     base_url = f"http://{MOCK_HOST}/cgi-bin/systeminfo_cgi"
 
@@ -107,7 +108,7 @@ def test_add_url_param(beward):
     assert res == expect
 
 
-def test_query(caplog):
+def test_query(caplog) -> None:
     """Test that send requests to device."""
     caplog.set_level(logging.DEBUG)
     function = "systeminfo"
@@ -134,15 +135,15 @@ def test_query(caplog):
         assert next((s for s in caplog.messages if MOCK_PASS in s), None) is None
 
 
-def test_add_alarms_handler(beward):
+def test_add_alarms_handler(beward) -> None:
     """Test that add alarm handlers."""
     # Check initial state
     assert beward._alarm_handlers == set()
 
-    def logger1():
+    def logger1() -> None:
         pass
 
-    def logger2():
+    def logger2() -> None:
         pass
 
     beward.add_alarms_handler(logger1)
@@ -155,13 +156,13 @@ def test_add_alarms_handler(beward):
     assert beward._alarm_handlers == {logger1, logger2}
 
 
-def test_remove_alarms_handler(beward):
+def test_remove_alarms_handler(beward) -> None:
     """Test that remove alarm handlers."""
 
-    def logger1():
+    def logger1() -> None:
         pass
 
-    def logger2():
+    def logger2() -> None:
         pass
 
     beward.add_alarms_handler(logger1)
@@ -178,19 +179,19 @@ def test_remove_alarms_handler(beward):
     assert beward._alarm_handlers == set()
 
 
-def test__handle_alarm(beward):
+def test__handle_alarm(beward) -> None:
     """Test that handle alarms."""
     # Check initial state
     assert beward.alarm_state == {ALARM_ONLINE: False}
     assert beward.alarm_timestamp == {ALARM_ONLINE: datetime.min}
 
-    ts1 = datetime.now()
-    beward._handle_alarm(ts1, ALARM_MOTION, True)
+    ts1 = datetime.now(local_tz)
+    beward._handle_alarm(ts1, ALARM_MOTION, state=True)
     assert beward.alarm_state == {ALARM_ONLINE: False, ALARM_MOTION: True}
     assert beward.alarm_timestamp == {ALARM_ONLINE: datetime.min, ALARM_MOTION: ts1}
 
-    ts2 = datetime.now()
-    beward._handle_alarm(ts2, ALARM_SENSOR, True)
+    ts2 = datetime.now(local_tz)
+    beward._handle_alarm(ts2, ALARM_SENSOR, state=True)
     assert beward.alarm_state == {
         ALARM_ONLINE: False,
         ALARM_MOTION: True,
@@ -202,8 +203,8 @@ def test__handle_alarm(beward):
         ALARM_SENSOR: ts2,
     }
 
-    ts3 = datetime.now()
-    beward._handle_alarm(ts3, ALARM_MOTION, False)
+    ts3 = datetime.now(local_tz)
+    beward._handle_alarm(ts3, ALARM_MOTION, state=False)
     assert beward.alarm_state == {
         ALARM_ONLINE: False,
         ALARM_MOTION: False,
@@ -216,7 +217,7 @@ def test__handle_alarm(beward):
     }
 
 
-def _listen_alarms_tester(alarms, expected_log):
+def _listen_alarms_tester(alarms, expected_log) -> None:
     with requests_mock.Mocker() as mock:
         beward = BewardGeneric(MOCK_HOST, MOCK_USER, MOCK_PASS)
         mock.register_uri(
@@ -225,7 +226,7 @@ def _listen_alarms_tester(alarms, expected_log):
         log = []
         logging = True
 
-        def _alarms_logger(device, timestamp, alarm, state):
+        def _alarms_logger(device, timestamp, alarm, state) -> None:
             nonlocal logging
             if not logging:
                 return
@@ -240,9 +241,7 @@ def _listen_alarms_tester(alarms, expected_log):
         assert beward.alarm_state == {ALARM_ONLINE: False}
         assert beward.alarm_timestamp == {ALARM_ONLINE: datetime.min}
 
-        alarms2listen = []
-        for alarm in alarms:
-            alarms2listen.append(alarm.split(";")[2])
+        alarms2listen = [x.split(";")[2] for x in alarms]
         beward.add_alarms_handler(_alarms_logger)
         beward.listen_alarms(alarms=alarms2listen)
         sleep(0.1)
@@ -259,20 +258,22 @@ def _listen_alarms_tester(alarms, expected_log):
 
 def test_listen_alarms():
     """Test that listen alarms."""
+    local_tz_str = datetime.now(local_tz).isoformat(timespec="seconds")[19:]
+
     alarms = ["2019-07-28;00:57:27;MotionDetection;1;0"]
-    ex_log = ["2019-07-28 00:57:27;MotionDetection;True"]
+    ex_log = [f"2019-07-28 00:57:27{local_tz_str};MotionDetection;True"]
     _listen_alarms_tester(alarms, ex_log)
 
     alarms.append("2019-07-28;00:57:28;MotionDetection;0;0")
-    ex_log.append("2019-07-28 00:57:28;MotionDetection;False")
+    ex_log.append(f"2019-07-28 00:57:28{local_tz_str};MotionDetection;False")
     _listen_alarms_tester(alarms, ex_log)
 
     alarms.append("2019-07-28;15:51:52;SensorAlarm;1;0")
-    ex_log.append("2019-07-28 15:51:52;SensorAlarm;True")
+    ex_log.append(f"2019-07-28 15:51:52{local_tz_str};SensorAlarm;True")
     _listen_alarms_tester(alarms, ex_log)
 
     alarms.append("2019-07-28;15:51:53;SensorAlarm;0;0")
-    ex_log.append("2019-07-28 15:51:53;SensorAlarm;False")
+    ex_log.append(f"2019-07-28 15:51:53{local_tz_str};SensorAlarm;False")
     _listen_alarms_tester(alarms, ex_log)
 
 

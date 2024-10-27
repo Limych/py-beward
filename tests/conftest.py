@@ -6,7 +6,6 @@ import threading
 import pytest
 
 from beward import BewardGeneric
-
 from tests import MOCK_HOST
 from tests.const import MOCK_PASS, MOCK_USER
 

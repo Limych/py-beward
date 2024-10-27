@@ -41,7 +41,7 @@ classifiers = [
 Homepage = "https://github.com/Limych/py-beward"
 Documentation = "https://github.com/Limych/py-beward/README.md"
 Issues = "https://github.com/Limych/py-beward/issues"
-"New Device" = "https://github.com/Limych/py-beward/issues/new?template=new_device.md"
+"New Device" = "https://github.com/Limych/py-beward/issues/new?template=new_device.yml"
 
 [tool.ruff]
 target-version = "py312"

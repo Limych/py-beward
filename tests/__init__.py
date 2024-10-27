@@ -1,22 +1,22 @@
 # pylint: disable=protected-access,redefined-outer-name
 """Unit tests package."""
 
-import os
+from pathlib import Path
 
 from .const import MOCK_HOST
 
 
 def load_fixture(filename):
     """Load a fixture."""
-    path = os.path.join(os.path.dirname(__file__), "fixtures", filename)
-    with open(path, encoding="utf-8") as fptr:
+    path = Path(__file__).parent / "fixtures" / filename
+    with path.open(encoding="utf-8") as fptr:
         return fptr.read()
 
 
 def load_binary(filename):
     """Load a binary data."""
-    path = os.path.join(os.path.dirname(__file__), "binary", filename)
-    with open(path, "rb") as fptr:
+    path = Path(__file__).parent / "binary" / filename
+    with path.open("rb") as fptr:
         return fptr.read()
 
 

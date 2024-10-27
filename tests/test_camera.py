@@ -10,10 +10,10 @@ from beward import BewardCamera
 from beward.const import ALARM_MOTION
 
 from . import function_url, load_binary, load_fixture
-from .const import MOCK_HOST, MOCK_PASS, MOCK_USER
+from .const import MOCK_HOST, MOCK_PASS, MOCK_USER, local_tz
 
 
-def test___init__():
+def test___init__() -> None:
     """Initialize test."""
     beward = BewardCamera(MOCK_HOST, MOCK_USER, MOCK_PASS)
     assert beward.rtsp_port is None
@@ -24,7 +24,7 @@ def test___init__():
     assert beward.stream == 2
 
 
-def test_obtain_uris():
+def test_obtain_uris() -> None:
     """Test that obtain urls from device."""
     with requests_mock.Mocker() as mock:
         beward = BewardCamera(MOCK_HOST, MOCK_USER, MOCK_PASS)
@@ -73,7 +73,7 @@ def test_obtain_uris():
         assert beward._rtsp_live_video_url == expect
 
 
-def test_live_image_url():
+def test_live_image_url() -> None:
     """Test that obtain live image url from device."""
     with requests_mock.Mocker() as mock:
         mock.register_uri("get", function_url("rtsp"))
@@ -87,7 +87,7 @@ def test_live_image_url():
         assert beward.live_image_url == expect
 
 
-def test_rtsp_live_video_url():
+def test_rtsp_live_video_url() -> None:
     """Test that obtain RTSP live video url from device."""
     with requests_mock.Mocker() as mock:
         mock.register_uri("get", function_url("rtsp"), text=load_fixture("rtsp.txt"))
@@ -101,7 +101,7 @@ def test_rtsp_live_video_url():
         assert beward.rtsp_live_video_url == expect
 
 
-def test_live_image():
+def test_live_image() -> None:
     """Test that receive live image from device."""
     image = load_binary("image.jpg")
 
@@ -122,7 +122,7 @@ def test_live_image():
         assert res == image
 
 
-def test__handle_alarm():
+def test__handle_alarm() -> None:
     """Test that handle alarms."""
     image = load_binary("image.jpg")
 
@@ -133,13 +133,13 @@ def test__handle_alarm():
         assert beward.last_motion_timestamp is None
         assert beward.last_motion_image is None
 
-        ts1 = datetime.now()
+        ts1 = datetime.now(local_tz)
         mock.register_uri(
             "get",
             function_url("images"),
             content=image,
             headers={"Content-Type": "image/jpeg"},
         )
-        beward._handle_alarm(ts1, ALARM_MOTION, True)
+        beward._handle_alarm(ts1, ALARM_MOTION, state=True)
         assert beward.last_motion_timestamp == ts1
         assert beward.last_motion_image == image

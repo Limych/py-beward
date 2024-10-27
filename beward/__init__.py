@@ -5,6 +5,7 @@
 
 import logging
 import struct
+import typing
 import urllib.parse
 from _socket import (
     AF_INET,
@@ -16,7 +17,7 @@ from _socket import (
     socket,
     timeout,
 )
-from collections import namedtuple
+from typing import Any
 
 import hexdump
 
@@ -47,7 +48,7 @@ _LOGGER = logging.getLogger(__name__)
 _LOGGER.addHandler(logging.NullHandler())
 
 
-def init():  # pragma: no cover
+def init() -> None:  # pragma: no cover
     """Run component initialization."""
     _LOGGER.info(STARTUP_MESSAGE)
 
@@ -55,7 +56,9 @@ def init():  # pragma: no cover
     init.__code__ = (lambda: None).__code__
 
 
-def split_auth_from_netloc(netloc: str):  # pragma: no cover
+def split_auth_from_netloc(
+    netloc: str,
+) -> tuple[str, tuple[str | None, str | None]]:  # pragma: no cover
     """
     Parse out and remove the auth information from a netloc.
 
@@ -100,7 +103,7 @@ def redact_auth_from_url(netloc: str) -> str:  # pragma: no cover
         password = ""
     else:
         user = urllib.parse.quote(user)
-        password = ":****"
+        password = ":****"  # noqa: S105
     return f"{user}{password}@{netloc}"
 
 
@@ -109,14 +112,14 @@ class Beward:
     """Beward device factory class."""
 
     @staticmethod
-    def discovery():  # pragma: no cover
+    def discovery() -> dict[str, Any]:  # pragma: no cover
         """Discover Beward devices in local network."""
         init()
 
         server = socket(AF_INET, SOCK_DGRAM)
         server.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
         server.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
-        server.bind(("0.0.0.0", 0))
+        server.bind(("0.0.0.0", 0))  # noqa: S104
         server.settimeout(1)
 
         _LOGGER.debug("Start discovery")
@@ -135,6 +138,7 @@ class Beward:
                     hexdump.hexdump(data[0][28:], result="return"),
                 )
 
+                # ruff: noqa: ERA001
                 (
                     # packet header (28 bytes):
                     # "\x67\x45\x00\x00\x05\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
@@ -200,7 +204,7 @@ class Beward:
                 ) = struct.unpack("<45xL19x64sI6s2H2x2I", data[0][:156])
                 name = name.replace(b"\x00", b"").decode("utf-8")
 
-                def _unpack_ip(ip_addr):
+                def _unpack_ip(ip_addr: Any) -> str:
                     return inet_ntoa(struct.pack(">I", ip_addr))
 
                 (host_ip, net_mask, gate_ip) = (
@@ -208,8 +212,7 @@ class Beward:
                     _unpack_ip(net_mask),
                     _unpack_ip(gate_ip),
                 )
-                # pylint: disable=consider-using-f-string
-                mac = ":".join("%02x" % i for i in mac)
+                mac = ":".join(f"{i:02x}" for i in mac)
 
                 _LOGGER.info(
                     "Discovered %s (ID: %d) at http://%s:%d",
@@ -230,9 +233,11 @@ class Beward:
                         "net_mask": net_mask,
                         "gate_ip": gate_ip,
                     }
-                    devices[mac] = namedtuple("BewardDevice", dev.keys())(*dev.values())
+                    devices[mac] = typing.NamedTuple("BewardDevice", dev.keys())(
+                        *dev.values()
+                    )
 
-            except Exception as err:  # pylint: disable=broad-except
+            except Exception as err:  # noqa: BLE001
                 if not isinstance(err, timeout):
                     _LOGGER.debug(err)
                 break
@@ -243,7 +248,9 @@ class Beward:
         return devices
 
     @staticmethod
-    def factory(host_ip: str, username: str, password: str, **kwargs):
+    def factory(
+        host_ip: str, username: str, password: str, **kwargs: Any
+    ) -> BewardGeneric:
         """Return correct class for device."""
         init()
 
@@ -252,10 +259,11 @@ class Beward:
         dev_type = bwd.get_device_type(model)
 
         if dev_type is None:
-            raise ValueError(
+            msg = (
                 f'Unknown device "{model}". '
-                f"Please, open new issue here: {URLS["New Device"]}"
+                f'Please, open new issue here: {URLS["New Device"]}'
             )
+            raise ValueError(msg)
 
         inst = None
 

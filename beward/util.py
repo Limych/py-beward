@@ -6,7 +6,7 @@
 import re
 
 
-def normalize_fqdn(hostname) -> str:
+def normalize_fqdn(hostname: str) -> str:
     """Normalize full qualified domain name."""
     # Convert unicode hostname to punycode and
     # remove the port number from hostname
@@ -19,10 +19,10 @@ def normalize_fqdn(hostname) -> str:
     return hostname
 
 
-def is_valid_fqdn(hostname) -> bool:
+def is_valid_fqdn(hostname: str) -> bool:
     """Validate full qualified domain name."""
     hostname = normalize_fqdn(hostname)
-    if not hostname or len(hostname) > 253:
+    if not hostname or len(hostname) > 253:  # noqa: PLR2004
         return False
     dn_seq = hostname.split(".")
     if re.match(r"[0-9]+$", dn_seq[-1]):

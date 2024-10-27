@@ -4,7 +4,8 @@
 """Beward camera controller."""
 
 import logging
-from typing import Optional
+from datetime import datetime
+from typing import Any
 
 from requests import ConnectTimeout
 
@@ -19,7 +20,15 @@ class BewardCamera(BewardGeneric):
     """Beward camera controller class."""
 
     # pylint: disable=too-many-arguments
-    def __init__(self, host, username, password, rtsp_port=None, stream=0, **kwargs):
+    def __init__(
+        self,
+        host: str,
+        username: str,
+        password: str,
+        rtsp_port: int | None = None,
+        stream: int = 0,
+        **kwargs: Any,
+    ) -> None:
         """Initialize Beward camera controller."""
         super().__init__(host, username, password, **kwargs)
 
@@ -32,9 +41,8 @@ class BewardCamera(BewardGeneric):
         self._live_image_url = None
         self._rtsp_live_video_url = None
 
-    def obtain_uris(self):
+    def obtain_uris(self) -> None:
         """Set the URIs for the camera."""
-
         self._live_image_url = self.get_url(
             "images",
             extra_params={"channel": 0},
@@ -71,16 +79,16 @@ class BewardCamera(BewardGeneric):
 
     @property
     # pylint: disable=unsubscriptable-object
-    def live_image(self) -> Optional[bytes]:
+    def live_image(self) -> bytes | None:
         """Return bytes of camera image."""
         res = self.query("images", extra_params={"channel": 0})
 
-        if not res.headers.get("Content-Type") in ("image/jpeg", "image/png"):
+        if res.headers.get("Content-Type") not in ("image/jpeg", "image/png"):
             return None
 
         return res.content
 
-    def _handle_alarm(self, timestamp, alarm, state):
+    def _handle_alarm(self, timestamp: datetime, alarm: str, state: bool) -> None:  # noqa: FBT001
         """Handle alarms from Beward device."""
         super()._handle_alarm(timestamp, alarm, state)
 
