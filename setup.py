@@ -3,9 +3,10 @@
 
 import re
 import sys
+from pathlib import Path
 
 from setuptools import find_packages, setup
-from setuptools.command.test import test as TestCommand
+from setuptools.command.test import test as TestCommand  # noqa: N812
 
 
 class PyTest(TestCommand):
@@ -15,7 +16,7 @@ class PyTest(TestCommand):
     # https://docs.pytest.org/en/latest/goodpractices.html#manual-integration
 
     # pylint: disable=attribute-defined-outside-init
-    def finalize_options(self):
+    def finalize_options(self) -> None:
         """Finalize test command options."""
         TestCommand.finalize_options(self)
         # we don't run integration tests which need an actual blueprint_client device
@@ -23,7 +24,7 @@ class PyTest(TestCommand):
         self.test_suite = True
 
     # pylint: disable=import-outside-toplevel,import-error
-    def run_tests(self):
+    def run_tests(self) -> None:
         """Run tests."""
         # import here, cause outside the eggs aren't loaded
         import shlex
@@ -36,7 +37,7 @@ class PyTest(TestCommand):
 
 def load_requirements(fpath: str) -> list:
     """Load requirements from file."""
-    with open(fpath, encoding="utf8") as f_req:
+    with Path(fpath).open(encoding="utf8") as f_req:
         data = list(f_req)
     imp = re.compile(r"^(-r|--requirement)\s+(\S+)")
     reqs = []
@@ -51,7 +52,7 @@ def load_requirements(fpath: str) -> list:
     return reqs
 
 
-with open("blueprint_client/const.py", encoding="utf-8") as file:
+with Path("blueprint_client/const.py").open(encoding="utf-8") as file:
     src = file.read()
 metadata = dict(re.findall(r'([a-z]+) = "([^"]+)"', src, re.IGNORECASE))
 metadata.update(dict(re.findall(r"([a-z]+) = '([^']+)'", src, re.IGNORECASE)))
@@ -75,7 +76,7 @@ CLASSIFIERS = [
     "Operating System :: OS Independent",
 ]
 
-with open("README.md", encoding="utf-8") as file:
+with Path("README.md").open(encoding="utf-8") as file:
     LONG_DESCRIPTION = file.read()
     LONG_DESCRIPTION_TYPE = "text/markdown"
 

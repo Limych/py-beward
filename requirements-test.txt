@@ -1,12 +1,15 @@
 -r requirements.txt
-coveralls~=3.3
-mock~=5.1
-mypy~=1.6
-pylint~=3.0
-pylint-strict-informational==0.1
-pytest~=8.0
-pytest-asyncio~=0.21
-pytest-cov~=4.1
-requests-mock~=1.12
+async-timeout
+asynctest~=0.13
+colorlog~=6.8
+flake8~=7.1
 flake8-docstrings~=1.7
-flake8~=6.1
+mock~=5.1
+mypy~=1.11
+pylint~=3.3
+pylint-strict-informational==0.1
+pytest>=7.2
+pytest-cov>=3.0
+pytest-asyncio~=0.21
+requests-mock~=1.12
+ruff>=0.4

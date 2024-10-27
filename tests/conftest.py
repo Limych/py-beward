@@ -14,19 +14,18 @@
 
 import datetime
 import json
-import os
+from pathlib import Path
 
 import pytest
 
 from blueprint_client.client import Client
-
 from tests.const import TEST_PASSWORD, TEST_USERNAME
 
 
 def load_fixture(filename):
     """Load a fixture."""
-    path = os.path.join(os.path.dirname(__file__), "fixtures", filename)
-    with open(path, encoding="utf-8") as fptr:
+    path = Path(__file__).parent / "fixtures" / filename
+    with path.open(encoding="utf-8") as fptr:
         return fptr.read()
 
 
@@ -35,14 +34,13 @@ def load_fixture_json(filename):
     return json.loads(load_fixture(filename))
 
 
-@pytest.fixture()
+@pytest.fixture
 def test_client():
     """Get test client fixture."""
-    client = Client(TEST_USERNAME, TEST_PASSWORD)
-    return client
+    return Client(TEST_USERNAME, TEST_PASSWORD)
 
 
-@pytest.fixture()
+@pytest.fixture
 def test_data():
     """Get test data fixture."""
     data = load_fixture_json("test_data.json")

@@ -19,10 +19,10 @@ async def test_change_something(test_client: Client):
     """Test change_something."""
     assert test_client.something is None
 
-    test_client.change_something(True)
+    test_client.change_something(something=True)
     #
     assert test_client.something is True
 
-    await test_client.async_change_something(False)
+    await test_client.async_change_something(something=False)
     #
     assert test_client.something is False

@@ -13,15 +13,15 @@ _LOGGER.info(STARTUP_MESSAGE)
 class Client:
     """Client class."""
 
-    def __init__(self, username, password):
+    def __init__(self, username: str, password: str) -> None:
         """Init."""
         self.username = username
         self.password = password
         self.something = None
 
-    def get_data(self):
+    def get_data(self) -> dict:
         """Return sample data."""
-        data = {
+        return {
             "username": self.username,
             "password": self.password,
             "data": {
@@ -32,16 +32,15 @@ class Client:
                 "none": None,
             },
         }
-        return data
 
-    async def async_get_data(self):
+    async def async_get_data(self) -> dict:
         """Return sample data."""
         return self.get_data()
 
-    def change_something(self, something: bool = None):
+    def change_something(self, something: bool | None = None) -> None:
         """Change something."""
         self.something = something
 
-    async def async_change_something(self, something: bool = None):
+    async def async_change_something(self, something: bool | None = None) -> None:
         """Change something."""
         self.something = something
