@@ -1,23 +1,23 @@
-#  Copyright (c) 2019-2022, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
+#  Copyright (c) 2019-2024, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
 #  Creative Commons BY-NC-SA 4.0 International Public License
 #  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
 """Constants."""
 
+from importlib import metadata
+
 # Base library constants
-NAME = "Beward Client"
 VERSION = "1.1.10.dev0"
-AUTHOR = 'Andrey "Limych" Khrolenok <andrey@khrolenok.ru>'
-LICENSE = "Creative Commons BY-NC-SA License"
-WEBSITE = "https://github.com/Limych/py-beward"
-ISSUE_URL = "https://github.com/Limych/py-beward/issues"
-NEW_DEVICE_ISSUE_URL = "https://github.com/Limych/py-beward/issues/new?assignees=&labels=enhancement&template=new_device.md&title="
+
+mdata = metadata.metadata(__package__)
+
+URLS = dict(x.split(", ") for x in mdata.get_all("Project-URL"))
 
 STARTUP_MESSAGE = f"""
 -------------------------------------------------------------------
-{NAME}
-Version: {VERSION}
+{mdata["Summary"]}
+Version: {mdata["Version"]}
 If you have ANY issues with this you need to open an issue here:
-{ISSUE_URL}
+{URLS["Issues"]}
 -------------------------------------------------------------------
 """
 
