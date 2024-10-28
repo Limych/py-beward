@@ -13,7 +13,7 @@ import threading
 from datetime import datetime, timezone
 from http import HTTPStatus
 from time import sleep
-from typing import Any
+from typing import Any, Protocol
 
 import requests
 from requests import ConnectTimeout, PreparedRequest, RequestException, Response
@@ -29,14 +29,19 @@ _LOGGER = logging.getLogger(__name__)
 local_tz = datetime.now(timezone.utc).astimezone().tzinfo  # noqa: UP017
 
 
-# pylint: disable=too-many-instance-attributes
+class AlarmHandlerCallback(Protocol):
+    """Protocol type for BewardGeneric alarm handler callback."""
+
+    def __call__(self, timestamp: datetime, alarm: str, state: bool) -> None:  # noqa: FBT001
+        """Define add_entities type."""
+
+
 class BewardGeneric:
     """Generic Implementation for Beward device."""
 
     _class_group = "Beward"
 
     @staticmethod
-    # pylint: disable=unsubscriptable-object
     def get_device_type(model: str | None) -> str | None:
         """Detect device type for model."""
         if not model:
@@ -50,7 +55,6 @@ class BewardGeneric:
 
         return None
 
-    # pylint: disable=unused-argument
     def __init__(
         self,
         host: str,
@@ -162,12 +166,12 @@ class BewardGeneric:
             _LOGGER.debug(MSG_GENERIC_FAIL)
         return response
 
-    def add_alarms_handler(self, handler: callable) -> BewardGeneric:
+    def add_alarms_handler(self, handler: AlarmHandlerCallback) -> BewardGeneric:
         """Add alarms handler."""
         self._alarm_handlers.add(handler)
         return self
 
-    def remove_alarms_handler(self, handler: callable) -> BewardGeneric:
+    def remove_alarms_handler(self, handler: AlarmHandlerCallback) -> BewardGeneric:
         """Remove alarms handler."""
         if handler in self._alarm_handlers:
             self._alarm_handlers.remove(handler)
