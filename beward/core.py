@@ -32,7 +32,13 @@ local_tz = datetime.now(timezone.utc).astimezone().tzinfo  # noqa: UP017
 class AlarmHandlerCallback(Protocol):
     """Protocol type for BewardGeneric alarm handler callback."""
 
-    def __call__(self, timestamp: datetime, alarm: str, state: bool) -> None:  # noqa: FBT001
+    def __call__(
+        self,
+        device: BewardGeneric,
+        timestamp: datetime,
+        alarm: str,
+        state: bool,  # noqa: FBT001
+    ) -> None:
         """Define add_entities type."""
 
 
@@ -186,7 +192,7 @@ class BewardGeneric:
         self.alarm_timestamp[alarm] = timestamp
         self.alarm_state[alarm] = state
 
-        for handler in self._alarm_handlers:
+        for handler in self._alarm_handlers:  # type: AlarmHandlerCallback
             handler(self, timestamp, alarm, state)
 
     def listen_alarms(self, channel: int = 0, alarms: Any = None) -> None:
