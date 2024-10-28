@@ -7,6 +7,7 @@ name = "beward"
 requires-python = ">=3.10"
 dynamic = ["version", "dependencies"]
 description = "Beward Client"
+readme = "README.md"
 authors = [
     { name = 'Andrey "Limych" Khrolenok', email = "andrey@khrolenok.ru" },
 ]
