@@ -1,5 +1,5 @@
 -r requirements-test.txt
-bandit~=1.7
+bandit~=1.8
 pre-commit~=4.0
 PyGithub~=2.4
 pyupgrade~=3.19
