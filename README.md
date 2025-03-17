@@ -84,7 +84,7 @@ See separate [license file](LICENSE.md) for full text.
 [contributors]: https://github.com/Limych/py-beward/graphs/contributors
 [license]: https://github.com/Limych/ha-beward/blob/main/LICENSE.md
 [license-shield]: https://img.shields.io/badge/license-Creative_Commons_BY--NC--SA_License-lightgray.svg?style=popout
-[maintained]: https://img.shields.io/maintenance/yes/2022.svg?style=popout
+[maintained]: https://img.shields.io/maintenance/yes/2025.svg?style=popout
 [maintenance-shield]: https://img.shields.io/badge/maintainer-Andrey%20Khrolenok%20%40Limych-blue.svg?style=popout
 [user_profile]: https://github.com/Limych
 [pypi]: https://pypi.org/project/beward/
