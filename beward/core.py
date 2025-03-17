@@ -1,4 +1,4 @@
-#  Copyright (c) 2019-2023, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
+#  Copyright (c) 2019-2025, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
 #  Creative Commons BY-NC-SA 4.0 International Public License
 #  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
 """Beward devices controller core."""
@@ -10,7 +10,7 @@ import logging
 import re
 import socket
 import threading
-from datetime import UTC, datetime, timezone
+from datetime import datetime, timezone
 from http import HTTPStatus
 from time import sleep
 from typing import Any, Protocol
@@ -26,7 +26,7 @@ from .const import ALARM_ONLINE, BEWARD_MODELS, MSG_GENERIC_FAIL, TIMEOUT
 
 _LOGGER = logging.getLogger(__name__)
 
-local_tz = datetime.now(timezone.utc).astimezone().tzinfo  # noqa: UP017
+local_tz = datetime.now(timezone.utc).astimezone().tzinfo
 
 
 class AlarmHandlerCallback(Protocol):
@@ -99,7 +99,7 @@ class BewardGeneric:
             ALARM_ONLINE: False,
         }
         self.alarm_timestamp = {
-            ALARM_ONLINE: datetime.min.replace(tzinfo=UTC),
+            ALARM_ONLINE: datetime.min.replace(tzinfo=timezone.utc),
         }
         self._alarm_handlers = set()
         self._alarm_listeners = []

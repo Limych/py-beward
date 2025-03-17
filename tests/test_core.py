@@ -1,8 +1,12 @@
+#  Copyright (c) 2019-2025, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
+#  Creative Commons BY-NC-SA 4.0 International Public License
+#  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
+
 # pylint: disable=protected-access,redefined-outer-name,no-value-for-parameter
 """Test to verify that Beward library works."""
 
 import logging
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from time import sleep
 
 import pytest
@@ -181,7 +185,7 @@ def test_remove_alarms_handler(beward) -> None:
 
 def test__handle_alarm(beward) -> None:
     """Test that handle alarms."""
-    dt_min = datetime.min.replace(tzinfo=UTC)
+    dt_min = datetime.min.replace(tzinfo=timezone.utc)
 
     # Check initial state
     assert beward.alarm_state == {ALARM_ONLINE: False}
@@ -242,7 +246,7 @@ def _listen_alarms_tester(alarms, expected_log) -> None:
         # Check initial state
         assert beward.alarm_state == {ALARM_ONLINE: False}
         assert beward.alarm_timestamp == {
-            ALARM_ONLINE: datetime.min.replace(tzinfo=UTC)
+            ALARM_ONLINE: datetime.min.replace(tzinfo=timezone.utc)
         }
 
         alarms2listen = [x.split(";")[2] for x in alarms]
