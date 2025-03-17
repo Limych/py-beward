@@ -6,7 +6,7 @@
 from importlib import metadata
 
 # Base library constants
-VERSION = "1.1.14.dev0"
+VERSION = "1.1.14"
 
 mdata = metadata.metadata(__package__)
 
