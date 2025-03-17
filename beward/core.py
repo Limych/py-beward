@@ -10,7 +10,7 @@ import logging
 import re
 import socket
 import threading
-from datetime import datetime, timezone
+from datetime import UTC, datetime, timezone
 from http import HTTPStatus
 from time import sleep
 from typing import Any, Protocol
@@ -99,7 +99,7 @@ class BewardGeneric:
             ALARM_ONLINE: False,
         }
         self.alarm_timestamp = {
-            ALARM_ONLINE: datetime.min,
+            ALARM_ONLINE: datetime.min.replace(tzinfo=UTC),
         }
         self._alarm_handlers = set()
         self._alarm_listeners = []

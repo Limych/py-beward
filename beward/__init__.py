@@ -36,9 +36,9 @@ from beward.doorbell import BewardDoorbell
 # but if you do, here is what you get:
 __all__ = [
     "Beward",
-    "BewardGeneric",
     "BewardCamera",
     "BewardDoorbell",
+    "BewardGeneric",
 ]
 
 _LOGGER = logging.getLogger(__name__)

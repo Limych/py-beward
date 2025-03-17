@@ -2,7 +2,7 @@
 """Test to verify that Beward library works."""
 
 import logging
-from datetime import datetime
+from datetime import UTC, datetime
 from time import sleep
 
 import pytest
@@ -181,14 +181,16 @@ def test_remove_alarms_handler(beward) -> None:
 
 def test__handle_alarm(beward) -> None:
     """Test that handle alarms."""
+    dt_min = datetime.min.replace(tzinfo=UTC)
+
     # Check initial state
     assert beward.alarm_state == {ALARM_ONLINE: False}
-    assert beward.alarm_timestamp == {ALARM_ONLINE: datetime.min}
+    assert beward.alarm_timestamp == {ALARM_ONLINE: dt_min}
 
     ts1 = datetime.now(local_tz)
     beward._handle_alarm(ts1, ALARM_MOTION, state=True)
     assert beward.alarm_state == {ALARM_ONLINE: False, ALARM_MOTION: True}
-    assert beward.alarm_timestamp == {ALARM_ONLINE: datetime.min, ALARM_MOTION: ts1}
+    assert beward.alarm_timestamp == {ALARM_ONLINE: dt_min, ALARM_MOTION: ts1}
 
     ts2 = datetime.now(local_tz)
     beward._handle_alarm(ts2, ALARM_SENSOR, state=True)
@@ -198,7 +200,7 @@ def test__handle_alarm(beward) -> None:
         ALARM_SENSOR: True,
     }
     assert beward.alarm_timestamp == {
-        ALARM_ONLINE: datetime.min,
+        ALARM_ONLINE: dt_min,
         ALARM_MOTION: ts1,
         ALARM_SENSOR: ts2,
     }
@@ -211,7 +213,7 @@ def test__handle_alarm(beward) -> None:
         ALARM_SENSOR: True,
     }
     assert beward.alarm_timestamp == {
-        ALARM_ONLINE: datetime.min,
+        ALARM_ONLINE: dt_min,
         ALARM_MOTION: ts3,
         ALARM_SENSOR: ts2,
     }
@@ -239,7 +241,9 @@ def _listen_alarms_tester(alarms, expected_log) -> None:
 
         # Check initial state
         assert beward.alarm_state == {ALARM_ONLINE: False}
-        assert beward.alarm_timestamp == {ALARM_ONLINE: datetime.min}
+        assert beward.alarm_timestamp == {
+            ALARM_ONLINE: datetime.min.replace(tzinfo=UTC)
+        }
 
         alarms2listen = [x.split(";")[2] for x in alarms]
         beward.add_alarms_handler(_alarms_logger)
