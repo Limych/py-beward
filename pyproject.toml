@@ -9,7 +9,7 @@ dynamic = ["version", "dependencies"]
 description = "Blueprint Client"
 readme = "README.md"
 authors = [
-    { name = "Andrey Khrolenok", email = "andrey@khrolenok.ru" },
+    { name = 'Andrey "Limych" Khrolenok', email = "andrey@khrolenok.ru" },
 ]
 license = { file = "LICENSE.md" }
 keywords = ["blueprint"]
