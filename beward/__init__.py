@@ -1,4 +1,4 @@
-#  Copyright (c) 2019-2024, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
+#  Copyright (c) 2019-2025, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
 #  Creative Commons BY-NC-SA 4.0 International Public License
 #  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
 """Python API for Beward Cameras and Doorbells."""
@@ -130,8 +130,8 @@ class Beward:
         )
 
         devices = {}
-        while True:
-            try:
+        try:
+            while True:
                 data = server.recvfrom(1024)
                 _LOGGER.debug(
                     "Discovery response data:\n%s",
@@ -237,10 +237,9 @@ class Beward:
                         *dev.values()
                     )
 
-            except Exception as err:  # noqa: BLE001
-                if not isinstance(err, timeout):
-                    _LOGGER.debug(err)
-                break
+        except Exception as err:  # noqa: BLE001
+            if not isinstance(err, timeout):
+                _LOGGER.debug(err)
 
         _LOGGER.debug("Stop discovery")
         server.close()
