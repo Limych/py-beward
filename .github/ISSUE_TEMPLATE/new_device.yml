@@ -21,12 +21,10 @@ body:
 - type: textarea
   attributes:
     label: Device ID as it was detected by `py-beward` library
-    description: ""
   validations:
     required: true
 - type: textarea
   attributes:
     label: Web-link to official device's description
-    description: ""
   validations:
     required: true
