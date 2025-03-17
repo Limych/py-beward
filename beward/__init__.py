@@ -261,7 +261,7 @@ class Beward:
         if dev_type is None:
             msg = (
                 f'Unknown device "{model}". '
-                f'Please, open new issue here: {URLS["New Device"]}'
+                f"Please, open new issue here: {URLS['New Device']}"
             )
             raise ValueError(msg)
 
